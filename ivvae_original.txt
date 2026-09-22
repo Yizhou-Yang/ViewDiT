@@ -1,0 +1,100 @@
+ 
+ 
+ 
+     
+     
+     
+     CVPR 2025 Open Access Repository 
+     
+      
+      
+      
+     
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+     
+           
+           
+     
+     
+         
+             CVPR 2025   open access 
+         
+         
+            These CVPR 2025 papers are the Open Access versions, provided by the
+ Computer Vision Foundation.  
+Except for the watermark, they are identical to the accepted versions;
+the final published version of the proceedings is available on IEEE Xplore.
+         
+         
+            This material is presented to ensure timely dissemination of scholarly and technical work.
+Copyright and all rights therein are retained by authors or by other copyright holders.
+All persons copying this information are expected to adhere to the terms and constraints invoked 
+by each author's copyright.  
+             
+                 
+                 
+             
+
+         
+     
+     
+           Powered by:  
+         
+           
+           
+           Sponsored by:  
+         
+         
+         
+     
+ 
+  
+      
+     
+        Improved Video VAE for Latent Video Diffusion Model
+     
+     
+                Pingyu Wu, Kai Zhu, Yu Liu, Liming Zhao, Wei Zhai, Yang Cao, Zheng-Jun Zha  ; Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), 2025, pp. 18124-18133
+     
+     
+      Abstract 
+     
+      
+     
+    Variational Autoencoder (VAE) aims to compress pixel data into low-dimensional latent space, playing an important role in OpenAI&#x27;s Sora and other latent video diffusion generation models. While most existing video VAEs inflate a pre-trained image VAE into the 3D causal structure for temporal-spatial compression, this paper presents two astonishing findings: (1) The initialization from a well-trained image VAE with the same latent dimensions is not an optimal scheme. (2) The adoption of causal reasoning leads to unequal information interactions and unbalanced performance between frames. To alleviate these problems, we propose a keyframe-based temporal compression (KTC) architecture and a group causal convolution (GCConv) module to further improve video VAE (IV-VAE). Specifically, the KTC architecture divides the latent space into two branches, in which one half completely inherits the compression prior of keyframes from a lower-dimension image VAE while the other half involves temporal compression through 3D group causal convolution, reducing temporal-spatial conflicts and accelerating the convergence speed of video VAE. The GCConv in the above 3D half uses standard convolution within each frame group to ensure inter-frame equivalence, and employs causal logical padding between groups to maintain flexibility in processing variable frame video. Extensive experiments on five benchmarks demonstrate the SOTA video reconstruction and generation abilities of our IV-VAE.
+     
+     
+      Related Material 
+     
+           
+[ pdf ]
+[ supp ]
+[ arXiv ]
+ [ bibtex ]
+ @InProceedings{Wu_2025_CVPR,
+    author    = {Wu, Pingyu and Zhu, Kai and Liu, Yu and Zhao, Liming and Zhai, Wei and Cao, Yang and Zha, Zheng-Jun},
+    title     = {Improved Video VAE for Latent Video Diffusion Model},
+    booktitle = {Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)},
+    month     = {June},
+    year      = {2025},
+    pages     = {18124-18133}
+} 
+         
+   
+ 
+ 

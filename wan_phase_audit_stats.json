@@ -1,0 +1,368 @@
+{
+  "complete": true,
+  "protocol": {
+    "frames_zero_based": true,
+    "end_offsets": [
+      6,
+      7,
+      8,
+      9
+    ],
+    "restricted_control": "freeze latent 0:3, modify latent3 onward",
+    "proof": "causal decoding makes frames0:9 independent of latent3 onward; sum squared residual on protected frames below9 is invariant"
+  },
+  "rows": [
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "protected_suffix_start": 6,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.016108671203255653,
+      "initial_suffix_mse": 0.02181815356016159,
+      "compensated_suffix_mse": 0.018184218555688858,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.7383150530514622,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "protected_suffix_start": 7,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.012893128208816051,
+      "initial_suffix_mse": 0.019173553213477135,
+      "compensated_suffix_mse": 0.015176228247582912,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.6724433424136244,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "protected_suffix_start": 8,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.007419048808515072,
+      "initial_suffix_mse": 0.014397300779819489,
+      "compensated_suffix_mse": 0.00995582714676857,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.5153083152165757,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "protected_suffix_start": 9,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0,
+      "initial_suffix_mse": 0.007850535213947296,
+      "compensated_suffix_mse": 0.002853876445442438,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.0,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "protected_suffix_start": 6,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.002987221349030733,
+      "initial_suffix_mse": 0.004163471981883049,
+      "compensated_suffix_mse": 0.0034996329341083765,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.7174832356334669,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "protected_suffix_start": 7,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.002424889476969838,
+      "initial_suffix_mse": 0.0037187652196735144,
+      "compensated_suffix_mse": 0.002988542430102825,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.6520684511464612,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "protected_suffix_start": 8,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0014250528765842319,
+      "initial_suffix_mse": 0.0028626921121031046,
+      "compensated_suffix_mse": 0.002051333896815777,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.4978016568946714,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "protected_suffix_start": 9,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0,
+      "initial_suffix_mse": 0.0016173443291336298,
+      "compensated_suffix_mse": 0.0007045657839626074,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.0,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "protected_suffix_start": 6,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.015402929857373238,
+      "initial_suffix_mse": 0.01908787339925766,
+      "compensated_suffix_mse": 0.01656169258058071,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.806948450211969,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "protected_suffix_start": 7,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.012438385747373104,
+      "initial_suffix_mse": 0.01649182103574276,
+      "compensated_suffix_mse": 0.013713022693991661,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.7542154211117962,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "protected_suffix_start": 8,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.007360168267041445,
+      "initial_suffix_mse": 0.01186398882418871,
+      "compensated_suffix_mse": 0.00877643097192049,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.6203788941570207,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "protected_suffix_start": 9,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0,
+      "initial_suffix_mse": 0.005066798068583012,
+      "compensated_suffix_mse": 0.0015932968817651272,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.0,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "protected_suffix_start": 6,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0029777612071484327,
+      "initial_suffix_mse": 0.003893093205988407,
+      "compensated_suffix_mse": 0.003310659434646368,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.764883101839946,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "protected_suffix_start": 7,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.00236755283549428,
+      "initial_suffix_mse": 0.003374418243765831,
+      "compensated_suffix_mse": 0.0027337409555912018,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.7016180759063538,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "protected_suffix_start": 8,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0013756201369687915,
+      "initial_suffix_mse": 0.0024943589232861996,
+      "compensated_suffix_mse": 0.0017824959941208363,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.551492459295504,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "protected_suffix_start": 9,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0,
+      "initial_suffix_mse": 0.0012585812946781516,
+      "compensated_suffix_mse": 0.00045773497549816966,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.0,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "protected_suffix_start": 6,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.03823820874094963,
+      "initial_suffix_mse": 0.04544178023934364,
+      "compensated_suffix_mse": 0.039987023919820786,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.8414769082449561,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "protected_suffix_start": 7,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.029854442924261093,
+      "initial_suffix_mse": 0.03777836635708809,
+      "compensated_suffix_mse": 0.03177814185619354,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.79025235347848,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "protected_suffix_start": 8,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.01718062348663807,
+      "initial_suffix_mse": 0.02598498947918415,
+      "compensated_suffix_mse": 0.01931806653738022,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.6611749256393191,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "protected_suffix_start": 9,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0,
+      "initial_suffix_mse": 0.009904908947646618,
+      "compensated_suffix_mse": 0.002404624130576849,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.0,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "protected_suffix_start": 6,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0019177745562046766,
+      "initial_suffix_mse": 0.0027289639692753553,
+      "compensated_suffix_mse": 0.00226302701048553,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.7027482142660606,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "protected_suffix_start": 7,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0015037214616313577,
+      "initial_suffix_mse": 0.0023960303515195847,
+      "compensated_suffix_mse": 0.0018834989750757813,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.6275886533230615,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "protected_suffix_start": 8,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0008875695057213306,
+      "initial_suffix_mse": 0.0018790236208587885,
+      "compensated_suffix_mse": 0.0013095448957756162,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.47235675798246546,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "protected_suffix_start": 9,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0,
+      "initial_suffix_mse": 0.0011153861414641142,
+      "compensated_suffix_mse": 0.00047472238657064736,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.0,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "protected_suffix_start": 6,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.028096603229641914,
+      "initial_suffix_mse": 0.03334532305598259,
+      "compensated_suffix_mse": 0.029544834047555923,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.8425950224705054,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "protected_suffix_start": 7,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.021898915991187096,
+      "initial_suffix_mse": 0.027672505006194115,
+      "compensated_suffix_mse": 0.02349196933209896,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.7913600877941958,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "protected_suffix_start": 8,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.013041731901466846,
+      "initial_suffix_mse": 0.019456826150417328,
+      "compensated_suffix_mse": 0.014811789616942406,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.6702908172506395,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "protected_suffix_start": 9,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0,
+      "initial_suffix_mse": 0.00721698347479105,
+      "compensated_suffix_mse": 0.0019913162104785442,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.0,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "protected_suffix_start": 6,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.003212507115676999,
+      "initial_suffix_mse": 0.004399500787258148,
+      "compensated_suffix_mse": 0.0036485232412815094,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.730198099971041,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "protected_suffix_start": 7,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.002529541030526161,
+      "initial_suffix_mse": 0.0038352336268872023,
+      "compensated_suffix_mse": 0.003009158419445157,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.6595533092932379,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "protected_suffix_start": 8,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0014879604568704963,
+      "initial_suffix_mse": 0.002938729478046298,
+      "compensated_suffix_mse": 0.0020208682399243116,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.5063278086623032,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "protected_suffix_start": 9,
+      "control_latent_start": 3,
+      "first_controlled_pixel_frame": 9,
+      "fixed_prefix_error_floor_mse": 0.0,
+      "initial_suffix_mse": 0.0016321154544129968,
+      "compensated_suffix_mse": 0.0005995213869027793,
+      "unavoidable_fraction_of_initial_mse_in_this_control_class": 0.0,
+      "note": "Bound follows from exact invariance of output before frame9 when only latent indices>=3 change. Does not apply to within-block channel controls or decoder modifications."
+    }
+  ]
+}

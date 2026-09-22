@@ -1,0 +1,30 @@
+{
+  "NOVELTY_MATH_METHOD_V4.md": {
+    "bytes": 33737,
+    "sha256": "b2763d6cb2af13cb5e66c9c4ea9faa238f33352791a0c6a2a3b7c759886f222b"
+  },
+  "NOVELTY_MATH_METHOD_V4.docx": {
+    "bytes": 28544,
+    "sha256": "693d9e34770319564633e0c61cf5782647487aee7303585ac0c35d8e6dde9ef7"
+  },
+  "boundary_contract_v4.py": {
+    "bytes": 9904,
+    "sha256": "ba0cd500751e30aba219cdb678556d0c2edd8b17cbc14a8d5d8a218e475dad72"
+  },
+  "boundary_contract_v4_stats.json": {
+    "bytes": 17176,
+    "sha256": "42d8c750a9203abd5a0063d47c047a86f458f11f58a5991daad0a8739c9cd8ea"
+  },
+  "boundary_contract_v4_summary.json": {
+    "bytes": 823,
+    "sha256": "3f349e0376d8867437c97b8752ac59f8553d9d8b2966a7c704c879402c9d807d"
+  },
+  "novelty_v4_sources/manifest.json": {
+    "bytes": 663,
+    "sha256": "8613c8764e0f0962461d11095db0eddd29db4fd332946eae083d2b32941e4231"
+  },
+  "novelty_v4_sources/snapshot_hashes.json": {
+    "bytes": 1661,
+    "sha256": "cf201f29e98396ffb38e5bd0a996dcacc1a2242b4429d1c2043727b27867e23c"
+  }
+}

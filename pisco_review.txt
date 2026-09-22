@@ -1,0 +1,2128 @@
+  
+ 
+ 
+ PISCO: Precise Video Instance Insertion with Sparse Control 
+ 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+    1  Introduction   
+    2  Related Works  
+ 
+    2.1  Video Inpainting for Video Instance Insertion   
+    2.2  Reference-Guided Video-to-Video Editing   
+    2.3  Image-to-Video (I2V) Generation and Propagation   
+    2.4  4D Reconstruction and Manipulation   
+  
+    3  Methodology  
+ 
+    3.1  Problem Formulation  
+ 
+   Variable-density user guidance via availability mask.   
+   Conditional video diffusion with context adapter.   
+  
+    3.2  Variable-Information Guidance via Dynamic Contextual Dropout  
+ 
+   Variable-Information Guidance (VIG).   
+  
+    3.3  Distribution-Preserving Temporal Masking (DPTM)  
+ 
+   Pixel-space temporal completion.   
+   Token-space masking.   
+   Availability channel aligned to token resolution.   
+  
+    3.4  Geometry- and Appearance-Robust Training  
+ 
+   Depth-aware insertion.   
+   Amodal instance augmentation.   
+   Instance relighting augmentation.   
+  
+  
+    4  Implementation Details  
+ 
+    4.1  Data Preparation  
+ 
+   Data sources.   
+   Background video generation.   
+   Depth estimation.   
+   Amodal Completion Data Construction.   
+  
+    4.2  Training Schedule  
+ 
+   Training Hyperparameters.   
+  
+  
+    5  Experiments  
+ 
+    5.1  Evaluation Data.   
+    5.2  Evaluation Protocol.   
+    5.3  Baselines.   
+    5.4  Quantitative Experiments.  
+ 
+   Reference-based Video Quality Assessment.   
+   Reference-free Video Quality Assessment.   
+  
+    5.5  Qualitative Experiments   
+  
+    6  Beyond Instance Insertion: Broader Applications of PISCO   
+    7  Conclusion   
+   References   
+  
+ 
+ 
+ 
+   
+    License: arXiv.org perpetual non-exclusive license
+   
+   
+arXiv:2602.08277v2 [cs.CV] 27 Mar 2026 
+  
+ 
+ 
+ 1]Texas A&amp;M University
+2]Visko Platform
+3]KAIST
+4]Stanford University
+ \project  https://xiangbogaobarry.github.io/PISCO/ 
+
+ \contact Xiangbo Gao ( xiangbogaobarry@gmail.com ), Zhengzhong Tu ( tzz@tamu.edu ) 
+ 
+ PISCO:  P recise Video Instance  I nsertion 
+ with  S parse  Co ntrol 
+ 
+ 
+ Xiangbo Gao
+  
+     
+ Renjie Li
+  
+     
+ Xinghao Chen
+  
+     
+ Yuheng Wu
+  
+     
+ Suofei Feng
+  
+     
+ Qing Yin
+  
+     
+ Zhengzhong Tu
+   
+  Affiliation:  [
+ 
+  Affiliation:  [
+ 
+  Affiliation:  [
+ 
+  Affiliation:  [
+     
+ August 24, 2026 
+
+  Abstract 
+    
+ The landscape of AI video generation is undergoing a pivotal shift: moving beyond general generation - which relies on exhaustive prompt-engineering and "cherry-picking" - towards fine-grained, controllable generation and high-fidelity post-processing. In professional AI-assisted filmmaking, the core requirement is the ability to perform precise, targeted modifications. A cornerstone of this transition is video instance insertion, which requires inserting a specific instance into existing footage while maintaining scene integrity. Unlike traditional video editing, this task demands several requirements: precise spatial-temporal placement, physically consistent scene interaction (e.g., shadows and reflections), and the faithful preservation of original dynamics - all achieved under minimal user effort. In this paper, we propose  PISCO , a video diffusion model for precise video instance insertion with arbitrary sparse keyframe control.  PISCO  allows users to specify a single keyframe, start-and-end keyframes, or sparse keyframes at arbitrary timestamps, and automatically propagates object appearance, motion, and interaction. To address the severe distribution shift induced by sparse conditioning in pretrained video diffusion models, we introduce Variable-Information Guidance for robust conditioning and Distribution-Preserving Temporal Masking to stabilize temporal generation, together with geometry-aware conditioning for realistic scene adaptation. We further construct  PISCO-Bench , a benchmark with verified instance annotations and paired clean background videos, and evaluate performance using both reference-based and reference-free perceptual metrics. Experiments demonstrate that  PISCO  consistently outperforms strong inpainting and video editing baselines under sparse control, and exhibits clear, monotonic performance improvements as additional control signals are provided. 
+  
+ 
+  
+   Figure 1 :   PISCO  enables precise video instance insertion with arbitrary sparse keyframe control. Given a clean input video and a few user-provided instance cutouts at selected timestamps,  PISCO  inserts the instance with coherent temporal propagation and physical effects while preserving the original background dynamics.   
+ 
+ 
+  1  Introduction 
+
+ 
+ Recent advances in large-scale video generative models  [ 1 ,  2 ,  3 ]  are able to generate videos with high visual fidelity and realistic motion.
+As these models continue to evolve, the focus of video generation is shifting beyond producing visually plausible content toward highly controllable video generation and editing  [ 4 ] , with the long-term goal of enabling  Hollywood-grade AI-assisted filmmaking   [ 5 ,  6 ] . In this new paradigm, the priority is no longer to  cherry-pick  a barely acceptable output from numerous generations, but to reliably  achieve precise user intent  with minimal iteration. 
+ 
+ 
+ A particularly demanding yet under-explored capability in this context is
+ Precise Video Instance Insertion : the ability to insert a specific object into an existing video at a user-specified spatial location and temporal position, while preserving the identity and dynamics of the original footage.
+In professional visual effects and post-production workflows, instance insertion is not merely about adding a visually plausible object, but about achieving precise and reliable control with minimal iteration.
+In this setting, precision entails several tightly coupled requirements: 
+ 
+  ➊  
+ 
+  Instance-level controllability , enabling users to explicitly specify when and where an object appears; 
+  
+  ➋  
+ 
+  Physically plausible temporal propagation , where the inserted object automatically evolves over time with coherent pose and motion, following physically reasonable dynamics; 
+  
+  ➌  
+ 
+  Physically consistent scene adaptation , in which the surrounding background is appropriately adjusted to account for insertion-induced effects such as shadows, reflections, illumination, water ripples, and others; 
+  
+  ➍  
+ 
+  Faithful preservation of background scene dynamics , ensuring that pre-existing motions, identities, and temporal patterns in the original video remain unchanged and temporally consistent after insertion; 
+  
+  ➎  
+ 
+  Low-effort user interaction , where achieving the above goals does not require dense per-frame annotations or manual editing across the entire video. 
+  
+ 
+ 
+ 
+ Despite the strong generative capacity of diffusion-based video models  [ 7 ] , these requirements remain largely unmet.
+Existing solutions can be broadly categorized into several classes, each addressing only a subset of the above requirements.
+Video inpainting methods  [ 8 ,  9 ]  enforce spatial consistency through dense per-frame masks, but require exhaustive annotation of object shape and trajectory, making them impractical under sparse user control (➎).
+Moreover, their copy-and-fill nature limits the ability to adjust the surrounding scene in a physically consistent manner, such as modeling realistic shadows or illumination changes (➌).
+Reference-guided video-to-video editing approaches  [ 10 ,  11 ]  propagate appearance information over time, yet lack fine-grained spatial and temporal controllability, making it difficult to precisely specify object placement and timing (➊).
+Agentic pipelines that combine image editing with subsequent image-to-video generation  [ 12 ,  13 ]  allow flexible object manipulation at the image level, but discard most temporal information from the original video, often leading to background drift and disrupted scene dynamics (➍).
+Geometry-heavy reconstruction-based approaches  [ 14 ,  15 ]  explicitly model scene structure and spatial relationships, but incur substantial computational overhead, rely on fragile geometric cues, and struggle to robustly model complex or previously unseen object motions (➋).
+Together, these limitations prevent existing methods from providing a practical and flexible solution for precise video instance insertion under sparse user control. 
+ 
+ 
+ To overcome these limitations, we propose  PISCO  ( P recise  I nstance insertion with  S parse  CO ntrol), a video diffusion framework designed for professional-grade instance insertion with minimal user effort.  PISCO  allows users to specify sparse instance conditions—such as a single keyframe, start-and-end keyframes, or arbitrary keyframes at any timestamps—and performs video instance insertion by propagating appearance, motion, and interaction in a scene-consistent manner. Our framework builds upon the Wan video diffusion backbone and augments it with a multi-channel context adapter that ingests instance RGB, mask, depth, and an explicit availability signal indicating when instance guidance is provided, enabling flexible sparse keyframe control within a unified model. 
+ 
+ 
+ Sparse control introduces additional challenges, as naïvely masking missing frames can cause severe distribution shift when processed by pretrained temporal video VAEs, resulting in flickering, miscoloring, and incomplete instance rendering.  PISCO  addresses these challenges through a set of dedicated mechanisms, including  Variable-Information Guidance (VIG)  for modulating conditioning strength during training to enable robust guidance,  Distribution-Preserving Temporal Masking (DPTM)  to stabilize sparse conditioning under temporal VAEs, and geometry-aware conditioning to maintain physically plausible interactions and scene consistency. 
+ 
+ 
+ To evaluate precise video instance insertion under sparse control, we construct  PISCO-Bench , a curated benchmark derived from BURST  [ 16 ]  with carefully verified instance annotations and paired clean background videos generated using a side-effect-aware instance removal model  [ 17 ] . We evaluate performance using both reference-based metrics (FVD, LPIPS, PSNR, SSIM) and reference-free perceptual metrics (VBench  [ 18 ] ). Experimental results show that  PISCO  consistently outperforms strong inpainting and video editing baselines under sparse-control settings, and further demonstrates clear and monotonic improvements as additional sparse control frames are provided, validating its scalability with respect to control signal density. Our contributions are summarized as follows: 
+ 
+  •  
+ 
+ We introduce  PISCO , the first video diffusion framework that enables precise video instance insertion under arbitrary sparse keyframe control, allowing users to insert instances at any desired timestamps with minimal annotation effort. 
+  
+  •  
+ 
+ We propose a set of dedicated mechanisms for sparse instance control, including Variable-Information Guidance and Distribution-Preserving Temporal Masking, which jointly address temporal propagation and distribution shift in pretrained video diffusion models. 
+  
+  •  
+ 
+ We construct  PISCO-Bench  and demonstrate through extensive reference-based and reference-free experiments that  PISCO  significantly outperforms state-of-the-art video instance insertion baselines, exhibiting consistent performance improvements as additional control signals are provided. 
+  
+ 
+ 
+ 
+ 
+  2  Related Works 
+
+ 
+  2.1  Video Inpainting for Video Instance Insertion 
+
+ 
+ Video inpainting  [ 8 ]  refers to masking out a certain part of the video and leveraging models to recover the masked region. It serves as a core technique for object removal, insertion, replacement, video restoration, and outpainting. Early methods employed 3D Convolutional Neural Networks (3D-CNNs) to learn spatio-temporal coherence  [ 19 ,  20 ,  21 ] . To provide stronger motion priors, subsequent approaches incorporated optical flow guidance  [ 22 ,  23 ,  24 ,  25 ,  26 ,  27 ] . With the advent of Transformers, attention mechanisms were adopted to better capture long-range spatio-temporal correlations  [ 28 ,  29 ,  30 ,  31 ] . 
+ 
+ 
+ Recently, with the development of diffusion models  [ 7 ]  and video generative foundation models (e.g., Wan  [ 2 ] , Flux  [ 32 ] ), video diffusion models have been extensively applied to video inpainting  [ 33 ,  34 ,  35 ,  9 ,  36 ,  37 ,  38 ,  39 ,  40 ] . A significant advantage of these models is that training data can be obtained by simply masking out target regions in original videos, relieving the reliance on high-quality paired data which is difficult to acquire. However, despite their generation quality, applying standard inpainting to instance insertion faces a critical bottleneck: it necessitates  dense segmentation annotations (masks) for every frame  during inference. Obtaining per-frame masks for a dynamic object that does not yet exist in the video is labor-intensive and impractical for general users. In contrast, our proposed method requires only  sparse instance mask signals  to control the video instance insertion process. 
+ 
+ 
+ 
+  2.2  Reference-Guided Video-to-Video Editing 
+
+ 
+ Reference-guided video editing focuses on conditional video generation, using references such as instance images or text prompts to guide the synthesis process. Large-scale frameworks like UniVideo  [ 10 ]  and VACE  [ 11 ]  integrate multimodal controls to unify generation and editing tasks. Similarly, methods such as VideoDirector  [ 41 ]  and ContextFlow  [ 42 ]  utilize text-to-video models to modify scene content via prompt engineering. Specific to object manipulation, VideoAnydoor  [ 43 ]  and Wan-Animate  [ 44 ]  focus on high-fidelity object insertion or replacement with motion control, while Animate-a-Story  [ 45 ]  retrieves assets for storytelling. 
+ 
+ 
+ The primary limitation of these methods is the inability to achieve  fine-grained spatial and temporal control . Most current approaches function as general video-to-video translation, which modifies the global style or replaces existing objects where the motion trajectory is pre-defined. They struggle to satisfy precise user intents, such as inserting a specific instance at an  exact position , with an  exact posture , starting at an  exact timestamp . Our work specifically addresses this need, enabling precise instance-level manipulation while maintaining the integrity of the original video. 
+ 
+ 
+ 
+  2.3  Image-to-Video (I2V) Generation and Propagation 
+
+ 
+ A distinct paradigm involves a “generate-then-animate” workflow: editing a single keyframe using mature image editing tools and then animating it via Image-to-Video (I2V) models. Recent advancements in image editing, such as Step1x-edit  [ 46 ] , Z-Image  [ 47 ] , and Qwen-Image  [ 48 ] , allow for precise object insertion in static images. To extend this to video, I2V models  [ 12 ,  49 ,  50 ,  13 ,  51 ]  and transition generation methods  [ 52 ,  53 ]  predict future frames based on the edited image. Specialized architectures like MotionStone  [ 54 ] , MotionPro  [ 55 ] , and Through-The-Mask  [ 56 ]  attempt to decouple motion from appearance to improve controllability. 
+ 
+ 
+ However, relying solely on I2V models for insertion introduces a fundamental issue:  background hallucination . I2V models are trained to generate motion for the entire frame and often fail to strictly adhere to the unedited background pixels of the original video. This leads to severe temporal drift and inconsistency between the edited foreground and the static background. While Generative Video Propagation  [ 57 ]  attempts to mitigate this, ensuring seamless blending without altering the non-object regions remains a significant challenge for pure I2V approaches. Our approach overcomes this by leveraging the original video context to strictly preserve background consistency. 
+ 
+ 
+ 
+  2.4  4D Reconstruction and Manipulation 
+
+ 
+ To address challenges related to occlusion and geometric consistency, recent works have proposed lifting 2D video into explicit 3D or 4D representations. Methods like “Place Anything into Any Video”  [ 14 ]  and “Anything in Any Scene”  [ 58 ]  utilize depth and flow to physically place objects. Most notably, InsertAnywhere  [ 15 ]  bridges 4D scene geometry with diffusion models to handle complex occlusions during insertion. 
+ 
+ 
+ Despite their theoretical correctness, these geometry-heavy approaches suffer from inherent flexibility limitations compared to 2D generative models. First, they are constrained by  data scarcity , as high-quality 4D-labeled data is rare, leading to poor generalization across diverse real-world scenes. Second, they struggle with  dynamic object insertion ; inserting a moving character into a 4D scene typically requires a pre-existing dynamic object, whereas 2D diffusion models can infer realistic motion from a single or a few images. Our method bypasses these heavy reconstruction requirements, offering a flexible, data-efficient solution that supports dynamic object insertion with natural interaction. 
+ 
+ 
+ 
+ 
+  3  Methodology 
+
+ 
+  3.1  Problem Formulation 
+
+ 
+ Given paired videos     {   V  ^   ,  V  }   \{\hat{V},V\}    of length    T  T   , where      V  ^   =    {    V  ^   t   }    t  =  1   T    \hat{V}=\{\hat{V}_{t}\}_{t=1}^{T}    contains a foreground instance and     V  =    {   V  t   }    t  =  1   T    V=\{V_{t}\}_{t=1}^{T}    depicts the same scene without that instance, our goal is to synthesize an edited video     V  ~   \tilde{V}    in which the instance is naturally inserted into    V  V    with spatially accurate placement, temporally coherent motion, and geometrically plausible occlusion relationships. 
+ 
+ 
+ We represent the instance-side conditions as an RGB instance clip     I  =    {   I  t   }    t  =  1   T    I=\{I_{t}\}_{t=1}^{T}   , its spatial mask     M  =    {   M  t   }    t  =  1   T    M=\{M_{t}\}_{t=1}^{T}   , and the instance depth      D  I   =    {   D   I  ,  t    }    t  =  1   T    D_{I}=\{D_{I,t}\}_{t=1}^{T}   . Here, each     I  t   I_{t}    contains only the segmented foreground instance on a constant zero-valued background, and     M  t   M_{t}    indicates the corresponding foreground region. In addition, we compute a background depth map     D  V   D_{V}    from    V  V    to provide geometric cues for depth ordering and occlusion reasoning. Details of how these signals are constructed are described in Sec.   4.1  . 
+ 
+ 
+ Variable-density user guidance via availability mask. 
+
+ 
+ User guidance can range from a single keyframe to dense per-frame supervision. We model this variability with an availability mask     A  =    {   A  t   }    t  =  1   T    A=\{A_{t}\}_{t=1}^{T}   , where      A  t   ∈   {   0  ,  1   }    A_{t}\in\{0,1\}    indicates whether instance-side information is available at time    t  t   . During training, we sample     A  ∼    p  γ   ​   (  A  )     A\sim p_{\gamma}(A)   , where the density ratio     γ  ∈   [   0  ,  1   ]    \gamma\in[0,1]    controls the expected fraction of available frames as well as their temporal placement. The mask is applied exclusively to instance-specific signals: 
+ 
+
+  
+  
+        I  A   =   A  ⊙  I    ,    M  A   =   A  ⊙  M    ,    D  I  A   =   A  ⊙   D  I      ,   I^{A}=A\odot I,\quad M^{A}=A\odot M,\quad D_{I}^{A}=A\odot D_{I},    
+  
+  (1)    
+ 
+ while the background depth     D  V   D_{V}    remains unmasked. This design reflects practical scenarios: while a user typically specifies instance-level details sparsely, the background scene geometry is often fully observable. 
+ 
+ 
+ 
+ Conditional video diffusion with context adapter. 
+
+ 
+ Let     z  0   z_{0}    denote the latent representation of the target video obtained using a pretrained temporal video VAE, and let     z  t   z_{t}    be the noisy latent at diffusion step    t  t   . We train a denoising network     ϵ  θ   \epsilon_{\theta}    to predict the added noise conditioned on the background video and the masked instance-side signals, ending up with the training objective 
+ 
+
+  
+  
+      ℒ  =    𝔼    z  0   ,  ϵ  ,  t  ,   A  ∼   p  γ      ​   [    ‖   ϵ  −    ϵ  θ   ​   (   z  t   ,  t  ,  V  ,   D  V   ,   I  A   ,   D  I  A   ,   M  A   ,  A  )     ‖   2   ]     .   \mathcal{L}=\mathbb{E}_{z_{0},\epsilon,t,\,A\sim p_{\gamma}}\left[\left\|\epsilon-\epsilon_{\theta}\big(z_{t},\,t,\,V,\,D_{V},\,I^{A},\,D_{I}^{A},\,M^{A},\,A\big)\right\|_{2}\right].    
+  
+  (2)    
+ 
+ 
+ 
+ In our implementation,     ϵ  θ   \epsilon_{\theta}    uses the Wan video diffusion backbone  [ 2 ]  with a VACE context adapter  [ 11 ]  for injecting multi-channel video conditions. To accommodate our condition format, we modify the first linear layer of the VACE adapter to match the new input dimensionality, while reusing pretrained parameters for the remaining layers. Training details are provided in Sec.   4.2  . 
+ 
+  
+   Figure 2 :   Overview of  PISCO  pipeline.  We train a conditional video diffusion model with sparse keyframe control via Variable-Information Guidance (VIG), and stabilize sparse conditioning under pretrained temporal VAEs using Distribution-Preserving Temporal Masking (DPTM): pixel-space nearest-frame interpolation followed by token-level masking, with spatial mask and availability signals injected alongside RGB/depth conditions.   
+ 
+ 
+ 
+ 
+  3.2  Variable-Information Guidance via Dynamic Contextual Dropout 
+
+   
+   Figure 3 :   Visualization of the depth-aware insertion . Conditioning on depth improves depth ordering and occlusion handling, reducing foreground/background blending artifacts compared to a depth-agnostic variant.   
+ 
+ 
+ Variable-Information Guidance (VIG). 
+
+ 
+ Precise video instance insertion requires flexibility regarding user input, which can range from a single keyframe to dense per-frame annotations. To ensure robustness across varying levels of control, we introduce  Variable-Information Guidance (VIG) , a dynamic contextual dropout strategy that samples an availability mask    A  A    during training. This approach exposes the model to diverse supervision regimes, encouraging it to propagate instance information under sparse guidance while maintaining appearance fidelity and spatial alignment under dense guidance. 
+ 
+ 
+ We employ a hybrid sampling strategy that covers the spectrum of annotation densities. This includes an extreme sparsity regime where only a single frame is retained, varying levels of sparse and dense sampling to simulate different user efforts, and an anchor regime that provides full-frame supervision. This strategy enables a smooth trade-off between temporal propagation and fidelity: under sparse conditions, the model learns to infer plausible motion by leveraging background context, while dense regimes prevent identity drift and preserve detailed appearance. 
+ 
+ 
+ 
+ 
+  3.3  Distribution-Preserving Temporal Masking (DPTM) 
+
+ 
+ Modern video generative models  [ 2 ,  59 ,  60 ]  often rely on pretrained temporal video VAEs  [ 61 ,  62 ,  63 ,  64 ]  that compress the temporal dimension by a factor     C  t   C_{t}   . If we naïvely mask missing frames using    A  A    in pixel space, the temporal VAE receives out-of-distribution inputs, which leads to flickering, miscoloring, and incomplete instance rendering as illustrated in   Figure   4  . To address this, we propose  Distribution-Preserving Temporal Masking (DPTM)  to decouple distribution preservation from information masking, while staying fully consistent with the sampled availability mask    A  A   . 
+ 
+ 
+ Pixel-space temporal completion. 
+
+ 
+ As shown in   Figure   2  , given a masked instance clip     I  A   I^{A}   , we first perform nearest interpolation in pixel space. Concretely, missing frames are filled by propagating the temporally nearest available instance frame forward and backward. This produces a temporally complete clip with natural video statistics, which helps keep the input distribution compatible with pretrained temporal VAEs. 
+ 
+  
+   Figure 4 :   Effectiveness of DPTM under sparse guidance. 
+We compare results given segmented instance inputs only on odd frames.
+Naïve masking leads to distribution shifts and temporal artifacts, whereas DPTM preserves encoder input statistics and significantly improves temporal stability.   
+ 
+ 
+ 
+ Token-space masking. 
+
+ 
+ We then encode the interpolated clip into video tokens. Tokens corresponding to the originally unobserved frames are masked out in the latent space. This explicit masking enables the model to distinguish valid signals from interpolated fillers, thereby accelerating convergence. 
+ 
+ 
+ 
+ Availability channel aligned to token resolution. 
+
+ 
+ To distinguish observed frames from interpolated ones, we introduce an availability channel.
+Let      T  ′   =   ⌈   T  /   C  t    ⌉    T^{\prime}=\lceil T/C_{t}\rceil    be the compressed token length and     (   H  ′   ,   W  ′   )   (H^{\prime},W^{\prime})    be the spatial resolution.
+We reshape the binary frame-level availability mask     A  ∈    {   0  ,  1   }    T  ×  H  ×  W     A\in\{0,1\}^{T\times H\times W}    into: 
+ 
+
+  
+  
+      A  ∈   ℝ    C  t   ×   T  ′   ×   H  ′   ×   W  ′      .   A\in\mathbb{R}^{C_{t}\times T^{\prime}\times H^{\prime}\times W^{\prime}}.    
+    
+ 
+ This transformation moves the local temporal window     C  t   C_{t}    into the channel dimension, preserving fine-grained observability patterns within each compressed token.
+The resulting tensor is concatenated with other conditions and processed by the VACE context adapter.
+Combined with pixel-space completion and token-space masking, this strategy enables precise sparse conditioning and minimizes temporal artifacts, as evidenced in   Figure   4  . 
+ 
+ 
+ 
+ 
+  3.4  Geometry- and Appearance-Robust Training 
+
+   
+   Figure 5 :   Visualization of amodal instance completion and relighting augmentations.  We complete occluded instance cutouts to form pseudo-amodal inputs and apply moderate relighting to improve illumination compatibility with the target scene while preserving keyframe appearance controllability.   
+ 
+ 
+ We further incorporate three complementary strategies to improve geometric plausibility and appearance robustness: depth-aware conditioning, occlusion-aware completion augmentation, and relighting augmentation. 
+ 
+ 
+ Depth-aware insertion. 
+
+ 
+ Purely 2D video editing lacks explicit geometric reasoning, making scale, depth ordering, and occlusion ambiguous. We therefore condition the model on two depth signals: the background depth     D  V   D_{V}    computed from    V  V   , and the instance depth     D  I   D_{I}    extracted from     V  ^   \hat{V}    using mask    M  M    and masked by availability as     D  I  A   D_{I}^{A}   . These depth cues are provided alongside RGB, spatial mask, and availability signals, enabling the model to reason about relative depth ordering and produce physically plausible layer compositing. As shown in   Figure   3  , Depth conditioning helps the model respect depth ordering and occlusion relations during insertion. 
+ 
+  
+   Figure 6 :   Effectiveness of relighting augmentation.  Without relighting, the model over-preserves the input instance appearance, causing illumination mismatch after insertion. Relighting augmentation encourages lighting adaptation, yielding more coherent blending with the surrounding scene.   
+ 
+ 
+ 
+ Amodal instance augmentation. 
+
+ 
+ During inference, users typically provide spatially complete (amodal  [ 65 ,  66 ] ) instances, expecting the model to resolve occlusions based on scene geometry.
+However, training instances extracted directly from segmentation are often fragmented by scene occlusions.
+To align training with this inference requirement, we introduce an amodal augmentation strategy.
+Specifically, we reconstruct missing regions to generate a complete pseudo-amodal instance as the input condition, while supervising the model with the original occluded video.
+This pairing forces the model to learn the compositing logic required to correctly occlude a complete input instance according to depth cues.
+Details of the completion construction are provided in Sec.   4.1  . Some examples of amodal completion results are shown in   Figure   5  . 
+ 
+ 
+ 
+ Instance relighting augmentation. 
+
+ 
+ In video instance insertion, strictly preserving the provided instance appearance can lead to incompatible lighting between the instance and the background scene. To improve automatic lighting adaptation, we augment training with relighted instances generated by IC-Light  [ 67 ] . For each instance clip, we synthesize a relighted version     I  ~   \tilde{I}    under randomly sampled background lighting conditions. The relighted instance     I  ~   \tilde{I}    is then used as additional training data for instance conditioning.   Figure   6   shows the qualitative results of the relighting augmentation. 
+ 
+ 
+ 
+ 
+ 
+  4  Implementation Details 
+
+ 
+  4.1  Data Preparation 
+
+ 
+ We construct training tuples of the form     (   V  ^   ,  V  ,  I  ,  M  ,   D  V   ,   D  I   )   (\ \hat{V},\ V,\ I,\ M,\ D_{V},\ D_{I}\ )   ,
+where     V  ^   \hat{V}    is the target video containing the instance,    V  V    is the paired background video,     (  I  ,  M  )   (I,M)    are the segmented instance clip and its mask, and     (   D  V   ,   D  I   )   (D_{V},D_{I})    are depth maps computed for background and instance signals. 
+ 
+ 
+ Data sources. 
+
+ 
+ We use real-world videos from ROSE  [ 26 ] , VPData  [ 36 ] , MOSE  [ 68 ,  69 ] , and DAVIS  [ 70 ,  71 ] . We filter the segmentation results to favor clips with clean and logically removable instances and discard cases with ambiguous or non-detachable masks. After filtering, we obtain 16,642 video clips with corresponding foreground segmentation masks, each with at least 49 frames. 
+ 
+ 
+ 
+ Background video generation. 
+
+ 
+ To construct paired videos     {   V  ^   ,  V  }   \{\hat{V},V\}   , we train a side-effect-aware video instance removal model on ROSE  [ 17 ] . Given a target video     V  ^   \hat{V}    and an instance mask    M  M   , we extract the masked instance    I  I    from     V  ^   \hat{V}    and apply the instance removal model to obtain the paired background video    V  V   . This procedure produces training pairs that share the same scene dynamics while differing in the presence of the target instance, which matches the insertion objective. 
+ 
+ 
+ 
+ Depth estimation. 
+
+ 
+ We compute     D  V   D_{V}    by running Depth Anything V3  [ 72 ]  on the background video    V  V   . We compute     D  I   D_{I}    by running it on the target video     V  ^   \hat{V}    and then cropping the instance region using    M  M   . 
+ 
+ 
+ 
+ Amodal Completion Data Construction. 
+
+ 
+ To support amodal instance augmentation, we develop a completion model    ℱ  \mathcal{F}    that reconstructs the full amodal appearance      I  ~   =   ℱ  ⁡   (  I  )     \tilde{I}=\mathcal{F}(I)    from an occluded modal segment    I  I   .
+We construct paired training data by curating a collection of fully visible instances from our dataset to serve as amodal ground truth. Corresponding modal inputs are synthesized by randomly overlaying additional instance cutouts onto these samples, creating a mapping from occluded views to complete appearances.
+We employ a pre-trained image editing framework as the base generator, fine-tuning it via LoRA to specialize in amodal recovery. This model is applied frame-wise to generate pseudo-amodal instance clips. Finally, the amodal masks     M  ~   \tilde{M}    are obtained through thresholding, while the amodal depth      D  ~   I   \tilde{D}_{I}    is synthesized using interpolation from available depth values. 
+ 
+ 
+ 
+ 
+  4.2  Training Schedule 
+
+ 
+ Training Hyperparameters. 
+
+ 
+ Our models are built upon two pretrained backbones:  Wan2.1-VACE-1.3B  and  Wan2.2-VACE-Fun-A14B , denoted as  PISCO-1.3B  and  PISCO-14B , respectively. To ensure stable adaptation to our multi-condition setting while preserving pretrained generative priors, we adopt a staged training strategy with progressively increased model flexibility.
+All stages prior to Stage V are conducted at a spatial resolution of     832  ×  480   832\times 480    and temporal length of 49 frames to stabilize optimization and reduce computational cost. 
+ 
+ 
+ 
+  •  
+ 
+  Stage I: Adapter input warm-up. 
+We replace the input projection of the VACE context adapter to support multi-channel conditioning and train only this newly introduced layer while freezing all other modules.
+This warm-up stage stabilizes condition injection before finetuning deeper components. 
+  
+  •  
+ 
+  Stage II: Adapter finetuning. 
+We finetune the full VACE context adapter while keeping the diffusion backbone frozen.
+This allows the adapter to better align pretrained representations with task-specific conditioning without disturbing the backbone priors. 
+  
+  •  
+ 
+  Stage III: Joint finetuning. 
+We jointly finetune the context adapter and the diffusion backbone.
+This step improves the coupling between conditioning signals and generation dynamics. 
+  
+  •  
+ 
+  Stage IV: Augmented training. 
+We introduce occlusion-aware completion and relighting augmentations and continue joint training using parameter-efficient LoRA finetuning.
+This enhances robustness under challenging visibility and appearance variations. 
+  
+  •  
+ 
+  Stage V: Resolution and temporal extension. 
+We further extend the model from generating 49-frame videos at     832  ×  480   832\times 480    resolution to 120-frame videos at     1280  ×  720   1280\times 720    resolution. 
+  
+ 
+ 
+ 
+ All experiments are trained using AdamW on NVIDIA H100 GPUs. Wan2.2 adopts a dual-denoiser architecture with separate high-noise and low-noise denoising stages; therefore, for  PISCO-14B , the two denoisers are trained independently using the same schedule and hyperparameters. 
+ 
+ 
+ 
+ 
+ 
+  5  Experiments 
+
+ 
+  5.1  Evaluation Data. 
+
+ 
+ We introduce  PISCO-Bench , a curated evaluation benchmark constructed on top of the BURST dataset  [ 16 ] .  PISCO -Bench is designed to assess instance-level video editing under diverse real-world conditions, including urban driving scenes, scripted movie clips, and in-the-wild internet videos. 
+ 
+ 
+ Starting from BURST, we carefully select 100 videos with broad scenario coverage and no overlap with our training data. For each video, we manually inspect the instance segmentation annotations and correct missing or low-quality masks to ensure reliable conditioning inputs. To obtain clean background videos, we remove the target instances using ROSE  [ 17 ] , a side-effect-aware instance removal model.
+Throughout this section, in the context of video instance insertion, we refer to these processed background videos as “clean videos” and the videos with instances as “target videos”. 
+ 
+ 
+ 
+  5.2  Evaluation Protocol. 
+
+ 
+ We report results for both  PISCO-1.3B  and  PISCO-14B  under two sparse-control settings:
+(i)  First-frame control , where the segmented instance image and mask are provided only at the first frame;
+(ii)  First &amp; last-frame control , where the segmented instance image and mask are provided at both the first and last frames.
+For all experiments, we perform inference using 50 diffusion denoising steps. 
+ 
+ 
+ 
+  5.3  Baselines. 
+
+ 
+ Our goal is precise video instance insertion under sparse user control, where the user provides only a small number of segmented instance frames to specify the appearance and placement of the instance. Since there are no directly comparable open-sourced models that support the same sparse conditioning interface, we compare against representative approaches that can achieve similar functionality via different pipelines. Specifically, we consider three categories: 
+ 
+ 
+  (1) Agentic pipeline: image editing + image-to-video (I2V) generation. 
+This pipeline first edits the first frame (and optionally the last frame) using the reference instance and mask, and then generates the full video conditioned on the edited frame(s) with an I2V model. This is a commonly adopted recipe in recent editing data generation workflows  [ 73 ,  74 ] . In our experiments, we use  Nano-banana-Pro   [ 75 ]  for image editing, taking the unedited frame(s) together with the segmented reference instance image and mask as input. We then use  Wan2.2-Fun-A14B-InP   [ 2 ]  for I2V generation under both first-frame and first &amp; last-frame control. 
+ 
+ 
+   Table 1 :   Input conditions for all compared methods.  We indicate whether each approach uses the clean video, reference instance frames (first/last), and instance masks (sparse or dense), as well as an optional text prompt. Notably, several baselines require dense per-frame masks, whereas PISCO operates with sparse keyframe masks (first-only or first&amp;last).   
+  
+ 
+ 
+  Method  
+  
+  Instance  
+  Instance Mask  
+   
+ 
+  Video  
+  First  
+  Last  
+  First  
+  Last  
+  All  
+  Text   
+ 
+  Image Editing + I2V Generation   
+ 
+  First  
+  ✓  
+  ✓  
+  
+  ✓  
+  
+  
+  ✓   
+ 
+  First&amp;Last  
+  ✓  
+  ✓  
+  ✓  
+  ✓  
+  ✓  
+  
+  ✓   
+ 
+  Video Inpainting   
+ 
+  CoCoCo  
+  ✓  
+  
+  
+  ✓  
+  ✓  
+  ✓  
+  ✓   
+ 
+  VideoPainter  
+  ✓  
+  
+  
+  ✓  
+  ✓  
+  ✓  
+  ✓   
+ 
+  Video-to-Video Editing   
+ 
+  VACE (14B)  
+  ✓  
+  ✓  
+  
+  ✓  
+  ✓  
+  ✓  
+  ✓   
+ 
+  UniVideo  
+  ✓  
+  ✓  
+  
+  
+  
+  
+  ✓   
+ 
+  PISCO  1.3B (Ours)    
+ 
+  First  
+  ✓  
+  ✓  
+  
+  ✓  
+  
+  
+   
+ 
+  First&amp;Last  
+  ✓  
+  ✓  
+  ✓  
+  ✓  
+  ✓  
+  
+   
+ 
+  PISCO  14B (Ours)    
+ 
+  First  
+  ✓  
+  ✓  
+  
+  ✓  
+  
+  
+   
+ 
+  First&amp;Last  
+  ✓  
+  ✓  
+  ✓  
+  ✓  
+  ✓  
+  
+   
+ 
+  
+ 
+ 
+  (2) Video inpainting models. 
+Video inpainting methods typically require dense masks over all frames, along with a text prompt describing the inserted object and the target scene. In this experiment, we use  Qwen3-VL-32B-Instruct  to generate a detailed textual description of the segmented reference instance image as the prompt. We adopt CoCoCo  [ 9 ]  and VideoPainter  [ 36 ]  as strong inpainting baselines. Both take the text prompt and the masked video as input, and this setting is also widely used in video editing pipelines  [ 73 ,  74 ] . 
+ 
+ 
+  (3) Reference-guided video-to-video editing models. 
+Another alternative is generic video-to-video editing, which edits the entire video in an end-to-end manner using multiple conditions such as a reference image, text prompt, and masks. In this category, we evaluate VACE  [ 11 ]  and UniVideo  [ 10 ] . VACE takes the unedited video, segmented reference image, text prompt, and the full mask video as input. UniVideo does not support mask conditioning; it uses only the unedited video, segmented reference image, and text prompt. 
+ 
+ 
+   Table   1   summarizes the input conditions for all methods. we note that several baselines requires dense per-frame masks (the full mask video), whereas our models work with sparse masks (first frame or first &amp; last frame). This comparison reflects the design philosophy of  PISCO : minimizing user effort while maintaining controllability and output quality. Consider that different pipelines support different video resolutions and frame length, we keep the experimental comparison with 832 pixel width, 480 pixel height, and 49 frames. 
+ 
+ 
+ 
+  5.4  Quantitative Experiments. 
+
+ 
+ Reference-based Video Quality Assessment. 
+
+ 
+ For the Precise Video Instance Insertion task, we use the  PISCO-Bench  dataset’s ground-truth pairs     (  V  ,   V  ^   )   (V,\hat{V})    to conduct reference-based evaluation. The generated videos     V  ′   V^{\prime}    are assessed using four standard metrics: FVD  [ 76 ] , LPIPS  [ 77 ] , PSNR  [ 78 ] , and SSIM  [ 79 ] . To ensure a comprehensive analysis, we evaluate at two levels:
+(1)  Whole-video assessment  calculates metrics between     V  ′   V^{\prime}    and     V  ^   \hat{V}    to measure global consistency and the accuracy of physical effects like shadows or reflections.
+(2)  Foreground assessment  isolates the inserted instance using mask    M  M   , computing     Metric  ​   (    V  ′   ⊙  M   ,    V  ^   ⊙  M   )    \text{Metric}(V^{\prime}\odot M,\hat{V}\odot M)   . This directly verifies whether the generated object adheres to the reference conditions and intended trajectory. 
+ 
+ 
+   Table 2 :   Quantitative Results (FVD, LPIPS, PSNR, SSIM).  Comparisons on Whole Video and Foreground Region.  Blue  and  red  indicate best and second-best among standard settings.  Gray rows  indicate the Five-Frame reference setting (not included in ranking).   
+  
+ 
+ 
+  Method  
+  Whole Video  
+  Foreground   
+ 
+  FVD       ↓  \downarrow     
+  LPIPS       ↓  \downarrow     
+  PSNR       ↑  \uparrow     
+  SSIM       ↑  \uparrow     
+  FVD       ↓  \downarrow     
+  LPIPS       ↓  \downarrow     
+  PSNR       ↑  \uparrow     
+  SSIM       ↑  \uparrow      
+ 
+  Image Editing + I2V Generation   
+ 
+  First Only  
+  826  
+  0.451  
+  15.47  
+  0.55  
+  297  
+  0.030  
+  30.24  
+  0.97   
+ 
+  First + Last  
+  624  
+  0.392  
+  16.44  
+  0.56  
+  250  
+  0.030  
+  30.38  
+  0.98   
+ 
+  Video Inpainting   
+ 
+  CoCoCo  
+  590  
+  0.191  
+  23.62  
+  0.80  
+  398  
+  0.031  
+  30.26  
+  0.97   
+ 
+  VideoPainter  
+  524  
+  0.154  
+  23.11  
+  0.78  
+  384  
+  0.035  
+  29.27  
+  0.97   
+ 
+  Video-to-Video Editing   
+ 
+  VACE       14B   {}_{\text{14B}}    
+  371  
+  0.103  
+  25.55  
+  0.88  
+  273  
+  0.028  
+  30.55  
+  0.98   
+ 
+  UniVideo  
+  485  
+  0.211  
+  19.22  
+  0.61  
+  310  
+  0.031  
+  29.21  
+  0.97   
+ 
+  PISCO        1.3B   {}_{\text{1.3B}}    (Ours)    
+ 
+  First Only  
+  398  
+  0.121  
+  25.35  
+  0.87  
+  243  
+  0.029  
+  30.51  
+  0.98   
+ 
+  First + Last  
+  269  
+  0.103  
+  27.01  
+  0.88  
+  171  
+  0.024  
+  32.99  
+  0.98   
+ 
+  Five Frames  
+  172  
+  0.089  
+  28.53  
+  0.89  
+  104  
+  0.018  
+  35.07  
+  0.98   
+ 
+  PISCO        14B   {}_{\text{14B}}    (Ours)    
+ 
+  First Only  
+  337  
+  0.116  
+  24.81  
+  0.88  
+  222  
+  0.029  
+  30.61  
+  0.97   
+ 
+  First + Last  
+  204  
+  0.097  
+  26.58  
+  0.89  
+  138  
+  0.022  
+  33.58  
+  0.98   
+ 
+  Five Frames  
+  136  
+  0.084  
+  28.01  
+  0.90  
+  75  
+  0.015  
+  35.94  
+  0.98   
+ 
+  
+ 
+ 
+ Quantitative results in   Table   2   show that  PISCO  consistently outperforms all baselines. In whole-video metrics, the  Image Editing + I2V  pipeline performs worst due to severe background hallucination, as reflected by its low PSNR and SSIM. While  Video Inpainting  models like CoCoCo and VideoPainter preserve unmasked regions better, their high FVD scores indicate poor temporal coherence. VACE emerges as the strongest baseline, yet  PISCO -14B (First &amp; Last) surpasses it significantly, reducing FVD from 371 to 204 and LPIPS from 0.103 to 0.097. In foreground assessment,  PISCO -14B (First &amp; Last) achieves a Foreground FVD of 138 and LPIPS of 0.022, both substantially better than competing methods. These results demonstrate that our framework generates instances with high visual quality and strict temporal alignment. Moreover, the superior performance of the First &amp; Last configuration over First Only confirms that endpoint constraints effectively stabilize complex instance dynamics. 
+ 
+ 
+ We also evaluated scalability using a “Five Frames” setting, incorporating the first, last, and three random intermediate frames. Unlike existing baselines that lack the flexibility for arbitrary multi-frame conditioning,  PISCO  leverages these additional signals to further refine quality. For example,  PISCO -14B with five frames improves whole-video FVD to 136 and Foreground LPIPS to 0.015. This performance boost underscores our framework’s unique ability to effectively scale controllability with additional sparse inputs. 
+ 
+ 
+   Table 3 :   VBench Quantitative Comparison.  We compare  PISCO  against recent baselines. To ensure precise evaluation for instance insertion,  Background  and  Subject Consistency  are computed using masked regions to isolate foreground/background signals.  Blue  and  red  indicate the best and second-best results among standard settings.  Gray rows  indicate the Five-Frame setting.   
+  
+ 
+ 
+  Method  
+ 
+ 
+  Background  
+  Consistency  
+  
+ 
+ 
+  Subject  
+  Consistency  
+  
+ 
+ 
+  Aesthetic  
+  Quality  
+  
+ 
+ 
+  Imaging  
+  Quality  
+  
+ 
+ 
+  Motion  
+  Smoothness  
+  
+ 
+ 
+  Overall  
+  Consistency  
+  
+ 
+ 
+  Temporal  
+  Flickering  
+  
+ 
+ 
+  Temporal  
+  Style  
+  
+  Average   
+ 
+  Image Editing + I2V Generation   
+ 
+  First Only  
+  91.43  
+  83.86  
+  48.83  
+  59.01  
+  97.89  
+  15.11  
+  95.89  
+  15.11  
+  63.39   
+ 
+  First + Last  
+  92.28  
+  85.09  
+  49.47  
+  59.71  
+  98.18  
+  15.58  
+  96.26  
+  15.58  
+  64.02   
+ 
+  Video Inpainting   
+ 
+  CoCoCo  
+  94.63  
+  89.55  
+  47.81  
+  55.76  
+  98.67  
+  14.61  
+  97.69  
+  14.61  
+  64.17   
+ 
+  VideoPainter  
+  94.51  
+  89.14  
+  47.82  
+  57.68  
+  98.97  
+  13.85  
+  97.77  
+  13.85  
+  64.20   
+ 
+  Video-to-Video Editing   
+ 
+  VACE       14B   {}_{\text{14B}}    
+  94.21  
+  90.29  
+  48.69  
+  60.95  
+  98.90  
+  14.87  
+  97.56  
+  14.87  
+  65.04   
+ 
+  UniVideo  
+  94.04  
+  89.88  
+  49.41  
+  60.84  
+  98.80  
+  15.51  
+  97.01  
+  15.92  
+  65.18   
+ 
+  PISCO        1.3B   {}_{\text{1.3B}}    (Ours)    
+ 
+  First Only  
+  93.72  
+  87.16  
+  47.70  
+  60.67  
+  98.85  
+  14.92  
+  97.54  
+  14.92  
+  64.43   
+ 
+  First + Last  
+  94.07  
+  91.33  
+  49.48  
+  61.18  
+  98.86  
+  15.58  
+  97.51  
+  15.58  
+  65.45   
+ 
+  Five Frames  
+  94.23  
+  91.45  
+  50.01  
+  62.09  
+  98.86  
+  15.61  
+  97.67  
+  15.61  
+  65.89   
+ 
+  PISCO        14B   {}_{\text{14B}}    (Ours)    
+ 
+  First Only  
+  93.84  
+  87.26  
+  48.24  
+  60.80  
+  98.79  
+  15.14  
+  97.26  
+  15.14  
+  64.56   
+ 
+  First + Last  
+  94.20  
+  91.57  
+  50.08  
+  62.00  
+  98.79  
+  15.64  
+  97.21  
+  15.64  
+  65.64   
+ 
+  Five Frames  
+  94.42  
+  91.98  
+  51.45  
+  62.87  
+  98.89  
+  15.82  
+  97.34  
+  15.57  
+  66.04   
+ 
+  
+ 
+ 
+ 
+ Reference-free Video Quality Assessment. 
+
+ 
+ To evaluate perceptual quality and temporal consistency without pixel-aligned ground truth, we employ VBench  [ 18 ] . However, standard VBench consistency metrics compute feature similarity over entire frames, mixing foreground and background signals. This is suboptimal for instance insertion, where object consistency and background preservation should be assessed independently. Therefore, we utilize instance masks to isolate foreground and background regions, extracting CLIP/DINO features solely from these areas to compute consistency scores. Other metrics, such as Aesthetic Quality and Motion Smoothness, follow the official implementation. 
+ 
+ 
+ The results in   Table   3   show that  PISCO  demonstrates superior performance across most perceptual dimensions. Notably, in Subject Consistency,  PISCO -14B (First &amp; Last) achieves a score of 91.57, significantly outperforming VACE (90.29) and inpainting models (   ∼  \sim   89). This indicates that our model maintains the identity and appearance of the inserted instance more faithfully over time.  PISCO  also secures top spots in Imaging Quality and Aesthetic Quality, suffering less from artifacts compared to baseline pipelines. While inpainting baselines naturally achieve high Background Consistency by copying pixels,  PISCO  remains highly competitive (94.20) while offering superior motion and instance fidelity. 
+ 
+ 
+ Following the reference-based evaluation, we also report  PISCO ’s performance using the “Five Frames” setting. Adding three intermediate control frames further boosts metrics, with  PISCO -14B reaching 91.98 in Subject Consistency and 51.45 in Aesthetic Quality. This consistent upward trend across both reference-based and reference-free benchmarks reinforces our conclusion:  PISCO  is uniquely capable of leveraging additional sparse visual prompts to refine generation quality, a flexibility not supported by current state-of-the-art baselines. 
+ 
+  
+   Figure 7 :   Qualitative Comparison . Visual results of instance insertion in two dynamic scenes (A) and (B). Existing methods struggle with background preservation (Agentic), instance identity (Inpainting), or scale consistency (UniVideo/VACE). Our method,  PISCO , achieves superior visual fidelity and spatiotemporal alignment, particularly when utilizing sparse "First &amp; Last" frame control.   
+ 
+ 
+ 
+ 
+  5.5  Qualitative Experiments 
+
+ 
+ We qualitatively compare generated frames in   Figure   7   to assess different methods. The results highlight several baseline limitations: agentic pipelines (combining image editing with I2V) often regenerate the entire sequence, severely degrading background consistency. Inpainting models like CoCoCo and VideoPainter, lacking reference instance inputs, frequently hallucinate blurry or incorrect objects. Meanwhile, reference-based V2V models such as UniVideo and VACE struggle with long-term spatial control; they often fail to maintain correct perspective (e.g., the oversized car in UniVideo) or lose the target instance entirely in later frames. 
+ 
+ 
+ In contrast, our  PISCO  approach demonstrates superior controllability. While first-frame control alone effectively captures appearance, the trajectory may slightly drift over time. However, as shown in the “ PISCO  First &amp; Last” results, providing sparse control frames easily resolves this ambiguity, ensuring precise alignment with the target trajectory throughout the sequence. 
+ 
+ 
+ 
+ 
+  6  Beyond Instance Insertion: Broader Applications of PISCO 
+
+ 
+ While  PISCO  is designed for precise video instance insertion under sparse keyframe control, the same
+instance-level conditioning and temporal propagation machinery naturally generalizes to a broader set
+of controllable video editing and simulation tasks.
+Figure   8   illustrates representative use cases enabled by  PISCO .
+In particular,  PISCO  can (i) perform  background change  by re-rendering the surrounding scene while
+preserving the foreground instance identity and motion; (ii) support  instance repositioning  and
+ instance rescaling  by adjusting the instance location and size while maintaining scene-consistent
+interactions (e.g., occlusions and shadows); (iii) realize  speed change  by temporally subsampling
+instance-related conditions to induce faster or slower motion; and (iv) enable  dynamics simulation 
+by providing partial instance-related conditions to create counterfactual trajectories for stress-testing
+downstream perception and planning systems.
+These extensions highlight  PISCO  as a general-purpose, instance-centric video editing framework rather than a
+single-task solution.
+We encourage future researchers and developers to further investigate these directions and extend  PISCO  to
+additional instance-centric editing and simulation scenarios. 
+ 
+  
+   Figure 8 :   Broader applications beyond instance insertion. 
+Leveraging the same instance-level conditioning and temporal propagation,  PISCO  supports diverse instance-centric video edits and simulation
+under controllable spatiotemporal guidance:  Background Change ,  Instance Repositioning ,  Speed Change ,  Instance Rescaling ,
+and  Dynamics Simulation .   
+ 
+ 
+ 
+  7  Conclusion 
+
+ 
+ In this paper, we presented  PISCO , a video diffusion model for precise video instance insertion under sparse user control. By introducing Variable-Information Guidance and Distribution-Preserving Temporal Masking, together with geometry-aware conditioning,  PISCO  effectively resolves the distribution shift and temporal instability issues that arise when applying sparse conditions to pretrained video diffusion models. Extensive experiments on the proposed  PISCO -Bench demonstrate that  PISCO  consistently outperforms strong inpainting, video editing, and agentic baselines, while exhibiting clear and monotonic performance gains as additional sparse control frames are provided. These results position  PISCO  as a practical and scalable solution for professional-grade video editing, and a key step toward highly controllable, low-effort, AI-assisted filmmaking. 
+ 
+  
+ 
+ 
+ References 
+
+ 
+  [1] 
+  W. Kong, Q. Tian, Z. Zhang, R. Min, Z. Dai, J. Zhou, J. Xiong, X. Li, B. Wu, J. Zhang,  et al.    (2024) 
+ 
+  Hunyuanvideo: a systematic framework for large video generative models .
+ 
+  arXiv preprint arXiv:2412.03603 .
+ 
+ Cited by:   §1  .
+  
+  [2] 
+  T. Wan, A. Wang, B. Ai, B. Wen, C. Mao, C. Xie, D. Chen, F. Yu, H. Zhao, J. Yang,  et al.    (2025) 
+ 
+  Wan: open and advanced large-scale video generative models .
+ 
+  arXiv preprint arXiv:2503.20314 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  §3.1  ,
+  §3.3  ,
+  §5.3  .
+  
+  [3] 
+  Y. HaCohen, B. Brazowski, N. Chiprut, Y. Bitterman, A. Kvochko, A. Berkowitz, D. Shalem, D. Lifschitz, D. Moshe, E. Porat,  et al.    (2026) 
+ 
+  LTX-2: efficient joint audio-visual foundation model .
+ 
+  arXiv preprint arXiv:2601.03233 .
+ 
+ Cited by:   §1  .
+  
+  [4] 
+  A. Polyak, A. Zohar, A. Brown, A. Tjandra, A. Sinha, A. Lee, A. Vyas, B. Shi, C. Ma, C. Chuang,  et al.    (2024) 
+ 
+  Movie gen: a cast of media foundation models .
+ 
+  arXiv preprint arXiv:2410.13720 .
+ 
+ Cited by:   §1  .
+  
+  [5] 
+  L. Manovich   (2023) 
+ 
+  The rise of generative media .
+ 
+ Note:  Manovich.netFrom the collection "Artificial Aesthetics" 
+ 
+ External Links:   Link  
+ 
+ Cited by:   §1  .
+  
+  [6] 
+  J. Moore   (2024) 
+ 
+  Why 2023 was ai video’s breakout year, and what to expect in 2024 .
+ 
+   Andreessen Horowitz .
+ 
+ Note:  Accessed: 2024-05-20 
+ 
+ External Links:   Link  
+ 
+ Cited by:   §1  .
+  
+  [7] 
+  L. Yang, Z. Zhang, Y. Song, S. Hong, R. Xu, Y. Zhao, W. Zhang, B. Cui, and M. Yang   (2023) 
+ 
+  Diffusion models: a comprehensive survey of methods and applications .
+ 
+  ACM computing surveys   56  ( 4 ),  pp. 1–39 .
+ 
+ Cited by:   §1  ,
+  §2.1  .
+  
+  [8] 
+  W. Quan, J. Chen, Y. Liu, D. Yan, and P. Wonka   (2024) 
+ 
+  Deep learning-based image and video inpainting: a survey .
+ 
+  International Journal of Computer Vision   132  ( 7 ),  pp. 2367–2400 .
+ 
+ Cited by:   §1  ,
+  §2.1  .
+  
+  [9] 
+  B. Zi, S. Zhao, X. Qi, J. Wang, Y. Shi, Q. Chen, B. Liang, R. Xiao, K. Wong, and L. Zhang   (2025) 
+ 
+  Cococo: improving text-guided video inpainting for better consistency, controllability and compatibility .
+ 
+ In  Proceedings of the AAAI Conference on Artificial Intelligence ,
+ 
+ Vol.  39 ,  pp. 11067–11076 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  §5.3  .
+  
+  [10] 
+  C. Wei, Q. Liu, Z. Ye, Q. Wang, X. Wang, P. Wan, K. Gai, and W. Chen   (2025) 
+ 
+  Univideo: unified understanding, generation, and editing for videos .
+ 
+  arXiv preprint arXiv:2510.08377 .
+ 
+ Cited by:   §1  ,
+  §2.2  ,
+  §5.3  .
+  
+  [11] 
+  Z. Jiang, Z. Han, C. Mao, J. Zhang, Y. Pan, and Y. Liu   (2025) 
+ 
+  Vace: all-in-one video creation and editing .
+ 
+  arXiv preprint arXiv:2503.07598 .
+ 
+ Cited by:   §1  ,
+  §2.2  ,
+  §3.1  ,
+  §5.3  .
+  
+  [12] 
+  Y. Hu, C. Luo, and Z. Chen   (2022) 
+ 
+  Make it move: controllable image-to-video generation with text descriptions .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,
+ 
+  pp. 18219–18228 .
+ 
+ Cited by:   §1  ,
+  §2.3  .
+  
+  [13] 
+  Y. Jin, Z. Sun, N. Li, K. Xu, H. Jiang, N. Zhuang, Q. Huang, Y. Song, Y. Mu, and Z. Lin   (2024) 
+ 
+  Pyramidal flow matching for efficient video generative modeling .
+ 
+  arXiv preprint arXiv:2410.05954 .
+ 
+ Cited by:   §1  ,
+  §2.3  .
+  
+  [14] 
+  Z. Liu, J. Yang, M. Gao, and F. Zheng   (2024) 
+ 
+  Place anything into any video .
+ 
+  arXiv preprint arXiv:2402.14316 .
+ 
+ Cited by:   §1  ,
+  §2.4  .
+  
+  [15] 
+  H. Jin, H. Jang, J. Kim, J. Hyung, K. Kim, D. Kim, H. Choi, H. Kim, and J. Choo   (2025) 
+ 
+  InsertAnywhere: bridging 4d scene geometry and diffusion models for realistic video object insertion .
+ 
+  arXiv preprint arXiv:2512.17504 .
+ 
+ Cited by:   §1  ,
+  §2.4  .
+  
+  [16] 
+  A. Athar, J. Luiten, P. Voigtlaender, T. Khurana, A. Dave, B. Leibe, and D. Ramanan   (2023) 
+ 
+  Burst: a benchmark for unifying object recognition, segmentation and tracking in video .
+ 
+ In  Proceedings of the IEEE/CVF winter conference on applications of computer vision ,
+ 
+  pp. 1674–1683 .
+ 
+ Cited by:   §1  ,
+  §5.1  .
+  
+  [17] 
+  C. Miao, Y. Feng, J. Zeng, Z. Gao, H. Liu, Y. Yan, D. Qi, X. Chen, B. Wang, and H. Zhao   (2025) 
+ 
+  Rose: remove objects with side effects in videos .
+ 
+  arXiv preprint arXiv:2508.18633 .
+ 
+ Cited by:   §1  ,
+  §4.1  ,
+  §5.1  .
+  
+  [18] 
+  Z. Huang, Y. He, J. Yu, F. Zhang, C. Si, Y. Jiang, Y. Zhang, T. Wu, Q. Jin, N. Chanpaisit,  et al.    (2024) 
+ 
+  Vbench: comprehensive benchmark suite for video generative models .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,
+ 
+  pp. 21807–21818 .
+ 
+ Cited by:   §1  ,
+  §5.4  .
+  
+  [19] 
+  C. Wang, H. Huang, X. Han, and J. Wang   (2019) 
+ 
+  Video inpainting by jointly learning temporal structure and spatial details .
+ 
+ In  Proceedings of the AAAI conference on artificial intelligence ,
+ 
+ Vol.  33 ,  pp. 5232–5239 .
+ 
+ Cited by:   §2.1  .
+  
+  [20] 
+  Y. Chang, Z. Y. Liu, K. Lee, and W. Hsu   (2019) 
+ 
+  Free-form video inpainting with 3d gated convolution and temporal patchgan .
+ 
+ In  Proceedings of the IEEE/CVF international conference on computer vision ,
+ 
+  pp. 9066–9075 .
+ 
+ Cited by:   §2.1  .
+  
+  [21] 
+  Y. Hu, H. Wang, N. Ballas, K. Grauman, and A. G. Schwing   (2020) 
+ 
+  Proposal-based video completion .
+ 
+ In  European Conference on Computer Vision ,
+ 
+  pp. 38–54 .
+ 
+ Cited by:   §2.1  .
+  
+  [22] 
+  R. Xu, X. Li, B. Zhou, and C. C. Loy   (2019) 
+ 
+  Deep flow-guided video inpainting .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 3723–3732 .
+ 
+ Cited by:   §2.1  .
+  
+  [23] 
+  D. Kim, S. Woo, J. Lee, and I. S. Kweon   (2019) 
+ 
+  Deep video inpainting .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 5792–5801 .
+ 
+ Cited by:   §2.1  .
+  
+  [24] 
+  A. Li, S. Zhao, X. Ma, M. Gong, J. Qi, R. Zhang, D. Tao, and R. Kotagiri   (2020) 
+ 
+  Short-term and long-term context aggregation network for video inpainting .
+ 
+ In  European Conference on Computer Vision ,
+ 
+  pp. 728–743 .
+ 
+ Cited by:   §2.1  .
+  
+  [25] 
+  C. Gao, A. Saraf, J. Huang, and J. Kopf   (2020) 
+ 
+  Flow-edge guided video completion .
+ 
+ In  European Conference on Computer Vision ,
+ 
+  pp. 713–729 .
+ 
+ Cited by:   §2.1  .
+  
+  [26] 
+  X. Zou, L. Yang, D. Liu, and Y. J. Lee   (2021) 
+ 
+  Progressive temporal feature alignment network for video inpainting .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,
+ 
+  pp. 16448–16457 .
+ 
+ Cited by:   §2.1  ,
+  §4.1  .
+  
+  [27] 
+  Z. Li, C. Lu, J. Qin, C. Guo, and M. Cheng   (2022) 
+ 
+  Towards an end-to-end framework for flow-guided video inpainting .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 17562–17571 .
+ 
+ Cited by:   §2.1  .
+  
+  [28] 
+  R. Liu, H. Deng, Y. Huang, X. Shi, L. Lu, W. Sun, X. Wang, J. Dai, and H. Li   (2021) 
+ 
+  Fuseformer: fusing fine-grained information in transformers for video inpainting .
+ 
+ In  Proceedings of the IEEE/CVF international conference on computer vision ,
+ 
+  pp. 14040–14049 .
+ 
+ Cited by:   §2.1  .
+  
+  [29] 
+  R. Liu, H. Deng, Y. Huang, X. Shi, L. Lu, W. Sun, X. Wang, J. Dai, and H. Li   (2021) 
+ 
+  Decoupled spatial-temporal transformer for video inpainting .
+ 
+  arXiv preprint arXiv:2104.06637 .
+ 
+ Cited by:   §2.1  .
+  
+  [30] 
+  J. Cai, C. Li, X. Tao, C. Yuan, and Y. Tai   (2022) 
+ 
+  Devit: deformed vision transformers in video inpainting .
+ 
+ In  Proceedings of the 30th ACM international conference on multimedia ,
+ 
+  pp. 779–789 .
+ 
+ Cited by:   §2.1  .
+  
+  [31] 
+  S. Zhou, C. Li, K. C. Chan, and C. C. Loy   (2023) 
+ 
+  Propainter: improving propagation and transformer for video inpainting .
+ 
+ In  Proceedings of the IEEE/CVF international conference on computer vision ,
+ 
+  pp. 10477–10486 .
+ 
+ Cited by:   §2.1  .
+  
+  [32] 
+  B. F. Labs, S. Batifol, A. Blattmann, F. Boesel, S. Consul, C. Diagne, T. Dockhorn, J. English, Z. English, P. Esser,  et al.    (2025) 
+ 
+  FLUX. 1 kontext: flow matching for in-context image generation and editing in latent space .
+ 
+  arXiv preprint arXiv:2506.15742 .
+ 
+ Cited by:   §2.1  .
+  
+  [33] 
+  Y. Guo, C. Yang, A. Rao, Z. Liang, Y. Wang, Y. Qiao, M. Agrawala, D. Lin, and B. Dai   (2023) 
+ 
+  Animatediff: animate your personalized text-to-image diffusion models without specific tuning .
+ 
+  arXiv preprint arXiv:2307.04725 .
+ 
+ Cited by:   §2.1  .
+  
+  [34] 
+  Z. Zhang, B. Wu, X. Wang, Y. Luo, L. Zhang, Y. Zhao, P. Vajda, D. Metaxas, and L. Yu   (2024) 
+ 
+  Avid: any-length video inpainting with diffusion model .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 7162–7172 .
+ 
+ Cited by:   §2.1  .
+  
+  [35] 
+  D. Green, W. Harvey, S. Naderiparizi, M. Niedoba, Y. Liu, X. Liang, J. Lavington, K. Zhang, V. Lioutas, S. Dabiri,  et al.    (2024) 
+ 
+  Semantically consistent video inpainting with conditional diffusion models .
+ 
+  arXiv preprint arXiv:2405.00251 .
+ 
+ Cited by:   §2.1  .
+  
+  [36] 
+  Y. Bian, Z. Zhang, X. Ju, M. Cao, L. Xie, Y. Shan, and Q. Xu   (2025) 
+ 
+  Videopainter: any-length video inpainting and editing with plug-and-play context control .
+ 
+ In  Proceedings of the Special Interest Group on Computer Graphics and Interactive Techniques Conference Conference Papers ,
+ 
+  pp. 1–12 .
+ 
+ Cited by:   §2.1  ,
+  §4.1  ,
+  §5.3  .
+  
+  [37] 
+  X. Li, H. Xue, P. Ren, and L. Bo   (2025) 
+ 
+  Diffueraser: a diffusion model for video inpainting .
+ 
+  arXiv preprint arXiv:2501.10018 .
+ 
+ Cited by:   §2.1  .
+  
+  [38] 
+  M. Lee, S. Cho, C. Shin, J. Lee, S. Yang, and S. Lee   (2025) 
+ 
+  Video diffusion models are strong video inpainter .
+ 
+ In  Proceedings of the AAAI Conference on Artificial Intelligence ,
+ 
+ Vol.  39 ,  pp. 4526–4533 .
+ 
+ Cited by:   §2.1  .
+  
+  [39] 
+  Z. Wan, C. Qi, Z. Liu, T. Gui, and Y. Ma   (2025) 
+ 
+  Unipaint: unified space-time video inpainting via mixture-of-experts .
+ 
+ In  Proceedings of the IEEE/CVF International Conference on Computer Vision ,
+ 
+  pp. 1861–1871 .
+ 
+ Cited by:   §2.1  .
+  
+  [40] 
+  Y. Guo, C. Yang, A. Rao, C. Meng, O. Bar-Tal, S. Ding, M. Agrawala, D. Lin, and B. Dai   (2025) 
+ 
+  Keyframe-guided creative video inpainting .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 13009–13020 .
+ 
+ Cited by:   §2.1  .
+  
+  [41] 
+  Y. Wang, L. Wang, Z. Ma, Q. Hu, K. Xu, and Y. Guo   (2025) 
+ 
+  Videodirector: precise video editing via text-to-video models .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 2589–2598 .
+ 
+ Cited by:   §2.2  .
+  
+  [42] 
+  Y. Chen, X. He, X. Ma, and Y. Ma   (2025) 
+ 
+  ContextFlow: training-free video object editing via adaptive context enrichment .
+ 
+  arXiv preprint arXiv:2509.17818 .
+ 
+ Cited by:   §2.2  .
+  
+  [43] 
+  Y. Tu, H. Luo, X. Chen, S. Ji, X. Bai, and H. Zhao   (2025) 
+ 
+  VideoAnydoor: high-fidelity video object insertion with precise motion control .
+ 
+ Cited by:   §2.2  .
+  
+  [44] 
+  G. Cheng, X. Gao, L. Hu, S. Hu, M. Huang, C. Ji, J. Li, D. Meng, J. Qi, P. Qiao,  et al.    (2025) 
+ 
+  Wan-animate: unified character animation and replacement with holistic replication .
+ 
+  arXiv preprint arXiv:2509.14055 .
+ 
+ Cited by:   §2.2  .
+  
+  [45] 
+  Y. He, M. Xia, H. Chen, X. Cun, Y. Gong, J. Xing, Y. Zhang, X. Wang, C. Weng, Y. Shan,  et al.    (2023) 
+ 
+  Animate-a-story: storytelling with retrieval-augmented video generation .
+ 
+  arXiv preprint arXiv:2307.06940 .
+ 
+ Cited by:   §2.2  .
+  
+  [46] 
+  S. Liu, Y. Han, P. Xing, F. Yin, R. Wang, W. Cheng, J. Liao, Y. Wang, H. Fu, C. Han,  et al.    (2025) 
+ 
+  Step1x-edit: a practical framework for general image editing .
+ 
+  arXiv preprint arXiv:2504.17761 .
+ 
+ Cited by:   §2.3  .
+  
+  [47] 
+  H. Cai, S. Cao, R. Du, P. Gao, S. Hoi, S. Huang, Z. Hou, D. Jiang, X. Jin, L. Li,  et al.    (2025) 
+ 
+  Z-image: an efficient image generation foundation model with single-stream diffusion transformer .
+ 
+  arXiv preprint arXiv:2511.22699 .
+ 
+ Cited by:   §2.3  .
+  
+  [48] 
+  C. Wu, J. Li, J. Zhou, J. Lin, K. Gao, K. Yan, S. Yin, S. Bai, X. Xu, Y. Chen,  et al.    (2025) 
+ 
+  Qwen-image technical report .
+ 
+  arXiv preprint arXiv:2508.02324 .
+ 
+ Cited by:   §2.3  .
+  
+  [49] 
+  K. Namekata, S. Bahmani, Z. Wu, Y. Kant, I. Gilitschenski, and D. B. Lindell   (2024) 
+ 
+  Sg-i2v: self-guided trajectory control in image-to-video generation .
+ 
+  arXiv preprint arXiv:2411.04989 .
+ 
+ Cited by:   §2.3  .
+  
+  [50] 
+  X. Wang, B. Zhou, B. Curless, I. Kemelmacher-Shlizerman, A. Holynski, and S. M. Seitz   (2024) 
+ 
+  Generative inbetweening: adapting image-to-video models for keyframe interpolation .
+ 
+  arXiv preprint arXiv:2408.15239 .
+ 
+ Cited by:   §2.3  .
+  
+  [51] 
+  Z. Li, H. Luo, X. Shuai, and H. Ding   (2025) 
+ 
+  AnyI2V: animating any conditional image with motion control .
+ 
+  arXiv preprint arXiv:2507.02857 .
+ 
+ Cited by:   §2.3  .
+  
+  [52] 
+  Z. Yang, J. Zhang, Y. Yu, S. Lu, and S. Bai   (2025) 
+ 
+  Versatile transition generation with image-to-video diffusion .
+ 
+ In  Proceedings of the IEEE/CVF International Conference on Computer Vision ,
+ 
+  pp. 16981–16990 .
+ 
+ Cited by:   §2.3  .
+  
+  [53] 
+  W. Wang and Y. Yang   (2025) 
+ 
+  Tip-i2v: a million-scale real text and image prompt dataset for image-to-video generation .
+ 
+ In  Proceedings of the IEEE/CVF International Conference on Computer Vision ,
+ 
+  pp. 14898–14908 .
+ 
+ Cited by:   §2.3  .
+  
+  [54] 
+  S. Shi, B. Gong, X. Chen, D. Zheng, S. Tan, Z. Yang, Y. Li, J. He, K. Zheng, J. Chen,  et al.    (2025) 
+ 
+  Motionstone: decoupled motion intensity modulation with diffusion transformer for image-to-video generation .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 22864–22874 .
+ 
+ Cited by:   §2.3  .
+  
+  [55] 
+  Z. Zhang, F. Long, Z. Qiu, Y. Pan, W. Liu, T. Yao, and T. Mei   (2025) 
+ 
+  MotionPro: a precise motion controller for image-to-video generation .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 27957–27967 .
+ 
+ Cited by:   §2.3  .
+  
+  [56] 
+  G. Yariv, Y. Kirstain, A. Zohar, S. Sheynin, Y. Taigman, Y. Adi, S. Benaim, and A. Polyak   (2025) 
+ 
+  Through-the-mask: mask-based motion trajectories for image-to-video generation .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 18198–18208 .
+ 
+ Cited by:   §2.3  .
+  
+  [57] 
+  S. Liu, T. Wang, J. Wang, Q. Liu, Z. Zhang, J. Lee, Y. Li, B. Yu, Z. Lin, S. Y. Kim,  et al.    (2025) 
+ 
+  Generative video propagation .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 17712–17722 .
+ 
+ Cited by:   §2.3  .
+  
+  [58] 
+  C. Bai, Z. Shao, G. Zhang, D. Liang, J. Yang, Z. Zhang, Y. Guo, C. Zhong, Y. Qiu, Z. Wang,  et al.    (2024) 
+ 
+  Anything in any scene: photorealistic video object insertion .
+ 
+  arXiv preprint arXiv:2401.17509 .
+ 
+ Cited by:   §2.4  .
+  
+  [59] 
+  S. Chen, C. Ge, Y. Zhang, Y. Zhang, F. Zhu, H. Yang, H. Hao, H. Wu, Z. Lai, Y. Hu,  et al.    (2025) 
+ 
+  Goku: flow based video generative foundation models .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 23516–23527 .
+ 
+ Cited by:   §3.3  .
+  
+  [60] 
+  J. Liu, J. Han, B. Yan, H. Wu, F. Zhu, X. Wang, Y. Jiang, B. Peng, and Z. Yuan   (2025) 
+ 
+  Infinitystar: unified spacetime autoregressive modeling for visual generation .
+ 
+  arXiv preprint arXiv:2511.04675 .
+ 
+ Cited by:   §3.3  .
+  
+  [61] 
+  Z. Yang, J. Teng, W. Zheng, M. Ding, S. Huang, J. Xu, Y. Yang, W. Hong, X. Zhang, G. Feng,  et al.    (2024) 
+ 
+  Cogvideox: text-to-video diffusion models with an expert transformer .
+ 
+  arXiv preprint arXiv:2408.06072 .
+ 
+ Cited by:   §3.3  .
+  
+  [62] 
+  J. Wang, Y. Jiang, Z. Yuan, B. Peng, Z. Wu, and Y. Jiang   (2024) 
+ 
+  Omnitokenizer: a joint image-video tokenizer for visual generation .
+ 
+  Advances in Neural Information Processing Systems   37 ,  pp. 28281–28295 .
+ 
+ Cited by:   §3.3  .
+  
+  [63] 
+  Z. Zheng, X. Peng, T. Yang, C. Shen, S. Li, H. Liu, Y. Zhou, T. Li, and Y. You   (2024) 
+ 
+  Open-sora: democratizing efficient video production for all .
+ 
+  arXiv preprint arXiv:2412.20404 .
+ 
+ Cited by:   §3.3  .
+  
+  [64] 
+  N. Agarwal, A. Ali, M. Bala, Y. Balaji, E. Barker, T. Cai, P. Chattopadhyay, Y. Chen, Y. Cui, Y. Ding,  et al.    (2025) 
+ 
+  Cosmos world foundation model platform for physical ai .
+ 
+  arXiv preprint arXiv:2501.03575 .
+ 
+ Cited by:   §3.3  .
+  
+  [65] 
+  J. Ao, Q. Ke, and K. A. Ehinger   (2023) 
+ 
+  Image amodal completion: a survey .
+ 
+  Computer Vision and Image Understanding   229 ,  pp. 103661 .
+ 
+ Cited by:   §3.4  .
+  
+  [66] 
+  J. Ao, Y. Jiang, Q. Ke, and K. A. Ehinger   (2025) 
+ 
+  Open-world amodal appearance completion .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 6490–6499 .
+ 
+ Cited by:   §3.4  .
+  
+  [67] 
+  L. Zhang, A. Rao, and M. Agrawala   (2025) 
+ 
+  Scaling in-the-wild training for diffusion-based illumination harmonization and editing by imposing consistent light transport .
+ 
+ In  The Thirteenth International Conference on Learning Representations ,
+ 
+ Cited by:   §3.4  .
+  
+  [68] 
+  H. Ding, C. Liu, S. He, X. Jiang, P. H. Torr, and S. Bai   (2023) 
+ 
+  MOSE: a new dataset for video object segmentation in complex scenes .
+ 
+ In  ICCV ,
+ 
+ Cited by:   §4.1  .
+  
+  [69] 
+  H. Ding, K. Ying, C. Liu, S. He, X. Jiang, Y. Jiang, P. H. Torr, and S. Bai   (2025) 
+ 
+  MOSEv2: a more challenging dataset for video object segmentation in complex scenes .
+ 
+  arXiv preprint arXiv:2508.05630 .
+ 
+ Cited by:   §4.1  .
+  
+  [70] 
+  S. Caelles, J. Pont-Tuset, F. Perazzi, A. Montes, K. Maninis, and L. Van Gool   (2019) 
+ 
+  The 2019 davis challenge on vos: unsupervised multi-object segmentation .
+ 
+  arXiv .
+ 
+ Cited by:   §4.1  .
+  
+  [71] 
+  J. Pont-Tuset, F. Perazzi, S. Caelles, P. Arbeláez, A. Sorkine-Hornung, and L. Van Gool   (2017) 
+ 
+  The 2017 davis challenge on video object segmentation .
+ 
+  arXiv:1704.00675 .
+ 
+ Cited by:   §4.1  .
+  
+  [72] 
+  H. Lin, S. Chen, J. Liew, D. Y. Chen, Z. Li, G. Shi, J. Feng, and B. Kang   (2025) 
+ 
+  Depth anything 3: recovering the visual space from any views .
+ 
+  arXiv preprint arXiv:2511.10647 .
+ 
+ Cited by:   §4.1  .
+  
+  [73] 
+  H. He, J. Wang, J. Zhang, Z. Xue, X. Bu, Q. Yang, S. Wen, and L. Xie   (2025) 
+ 
+  OpenVE-3m: a large-scale high-quality dataset for instruction-guided video editing .
+ 
+  arXiv preprint arXiv:2512.07826 .
+ 
+ Cited by:   §5.3  ,
+  §5.3  .
+  
+  [74] 
+  Y. Chen, J. Zhang, T. Hu, Y. Zeng, Z. Xue, Q. He, C. Wang, Y. Liu, X. Hu, and S. Yan   (2025) 
+ 
+  Ivebench: modern benchmark suite for instruction-guided video editing assessment .
+ 
+  arXiv preprint arXiv:2510.11647 .
+ 
+ Cited by:   §5.3  ,
+  §5.3  .
+  
+  [75] 
+  Google Cloud   (2025) 
+ 
+  Nano banana pro: state-of-the-art image generation for enterprise .
+ 
+ Note:  Google Cloud Blog 
+ 
+ External Links:   Link  
+ 
+ Cited by:   §5.3  .
+  
+  [76] 
+  I. Skorokhodov, S. Tulyakov, and M. Elhoseiny   (2022) 
+ 
+  Stylegan-v: a continuous video generator with the price, image quality and perks of stylegan2 .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 3626–3636 .
+ 
+ Cited by:   §5.4  .
+  
+  [77] 
+  R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang   (2018) 
+ 
+  The unreasonable effectiveness of deep features as a perceptual metric .
+ 
+ In  Proceedings of the IEEE conference on computer vision and pattern recognition ,
+ 
+  pp. 586–595 .
+ 
+ Cited by:   §5.4  .
+  
+  [78] 
+  B. Jähne   (2005) 
+ 
+  Digital image processing .
+ 
+   Springer .
+ 
+ Cited by:   §5.4  .
+  
+  [79] 
+  Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli   (2004) 
+ 
+  Image quality assessment: from error visibility to structural similarity .
+ 
+  IEEE transactions on image processing   13  ( 4 ),  pp. 600–612 .
+ 
+ Cited by:   §5.4  .
+  
+ 
+ 
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

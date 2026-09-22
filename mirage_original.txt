@@ -1,0 +1,1609 @@
+  
+ 
+ 
+ Mirage: One-Step Video Diffusion for Photorealistic and Coherent Asset Editing in Driving Scenes 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+    1  Introduction   
+    2  Related Work  
+ 
+    2.1  One-Step Diffusion Model   
+    2.2  Video Editing in Autonomous Driving   
+    2.3  Asset Insertion and Relighting   
+  
+    3  Method  
+ 
+    3.1  Preliminary   
+    3.2  Overall Framework  
+ 
+    3.2.1  VAE Adaption Stage  
+ 
+   Motivation.   
+   Temporally Agnostic Latent Injection.   
+   Training Objective.   
+  
+    3.2.2  Harmonization Training Stage  
+ 
+   Training Objective.   
+  
+  
+    3.3  Data Processing Pipeline  
+ 
+   Motivation.   
+   Two-Stage Alignment Strategy.   
+   Data Pair Curation.   
+  
+  
+    4  Experiments  
+ 
+    4.1  Experimental Settings  
+ 
+   Implementation Details.   
+   Evaluation Metrics.   
+  
+    4.2  Experimental Results  
+ 
+   Quantitative Comparison.   
+   Qualitative Comparison.   
+   Vehicle Identity Preservation.   
+  
+    4.3  Ablation Study  
+ 
+   VAE Adaptation Strategies.   
+   MirageDrive Ablation.   
+   Ablation on Training Configurations.   
+  
+  
+    5  Conclusion   
+   References   
+    6  Motivation of Our Work   
+    7  Understanding the Temporal Behavior of the 3D VAE   
+    8  More Details about MirageDrive  
+ 
+    8.1  Distribution Mismatch Between Scene Gaussians and Asset Gaussians   
+    8.2  Scene Reconstruction and Object Selection   
+    8.3  Asset Generation and Alignment   
+    8.4  Background Rendering and Data Pair Construction   
+    8.5  Usage at Training and Inference   
+  
+    9  Video Demo   
+  
+ 
+ 
+ 
+   
+    License: CC BY 4.0
+   
+   
+arXiv:2512.24227v1 [cs.CV] 30 Dec 2025 
+  
+ 
+ 
+Mirage: One-Step Video Diffusion for Photorealistic and Coherent 
+ Asset Editing in Driving Scenes 
+ 
+ 
+ Shuyun Wang
+   
+  Affiliation:  The University of Queensland
+ 
+  Affiliation:  Xiaomi EV
+ 
+  Email:   shuyun.wang@uq.edu.au 
+    
+     
+ Haiyang Sun
+   
+  Affiliation:  Xiaomi EV
+    
+     
+ Bing Wang
+   
+  Affiliation:  Xiaomi EV
+    
+     
+ Hangjun Ye
+   
+  Affiliation:  Xiaomi EV
+    
+     
+ Xin Yu
+   
+  Affiliation:  The University of Queensland
+     
+
+  Abstract 
+    
+ Vision-centric autonomous driving systems rely on diverse and scalable training data to achieve robust performance.
+While video object editing offers a promising path for data augmentation, existing methods often struggle to maintain both high visual fidelity and temporal coherence.
+In this work, we propose  Mirage , a one-step video diffusion model for photorealistic and coherent asset editing in driving scenes.
+Mirage builds upon a text-to-video diffusion prior to ensure temporal consistency across frames.
+However, 3D causal variational autoencoders often suffer from degraded spatial fidelity due to compression, and directly passing 3D encoder features to decoder layers breaks temporal causality.
+To address this, we inject temporally agnostic latents from a pretrained 2D encoder into the 3D decoder to restore detail while preserving causal structures.
+Furthermore, because scene objects and inserted assets are optimized under different objectives, their Gaussians exhibit a distribution mismatch that leads to pose misalignment.
+To mitigate this, we introduce a two-stage data alignment strategy combining coarse 3D alignment and fine 2D refinement, thereby improving alignment and providing cleaner supervision.
+Extensive experiments demonstrate that Mirage achieves high realism and temporal consistency across diverse editing scenarios.
+Beyond asset editing, Mirage can also generalize to other video-to-video translation tasks, serving as a reliable baseline for future research. Our code is available at  https://github.com/wm-research/mirage . 
+  
+ 
+  
+ 
+    
+ 
+ 
+    
+  
+ 
+    
+ 
+   Figure 1 :   
+ Photorealistic results of Mirage.  GPT-4V visual question answering reveals three key properties: (i) perceptual realism, with no detected inconsistencies; (ii) behavioral out-of-distribution effects, which lead to incorrect reasoning; and (iii) temporal consistency, with full video results provided in the supplementary material. Right: Comparison of naïve insertion, Mirage results, and ground truth.
+  
+ 
+  
+   2    2  footnotetext:  Project leader;  * Corresponding author
+   
+ 
+  1  Introduction 
+
+ 
+ Vision-centric autonomous driving (AD) systems rely on large-scale and diverse training data to build reliable perception models.
+Public benchmarks such as nuScenes  [ 1 ]  and Waymo Open Dataset  [ 23 ]  have played an important role by providing extensive real-world driving videos.
+However, these datasets show a long-tail distribution.
+Common driving scenarios appear frequently.
+Safety-critical corner cases, such as unexpected insertions and rare maneuvers, are highly underrepresented.
+This imbalance leads to reduced generalization in challenging environments and weakens performance in safety-critical situations.
+Collecting such corner case data is difficult, expensive, and risky, but it is still necessary for developing robust autonomous driving systems. 
+ 
+ 
+ To augment rare driving scenarios, generative methods  [ 6 ,  30 ,  39 ]  have been proposed to synthesize data from scene layouts like BEV maps or text prompts.
+These scene-level approaches lack fine-grained control over object pose and appearance.
+This limitation reduces their effectiveness in generating precise corner cases.
+Object-centric video editing  [ 10 ,  9 ,  11 ,  22 ]  enables better control through 2D inpainting guided by 3D boxes and reference images.
+Since it operates only in the 2D image domain without reasoning about 3D structures, it struggles to maintain accurate geometry and multi-view consistency.
+Recently, R3D2  [ 16 ]  introduced a more promising approach by inserting 3D assets into reconstructed scenes and harmonizing the outputs using image diffusion.
+This hybrid pipeline offers more accurate pose control than inpainting-based methods.
+However, mismatches between 3D assets and scene Gaussians can still lead to geometric misalignments.
+In addition, performing harmonization independently on each frame often results in temporal inconsistency. 
+ 
+ 
+ To address these issues, we propose  Mirage , a one-step video diffusion model that integrates external 3D assets into driving scenes with photorealistic and coherent rendering effects.
+Built upon a powerful pretrained text-to-video foundation, Mirage leverages its inherent temporal priors to ensure cross-frame consistency without auxiliary temporal modules.
+However, adapting one-step image diffusion to the video domain is non-trivial.
+Latent compression in variational autoencoders (VAEs) often leads to the loss of high-frequency details.
+Previous 2D VAE-based methods  [ 31 ,  18 ,  16 ]  pass intermediate encoder features to the decoder to preserve spatial details.
+However, directly passing 3D encoder features introduces temporal leakage due to the asymmetric nature of encoder and decoder activations across time.
+To resolve this, we introduce a  temporally agnostic latent injection  strategy.
+We observe that decoder latents at later upsampling stages exhibit a one-to-one correspondence with output frames.
+Building on this insight, we inject temporally agnostic, high-frequency latents extracted from a pretrained 2D encoder into corresponding upsampling layers.
+This enables the injection of high-frequency details without interfering with the causal temporal structure of the 3D decoder.
+Since these injected 2D latents reside in a different representational space, we introduce a cross-modal fusion block prior to the upsampling block.
+Additionally, we train a dedicated 3D Low-Rank adaptation (LoRA) on the 3D decoder to better align the injected 2D latents with the temporal latent space of the 3D decoder.
+This design preserves temporal isolation while enhancing spatial fidelity, achieving both photorealism and frame-to-frame consistency in the output videos. 
+ 
+ 
+ Moreover, we observe that in previous asset reinsertion pipelines, the distribution gap between scene Gaussians and 3D assets often leads to inaccurate pose alignment and produces noisy supervisory signals.
+To bridge this gap, we introduce a two-stage alignment strategy.
+We first align the asset’s Gaussian ellipsoids to the scene object by optimizing its center, orientation, and scale.
+Subsequently, we refine the alignment in 2D by calibrating the rendered asset’s bounding box against the ground-truth bounding box, ensuring tighter image-space consistency.
+This procedure significantly improves alignment accuracy and yields cleaner, more stable supervision.
+Following this pipeline, we construct MirageDrive, a dataset of 3,550 video clips (2,840 training clips with 710 validation clips) with precisely aligned asset reinsertions.
+Equipped with our diffusion model and the MirageDrive dataset, our Mirage achieves impressive performance. 
+ 
+ 
+ Extensive experiments demonstrate that Mirage achieves superior visual realism and temporal coherence, outperforming existing methods across both qualitative assessments and quantitative metrics.
+Even under challenging editing conditions, such as repositioning a vehicle with a 180-degree direction reversal, Mirage produces outputs that are visually indistinguishable from real videos, as shown in Fig.   1  .
+Moreover, our framework also shows strong potential for general video-to-video translation tasks such as relighting or restoration. 
+ 
+ 
+ In summary, our key contributions are as follows: 
+ 
+  •  
+ 
+ We present Mirage, a generalizable one-step video diffusion model that generates realistic and temporally coherent rendering effects for 3D asset insertion. 
+  
+  •  
+ 
+ We introduce a temporally-agnostic latent injection strategy that enhances spatial fidelity while strictly preserving temporal causality in causal 3D VAEs. 
+  
+  •  
+ 
+ We develop a two-stage alignment strategy and create MirageDrive, a high-quality dataset of 3,550 clips that provides precise alignments and clean supervisory signals. 
+  
+ 
+ 
+ 
+ 
+  2  Related Work 
+
+ 
+  2.1  One-Step Diffusion Model 
+
+ 
+ A prevalent strategy for accelerating diffusion models is to reduce the number of sampling steps. Common technical routes include rectified flow  [ 14 ,  15 ] , score distillation  [ 40 ,  28 ,  34 ] , and adversarial training  [ 12 ,  38 ] . Building on these advances, Image-to-Image Turbo  [ 18 ]  demonstrates how adversarial fine-tuning enables photorealistic image translation in a single step. In 3D scene rendering, DIFIX3D+  [ 31 ]  employs variational score distillation to enhance novel view synthesis quality while maintaining 3D consistency. Extending such acceleration techniques to the video domain, however, introduces the critical challenge of maintaining temporal coherence. The recently proposed DOVE  [ 3 ]  addresses this by fine-tuning a pre-trained text-to-video model for one-step video super-resolution. Although it achieves improved coherence, its reliance on a 3D VAE for latent representation introduces noticeable compression artifacts, ultimately constraining the visual quality of the output. 
+ 
+ 
+ 
+  2.2  Video Editing in Autonomous Driving 
+
+ 
+ The evolution of video editing, particularly with diffusion models  [ 13 ,  2 ,  26 ] , has significantly advanced object-level manipulations. However, such methods often lack 3D spatial reasoning, limiting their direct applicability in autonomous driving scenarios. To address this gap, several driving-specific editing approaches have been developed. Methods like GenMM  [ 22 ]  adopt an inpainting framework for object insertion, while DriveEditor  [ 11 ]  introduces a unified system supporting multiple editing tasks. Similarly,     G  2   G^{2}   Editor leverages a 3D Gaussian representation as a dense prior to achieve more geometrically precise editing. Despite these contributions, these methods still face challenges in precise pose control and visual realism. In a parallel line of research, 3D Gaussian Splatting (3DGS)-based methods such as OmniRe  [ 4 ]  and SplatAD  [ 7 ]  have emerged, enabling object-level editing through Gaussian node manipulation. While these techniques provide more accurate 3D spatial control, they often struggle with inconsistent lighting conditions and output realism. 
+ 
+ 
+ 
+  2.3  Asset Insertion and Relighting 
+
+ 
+ Seamless asset insertion and relighting constitute a fundamental challenge in video editing.
+Traditional Physically Based Rendering (PBR) methods  [ 19 ]  provide principled solutions but require accurate material properties and detailed geometry.
+Diffusion-based methods like DiPIR  [ 10 ]  combine generative models with inverse rendering, yet still necessitate asset material knowledge.
+Recent generative relighting approaches have explored more flexible paradigms.
+IC-Light  [ 36 ]  adapts 2D object appearance to new scenes but often neglects reciprocal scene modifications like shadow casting.
+Similarly, DiffHarmony++  [ 41 ]  addresses image harmonization through latent diffusion, yet primarily focuses on adapting foreground appearance without explicit consideration for bidirectional object-scene lighting interaction.
+In the context of autonomous driving, R3D2  [ 16 ]  employs a one-step diffusion model to generate realistic rendering effects for asset insertion. However, its single-image processing paradigm lacks explicit temporal modeling, limiting its ability to maintain consistency across video sequences. 
+ 
+ 
+ 
+ 
+  3  Method 
+
+  
+   Figure 2 :   Overview of the framework and training flow of Mirage.  Given a naïve insertion video, Mirage encodes the input using both a 2D VAE encoder and a causal 3D VAE encoder. The 2D intermediate latents are fused with 3D latents through cross-modal fusion blocks. A diffusion transformer, equipped with 2D LoRA adapters, refines the NI latent toward the ground-truth (GT) latent. The 3D VAE decoder then reconstructs the edited video using two sets of LoRA modules: Reconstruction-LoRA for VAE adaptation and Harmonization-LoRA for harmonization fine-tuning.   
+ 
+ 
+ We decouple the task of photorealistic and coherent asset editing into two subtasks: (1) accurate scene–asset interaction, and (2) harmonization with the surrounding scene.
+Precise editing is ensured by our two-stage alignment strategy, which we use to curate a high-quality dataset with clean and consistently aligned 3D insertions for reliable one-step diffusion supervision.
+To further enhance visual realism, we adopt a two-stage training strategy—consisting of a VAE adaptation stage and a harmonization training stage that enables photorealistic rendering of edited outputs. 
+ 
+ 
+  3.1  Preliminary 
+
+ 
+ Diffusion models are a class of generative models that synthesize data by reversing a forward noising process.
+In our setting, generation operates in latent space, where a clean latent variable     z  0   z_{0}    is gradually corrupted into a noisy version     z  t   z_{t}    through a fixed Gaussian noise schedule.
+Following standard practice, we sample     z  t   z_{t}    using the closed-form expression:      z  t   =       α  ¯   t    ​   z  0    +     1  −    α  ¯   t     ​  ϵ     z_{t}=\sqrt{\bar{\alpha}_{t}}z_{0}+\sqrt{1-\bar{\alpha}_{t}}\epsilon   ,
+where     ϵ  ∼   𝒩  ⁡   (  0  ,  I  )     \epsilon\sim\mathcal{N}(0,I)    is standard Gaussian noise, and      α  ¯   t   \bar{\alpha}_{t}    denotes the cumulative signal preservation factor at diffusion timestep    t  t   .
+The reverse process is learned by a neural network     ϵ  θ   \epsilon_{\theta}   , which is trained to predict the added noise    ϵ  \epsilon    given the optional conditioning inputs    c  c    (e.g., text, masks, or images). The model is optimized using the noise prediction loss: 
+ 
+
+  
+  
+      ℒ  =    𝔼    z  0   ,  t  ,  ϵ    ​   [    ‖     ϵ  θ   ​   (   z  t   ,  t  ,  c  )    −  ϵ   ‖   2  2   ]     .   \mathcal{L}=\mathbb{E}_{z_{0},t,\epsilon}[\|\ \epsilon_{\theta}(z_{t},t,c)-\epsilon\|^{2}_{2}].    
+  
+  (1)    
+ 
+ 
+ 
+ While traditional diffusion models generate outputs through multiple denoising steps, recent approaches have explored one-step diffusion strategies for faster inference.
+These methods directly predict the clean latent     z  0   z_{0}    from a single noisy input     z  t   z_{t}    at a fixed timestep    t  t   , often by modifying the network architecture or adjusting the training scheme to strengthen the denoising prior. 
+ 
+ 
+ 
+  3.2  Overall Framework 
+
+ 
+ We construct our one-step video diffusion model,  Mirage , based on a powerful pretrained text-to-video model, CogVideoX  [ 33 ] .
+CogVideoX employs a causal 3D VAE to encode videos into a spatiotemporal latent space, and a Transformer denoiser     ϵ  θ   \epsilon_{\theta}    to perform latent-space denoising.
+Thanks to its strong temporal priors, Mirage ensures temporal coherence without requiring auxiliary motion-specific modules such as temporal attention or optical flow. 
+ 
+ 
+ The overall architecture of Mirage is illustrated in Fig.   2  .
+At inference time, given a naively insertion video     x   N  ​  I    x_{NI}   , we first encode it into spatiotemporal latent codes     z   N  ​  I    z_{NI}    using the 3D VAE encoder.
+In parallel, we also process     x   N  ​  I    x_{NI}    through a pretrained 2D VAE encoder and cache intermediate latents from selected layers for later injection.
+Following prior works  [ 16 ,  31 ] , we treat     z   N  ​  I    z_{NI}    as the noised latent     z  t   z_{t}    at a fixed timestep    t  t    and perform one-step denoising using     ϵ  θ   \epsilon_{\theta}   , producing the denoised latent     z   D  ​  R    z_{DR}   .
+Since we only execute a single denoising step, we set a smaller timestep     t  =  199   t{=}199    to balance denoising strength and structural preservation.
+Finally,     z   D  ​  R    z_{DR}    is decoded by the 3D VAE decoder to generate the edited output video     x   D  ​  R    x_{DR}   .
+During decoding, we inject the cached high-frequency latents from the 2D VAE into selected layers of the 3D decoder using our temporally agnostic latent injection strategy, which enhances spatial fidelity while maintaining temporal consistency. 
+ 
+ 
+  3.2.1  VAE Adaption Stage 
+
+ 
+ Motivation. 
+
+ 
+ A core limitation of latent diffusion models lies in spatial detail loss due to heavy compression introduced by the VAEs. The
+2D encoder typically downsamples inputs by a factor of     8  ×   8\times   , resulting in loss of fine details.
+This issue becomes even more severe in 3D VAEs, where causal 3D VAEs  [ 33 ,  35 ,  25 ]  often additionally apply     4  ×   4\times    temporal downsampling to improve efficiency.
+While 2D models mitigate this degradation by introducing skip connections between encoder and decoder layers  [ 31 ,  18 ] , naively applying the same strategy to 3D VAEs introduces severe temporal artifacts.
+Due to the causal nature of 3D encoders     E   3  ​  D    E^{3D}    and decoders     D   3  ​  D    D^{3D}   , skip connections disrupt the temporal distribution of features, resulting in ghosting and flickering across frames. 
+ 
+ 
+ 
+ Temporally Agnostic Latent Injection. 
+
+ 
+ To overcome this limitation, we introduce a  temporally agnostic latent injection  strategy that enhances spatial fidelity while preserving temporal causality.
+Our key observation is that in the last two upsampling blocks of     D   3  ​  D    D^{3D}   , each latent slice corresponds one-to-one with the output frames.
+This structure allows safe injection of static features without disrupting causal temporal modeling. 
+ 
+ 
+ We first encode the naively inserted video     x   N  ​  I    x_{NI}    using a pretrained 2D VAE encoder     E   2  ​  D    E^{2D}    to extract high-frequency intermediate latents     z   m  ​  i  ​  d    2  ​  D    {z}^{2D}_{{mid}}   .
+These latents are reshaped from the batch dimension to the temporal dimension and injected into     D   3  ​  D    D^{3D}    via Cross-Modal Fusion Blocks (CMFBs).
+Each CMFB fuses the 2D and 3D intermediate latents through concatenation and merging operations, enriching the decoder representation with detailed spatial cues while maintaining temporal isolation. 
+ 
+ 
+ However, since     z   m  ​  i  ​  d    2  ​  D    {z}^{2D}_{{mid}}    and     z   m  ​  i  ​  d    3  ​  D    {z}^{3D}_{{mid}}    lie in different representational spaces, we introduce trainable 3D causal LoRA adapters (denoted as Reconstruction-LoRA) into     D   3  ​  D    D^{3D}   .
+These lightweight adapters modulate the convolutional weights, enabling the decoder to interpret injected cross-modal features effectively with minimal finetuning. 
+ 
+ 
+ 
+ Training Objective. 
+
+ 
+ During this stage, we decouple training from the diffusion process and directly supervise the decoder to reconstruct a high-quality output video.
+Although the latent input ideally should be sampled from the diffusion process, we empirically find that using the encoded latent of the ground-truth video     x   G  ​  T    x_{GT}    provides a close approximation when the denoiser is well-trained.
+The overall training process is formulated as: 
+ 
+
+  
+  
+       x   R  ​  O    =    D   3  ​  D    ​   [     E   3  ​  D    ​   (   x   G  ​  T    )    ,   z   m  ​  i  ​  d    2  ​  D     ]     ,   {x}_{RO}=D^{3D}[E^{3D}(x_{GT}),z^{2D}_{mid}],    
+  
+  (2)    
+ 
+ where     z   m  ​  i  ​  d    2  ​  D    z^{2D}_{mid}    denotes the injected static latents extracted from      E   2  ​  D    ​   (   x   N  ​  I    )    E^{2D}(x_{NI})   .
+As illustrated in Fig.   2  , we minimize the reconstruction error between the output and the GT using a combination of mean squared error (MSE) loss and perceptual loss (    ℒ   l  ​  p  ​  i  ​  p  ​  s    \mathcal{L}_{lpips}     [ 37 ] ): 
+ 
+
+  
+  
+       ℒ   v  ​  a  ​  e    =     ℒ   m  ​  s  ​  e    ​   (   x   R  ​  O    ,   x   G  ​  T    )    +    λ  1   ​   ℒ   l  ​  p  ​  i  ​  p  ​  s    ​   (   x   R  ​  O    ,   x   G  ​  T    )      ,   \mathcal{L}_{vae}=\mathcal{L}_{mse}(x_{RO},x_{GT})+\lambda_{1}\mathcal{L}_{lpips}(x_{RO},x_{GT}),    
+  
+  (3)    
+ 
+ where     λ  1   \lambda_{1}    is a scalar weight for the perceptual loss. This training strategy substantially enhances reconstruction fidelity and texture realism in the final outputs. 
+ 
+  
+   Figure 3 :   Qualitative comparison of asset insertion results . Naïve insertion produces visible artifacts and inconsistent shading, while R3D2 partially improves realism but still shows lighting and geometry mismatches. Mirage generates photorealistic, temporally consistent vehicles that closely match ground-truth appearance.
+   
+ 
+  
+   Figure 4 :   Vehicle identity preservation comparison.  We retrain R3D2 on the MirageDrive dataset to ensure consistent geometry before evaluating temporal behavior. Even under this controlled setting, R3D2 shows clear appearance drift across distant frames. In contrast, Mirage preserves stable shape, reflectance, and vehicle identity, remaining closely aligned with the ground truth.
+   
+ 
+ 
+ 
+ 
+  3.2.2  Harmonization Training Stage 
+
+ 
+ After the VAE adaptation stage, Mirage effectively reconstructs videos from naively inserted scenes with improved spatial fidelity. However, subtle rendering cues such as shadows, specular reflections, and material consistency are still not fully recovered. These effects are crucial for photorealistic harmonization in image space. 
+ 
+ 
+ To further enhance appearance quality and realism, we fine-tune Mirage in pixel space while freezing all previously introduced parameters, including the cross-modal fusion blocks and the Reconstruction-LoRA.
+We introduce two dedicated modules for detail refinement.
+First, we inject trainable 2D LoRA layers into the pretrained Transformer denoiser     ϵ  θ   \epsilon_{\theta}   , enabling the model to adapt its attention blocks for harmonization.
+Second, we incorporate a causal 3D LoRA (Harmonization-LoRA) into the 3D VAE decoder. These layers structurally extend 2D LoRA by replacing 2D convolutions with causal 3D convolutions, ensuring each output frame depends only on past context and preserving the temporal causal structure. 
+ 
+ 
+ Training Objective. 
+
+ 
+ The model is trained to enhance visual realism in the diffusion render     x   D  ​  R    x_{DR}    given a naïvely inserted input     x   N  ​  I    x_{NI}   .
+In this stage, we use LPIPS loss to preserve perceptual structure and a Gram-matrix loss  [ 20 ]  to match texture statistics: 
+ 
+
+  
+  
+       ℒ    h  ​  a  ​  r  ​  m  ​  o  ​  n   .    =     ℒ   l  ​  p  ​  i  ​  p  ​  s    ​   (   x   D  ​  R    ,   x   G  ​  T    )    +    λ  2   ​   ℒ   g  ​  r  ​  a  ​  m    ​   (   x   D  ​  R    ,   x   G  ​  T    )      ,   \mathcal{L}_{harmon.}=\mathcal{L}_{lpips}(x_{DR},x_{GT})+\lambda_{2}\mathcal{L}_{gram}(x_{DR},x_{GT}),    
+  
+  (4)    
+ 
+ where     λ  2   \lambda_{2}    is a scalar weight for the Gram loss. The     ℒ   l  ​  p  ​  i  ​  p  ​  s    \mathcal{L}_{lpips}    enforces similarity in deep feature space, while     ℒ   g  ​  r  ​  a  ​  m    \mathcal{L}_{gram}    captures second-order texture statistics by computing Gram matrices over VGG-16 feature activations. 
+ 
+ 
+ 
+ 
+ 
+  3.3  Data Processing Pipeline 
+
+ 
+ To support the supervised training of Mirage, we construct a high-quality dataset of driving videos with precisely aligned 3D asset reinsertions. A key challenge in building such a dataset lies in reducing supervision noise caused by pose mismatches between inserted assets and scene objects. 
+ 
+ 
+ Motivation. 
+
+ 
+ In contrast to prior work such as R3D3  [ 16 ] , which directly replaces object Gaussians with generated assets, our setting reveals a notable distribution mismatch: the 3D Gaussians used in scene reconstruction and those representing inserted assets are optimized under different objectives and originate from distinct data distributions.
+As a result, naïvely aligning them based solely on position often leads to misalignment, which introduces noisy residuals into the training supervision. Since Mirage decouples geometry editing from appearance harmonization, such misalignment severely hinders the latter’s ability to learn meaningful render effects and produces inconsistent outputs. 
+ 
+ 
+ 
+ Two-Stage Alignment Strategy. 
+
+ 
+ To address the misalignment caused by Gaussian distribution mismatch, we introduce a two-stage alignment strategy that ensures high-quality scene–asset interaction through both 3D and 2D alignment. 
+ 
+ 
+ We begin with a coarse 3D alignment step, where the inserted asset’s Gaussian set is matched to that of the original scene object. This process estimates a rigid transformation (translation, rotation, and scaling) that places the asset approximately in the same world-space location as the original object. After rendering the video with the coarsely aligned asset, we compute 2D bounding boxes of the asset across all frames and compare them to the original object’s annotated boxes. We then estimate a global affine transformation (displacement and scaling) by averaging the bounding-box differences over the entire video. This transformation is uniformly applied to all frames to ensure tight spatial alignment in image space, correcting residual misalignment from 3D matching and improving frame-level consistency. 
+ 
+ 
+ 
+ Data Pair Curation. 
+
+ 
+ Given this two-stage alignment, we generate training pairs     (   x   N  ​  I    ,   x   G  ​  T    )   (x_{NI},x_{GT})   , where     x   N  ​  I    x_{NI}    is the video rendered from the scene with aligned 3D asset insertions and     x   G  ​  T    x_{GT}    is the original driving video. The former captures correct object placement but lacks realistic visual effects (e.g., lighting, shadows), while the latter provides the photorealistic reference. These pairs enable the harmonization training stage of Mirage to focus on learning meaningful render effects without being confounded by pose misalignment. 
+ 
+ 
+ We apply the above data curation pipeline to the Waymo Open Dataset  [ 23 ] . In total, we construct a dataset of 3,550 training video clips with carefully aligned 3D insertions across diverse object categories, viewpoints, and lighting conditions. This forms the foundation for both VAE adaptation and harmonization training stages. 
+ 
+ 
+   Table 1 :   Quantitative comparison on our evaluation set.    ↑  \uparrow    indicates higher is better;    ↓  \downarrow    indicates lower is better.  
+ 
+ 
+ 
+ Method 
+ PSNR   ↑  \uparrow    
+ SSIM   ↑  \uparrow    
+ LPIPS   ↓  \downarrow    
+ DISTS   ↓  \downarrow    
+      E   w  ​  a  ​  r  ​  p   ∗   ↓     \text{E}_{warp}^{*}\downarrow    
+ vFID   ↓  \downarrow    
+ FPS   ↑  \uparrow     
+ 
+  Actor-centric crops   
+ 
+ Naive Ins. 
+ 14.93 
+ 0.307 
+ 0.209 
+ 0.236 
+  0.801  
+ 0.506 
+ –  
+ 
+ R3D2 
+ 16.18 
+ 0.356 
+ 0.188 
+ 0.207 
+ 1.119 
+  0.442  
+ –  
+ 
+ Mirage 
+  17.43  
+  0.390  
+  0.179  
+  0.183  
+ 0.874 
+ 0.448 
+ –  
+ 
+  Full-resolution   
+ 
+ Naive Ins. 
+ 27.56 
+  0.921  
+ 0.112 
+ 0.091 
+  7.423  
+ 0.244 
+ –  
+ 
+ R3D2 
+ 27.61 
+ 0.904 
+ 0.072 
+ 0.055 
+ 11.320 
+ 0.206 
+ 4.07  
+ 
+ Mirage 
+  28.60  
+ 0.914 
+  0.069  
+  0.054  
+ 9.955 
+  0.178  
+  4.54   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  4  Experiments 
+
+ 
+  4.1  Experimental Settings 
+
+ 
+ Implementation Details. 
+
+ 
+ Our Mirage framework is built upon the text-to-video model CogVideoX1.5  [ 33 ] .
+To reduce inference overhead, we use a fixed prompt, “remove degradation,” and pre-encode its text embedding.
+Both training stages are trained on 8 NVIDIA H200 GPUs with a total batch size of 8, using the AdamW optimizer  [ 17 ]  with      β  1   =  0.9   \beta_{1}=0.9    and      β  2   =  0.999   \beta_{2}=0.999   .
+The training data consist of 9-frame clips at a resolution of     512  ×  768   512\times 768   .
+Each stage runs for 10,000 iterations with a learning rate of     1  ×   10   −  4     1\times 10^{-4}   .
+The loss weights     λ  1   \lambda_{1}    and     λ  2   \lambda_{2}    are both set to 0.1.
+In the harmonization training stage, we activate the Gram loss after 2,000 steps and apply a constant warm-up schedule for the first 500 steps.
+To construct our MirageDrive dataset, we employ Trellis  [ 32 ]  as the 3D asset generation framework.
+Each sequence is reconstructed into a virtual environment using the neural reconstruction method SplatAD  [ 7 ] . For the 2D latent space, we adopt AutoEncoderKL as our 2D VAE. 
+ 
+ 
+ 
+ Evaluation Metrics. 
+
+ 
+ We adopt multiple evaluation metrics to assess model performance. For spatial fidelity, we report PSNR and SSIM  [ 29 ] .
+For perceptual quality, we use LPIPS  [ 37 ]  and DISTS  [ 5 ] .
+To assess temporal consistency, we compute the average flow warping error     E   w  ​  a  ​  r  ​  p   ∗   E^{*}_{warp}     [ 8 ,  24 ] , where each frame is warped using optical flow from ground truth.
+To evaluate overall realism, we compute video Fréchet Inception Distance (vFID)  [ 27 ]  between generated videos and their ground-truth counterparts.
+These metrics jointly assess reconstruction accuracy, perceptual quality, and temporal stability. 
+ 
+ 
+ 
+ 
+  4.2  Experimental Results 
+
+ 
+ Quantitative Comparison. 
+
+ 
+ In Tab.   1  , we report quantitative results on our validation set, covering both actor-centric crops and full-resolution images. The actor-centric setting provides a focused assessment of local editing fidelity near the inserted asset, while the full-resolution evaluation reflects global consistency and overall scene realism. As shown, naïve insertion performs poorly especially under actor-centric evaluation, indicating strong inconsistencies between the inserted asset and the surrounding context. R3D2 improves over naïve insertion in most metrics. Mirage further improves the results across nearly all metrics. On actor-centric crops, Mirage achieves lower LPIPS and DISTS compared to R3D2, demonstrating better alignment with human perceptual preferences. The reduced     E   w  ​  a  ​  r  ​  p   ∗   \text{E}_{warp}^{*}    and vFID suggests that Mirage generates more stable temporal transitions around edited regions. On full-resolution images, Mirage consistently surpasses both baselines in all metrics, showing that it preserves global scene structure while producing visually coherent and photorealistic edits. Moreover, Mirage achieves slightly higher FPS than R3D2, indicating that the proposed architecture improves realism without introducing additional computational overhead. 
+ 
+ 
+ 
+ Qualitative Comparison. 
+
+ 
+ Fig.   3   presents a qualitative comparison between naïve insertion, R3D2, and our Mirage across challenging driving scenes. Naïve insertion often produces clear visual discontinuities between the inserted vehicle and the surrounding environment, including missing shadows, inconsistent illumination, and noticeable boundary artifacts. R3D2 reduces some of these inconsistencies but still exhibits shading mismatches, blurred reflections, and incomplete interaction with scene geometry. 
+ 
+ 
+ In contrast, Mirage generates photorealistic results. Our method accurately infers scene lighting and produces consistent shadows beneath the inserted vehicles. In addition, the inserted assets blend naturally into the road structure and scene layout, yielding results that closely match real imagery. These examples highlight Mirage’s ability to maintain both high spatial fidelity and strong scene-level realism. 
+ 
+ 
+   Table 2 :   Ablation study on VAE adaptation strategies. (“Skip Con.” denotes skip connections; “2D Inj.” denotes injecting 2D encoder latents.)  
+  
+ 
+ 
+ 
+ Method 
+ PSNR   ↑  \uparrow    
+ LPIPS   ↓  \downarrow    
+ vFID   ↓  \downarrow     
+ 
+ 
+ 
+ 2D VAE 
+ 30.30 
+ 0.040 
+ 0.112  
+ 
+ 2D VAE (w. Skip Con.) 
+ 32.70 
+ 0.043 
+ 0.106  
+ 
+ 3D VAE 
+ 33.98 
+ 0.041 
+ 0.080  
+ 
+ 3D VAE (w. 2D Inj.) 
+  35.07  
+  0.039  
+  0.079   
+ 
+ 
+  
+ 
+ 
+   Table 3 :   Comparison of R3D2 with and without MirageDrive.  
+  
+ 
+ 
+ 
+ Method 
+ PSNR   ↑  \uparrow    
+ LPIPS   ↓  \downarrow    
+ vFID   ↓  \downarrow     
+ 
+ 
+ 
+ R3D2 
+ 27.61 
+ 0.072 
+ 0.206  
+ 
+ R3D2 (w. MirageDrive) 
+  28.31  
+ 0.072 
+  0.193   
+ 
+ 
+  
+ 
+ 
+   Table 4 :   Ablation study on different training configurations.  
+  
+ 
+ 
+ 
+ Configuration 
+  PSNR   ↑  \uparrow     
+  LPIPS   ↓  \downarrow     
+  vFID   ↓  \downarrow      
+ 
+ Stage H 
+ Stage A 
+ 3D Skip  
+ 
+ 
+ 
+    ✓  \checkmark    
+    ×  \times    
+    ×  \times    
+ 27.89 
+ 0.083 
+ 0.206  
+ 
+    ✓  \checkmark    
+    ×  \times    
+    ✓  \checkmark    
+ 27.50 
+ 0.099 
+ 0.249  
+ 
+    ✓  \checkmark    
+    ✓  \checkmark    
+    ×  \times    
+  28.60  
+  0.069  
+  0.178   
+ 
+ 
+  
+ 
+ 
+ 
+ Vehicle Identity Preservation. 
+
+ 
+ By tracking the vehicle identity across frames, we can reliably assess temporal consistency.
+Fig.   4   presents a long-range qualitative comparison between R3D2, our method, and the ground truth on distant frames ( e.g .  , Frame 146 and Frame 185). To eliminate domain disparities, R3D2 is retrained on our MirageDrive dataset. 
+ 
+ 
+ R3D2 often exhibits appearance drift: the inserted vehicle gradually loses consistent shape cues, and its surface reflectance varies noticeably over time. These inconsistencies lead to an unstable vehicle identity across frames. In contrast, Mirage maintains a stable and coherent vehicle identity throughout the sequence. As highlighted in the zoomed-in regions, our method consistently preserves the car’s fine-grained appearance despite long temporal gaps. The resulting appearance remains closely aligned with the ground-truth vehicle, demonstrating the strong long-range temporal consistency achieved by our design. 
+ 
+ 
+ 
+ 
+  4.3  Ablation Study 
+
+ 
+ VAE Adaptation Strategies. 
+
+ 
+ In Tab.   2  , we analyze the impact of different VAE adaptation strategies on spatial fidelity and perceptual realism. Using a 2D VAE yields the lowest performance across all metrics. Switching to a 3D VAE brings substantial improvements in PSNR, SSIM, and vFID, demonstrating that modeling video latents in a spatiotemporal space is essential for coherent asset editing. 
+ 
+ 
+ We further evaluate two hybrid designs. Adding skip connections to the 2D VAE increases PSNR and SSIM, suggesting that direct feature passing is helpful for recovering spatial fidelity. In contrast, injecting 2D encoder features into the 3D decoder (“3D VAE w. 2D Inj.”) yields the best results across all metrics. This design preserves the causal temporal structure of the 3D VAE while restoring the fine spatial details captured by the 2D encoder. 
+ 
+ 
+ 
+ MirageDrive Ablation. 
+
+ 
+ Table   3   compares the original R3D2 trained on standard datasets against our version enhanced with MirageDrive trained on our aligned dataset. The original R3D2 achieves a PSNR of 27.61 and vFID of 0.206. By integrating MirageDrive and training on our carefully aligned dataset, we observe significant improvements: PSNR increases by 0.70 to 28.31, indicating superior reconstruction quality. The vFID score decreases from 0.206 to 0.193, demonstrating better distribution alignment with real video data and improved temporal coherence. These results underscore the critical importance of dataset alignment and validate the effectiveness of our MirageDrive. 
+ 
+ 
+ 
+ Ablation on Training Configurations. 
+
+ 
+ Tab.   4   presents an ablation study evaluating different training configurations. When using only the harmonization training stage (Stage H.), the model achieves a PSNR of 27.89 and vFID of 0.206. The introduction of 3D skip connections leads to performance degradation, due to 3D skip connections breaking the temporal distribution. Our complete framework, which integrates both the harmonization and VAE adaptation stages (Stage H + Stage A), achieves the best performance across all metrics. This demonstrates its ability to produce higher-quality videos with stronger temporal consistency. 
+ 
+ 
+ 
+ 
+ 
+  5  Conclusion 
+
+ 
+ In this paper, we presented Mirage, a one-step video diffusion framework for photorealistic and temporally coherent 3D asset editing in driving scenes. Mirage introduces a temporally-agnostic latent injection mechanism to enhance spatial fidelity in causal 3D VAEs, and a two-stage alignment strategy to provide clean supervision through the MirageDrive dataset. Through extensive experiments, Mirage achieves state-of-the-art realism and stable long-range temporal consistency. We believe Mirage offers a robust foundation for future research on controllable, high-fidelity asset editing for autonomous driving. 
+ 
+ 
+ 
+ References 
+
+ 
+  [1] 
+  H. Caesar, V. Bankiti, A. H. Lang, S. Vora, V. E. Liong, Q. Xu, A. Krishnan, Y. Pan, G. Baldan, and O. Beijbom   (2020) 
+ 
+  Nuscenes: a multimodal dataset for autonomous driving .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 11621–11631 .
+ 
+ Cited by:   §1  .
+  
+  [2] 
+  D. Ceylan, C. P. Huang, and N. J. Mitra   (2023) 
+ 
+  Pix2video: video editing using image diffusion .
+ 
+ In  Proceedings of the IEEE/CVF International Conference on Computer Vision ,
+ 
+  pp. 23206–23217 .
+ 
+ Cited by:   §2.2  .
+  
+  [3] 
+  Z. Chen, Z. Zou, K. Zhang, X. Su, X. Yuan, Y. Guo, and Y. Zhang   (2025) 
+ 
+  DOVE: efficient one-step diffusion model for real-world video super-resolution .
+ 
+  arXiv preprint arXiv:2505.16239 .
+ 
+ Cited by:   §2.1  .
+  
+  [4] 
+  Z. Chen, J. Yang, J. Huang, R. de Lutio, J. M. Esturo, B. Ivanovic, O. Litany, Z. Gojcic, S. Fidler, M. Pavone,  et al.    (2024) 
+ 
+  Omnire: omni urban scene reconstruction .
+ 
+  arXiv preprint arXiv:2408.16760 .
+ 
+ Cited by:   §2.2  .
+  
+  [5] 
+  K. Ding, K. Ma, S. Wang, and E. P. Simoncelli   (2020) 
+ 
+  Image quality assessment: unifying structure and texture similarity .
+ 
+  IEEE transactions on pattern analysis and machine intelligence   44  ( 5 ),  pp. 2567–2581 .
+ 
+ Cited by:   §4.1  .
+  
+  [6] 
+  S. Gao, J. Yang, L. Chen, K. Chitta, Y. Qiu, A. Geiger, J. Zhang, and H. Li   (2024) 
+ 
+  Vista: a generalizable driving world model with high fidelity and versatile controllability .
+ 
+  Advances in Neural Information Processing Systems   37 ,  pp. 91560–91596 .
+ 
+ Cited by:   §1  .
+  
+  [7] 
+  G. Hess, C. Lindström, M. Fatemi, C. Petersson, and L. Svensson   (2025) 
+ 
+  Splatad: real-time lidar and camera rendering with 3d gaussian splatting for autonomous driving .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 11982–11992 .
+ 
+ Cited by:   §2.2  ,
+  §4.1  ,
+  §8.2  .
+  
+  [8] 
+  W. Lai, J. Huang, O. Wang, E. Shechtman, E. Yumer, and M. Yang   (2018) 
+ 
+  Learning blind video temporal consistency .
+ 
+ In  Proceedings of the European conference on computer vision (ECCV) ,
+ 
+  pp. 170–185 .
+ 
+ Cited by:   §4.1  .
+  
+  [9] 
+  J. Li, J. Jiang, J. Miao, M. Long, T. Wen, P. Jia, S. Liu, C. Yu, M. Liu, Y. Cai,  et al.    (2025) 
+ 
+  Realistic and controllable 3d gaussian-guided object editing for driving video generation .
+ 
+  arXiv preprint arXiv:2508.20471 .
+ 
+ Cited by:   §1  .
+  
+  [10] 
+  R. Liang, Z. Gojcic, M. Nimier-David, D. Acuna, N. Vijaykumar, S. Fidler, and Z. Wang   (2024) 
+ 
+  Photorealistic object insertion with diffusion-guided inverse rendering .
+ 
+ In  European Conference on Computer Vision ,
+ 
+  pp. 446–465 .
+ 
+ Cited by:   §1  ,
+  §2.3  .
+  
+  [11] 
+  Y. Liang, Z. Yan, L. Chen, J. Zhou, L. Yan, S. Zhong, and X. Zou   (2025) 
+ 
+  DriveEditor: a unified 3d information-guided framework for controllable object editing in driving scenes .
+ 
+ In  Proceedings of the AAAI Conference on Artificial Intelligence ,
+ 
+ Vol.  39 ,  pp. 5164–5172 .
+ 
+ Cited by:   §1  ,
+  §2.2  .
+  
+  [12] 
+  S. Lin, X. Xia, Y. Ren, C. Yang, X. Xiao, and L. Jiang   (2025) 
+ 
+  Diffusion adversarial post-training for one-step video generation .
+ 
+  arXiv preprint arXiv:2501.08316 .
+ 
+ Cited by:   §2.1  .
+  
+  [13] 
+  S. Liu, Y. Zhang, W. Li, Z. Lin, and J. Jia   (2024) 
+ 
+  Video-p2p: video editing with cross-attention control .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,
+ 
+  pp. 8599–8608 .
+ 
+ Cited by:   §2.2  .
+  
+  [14] 
+  X. Liu, C. Gong, and Q. Liu   (2022) 
+ 
+  Flow straight and fast: learning to generate and transfer data with rectified flow .
+ 
+  arXiv preprint arXiv:2209.03003 .
+ 
+ Cited by:   §2.1  .
+  
+  [15] 
+  X. Liu, X. Zhang, J. Ma, J. Peng,  et al.    (2023) 
+ 
+  Instaflow: one step is enough for high-quality diffusion-based text-to-image generation .
+ 
+ In  The Twelfth International Conference on Learning Representations ,
+ 
+ Cited by:   §2.1  .
+  
+  [16] 
+  W. Ljungbergh, B. Taveira, W. Zheng, A. Tonderski, C. Peng, F. Kahl, C. Petersson, M. Felsberg, K. Keutzer, M. Tomizuka,  et al.    (2025) 
+ 
+  R3D2: realistic 3d asset insertion via diffusion for autonomous driving simulation .
+ 
+  arXiv preprint arXiv:2506.07826 .
+ 
+ Cited by:   §1  ,
+  §1  ,
+  §2.3  ,
+  §3.2  ,
+  §3.3  ,
+  Figure 5  ,
+  Figure 5  .
+  
+  [17] 
+  I. Loshchilov F. Hutter  et al.    (2017) 
+ 
+  Fixing weight decay regularization in adam .
+ 
+  arXiv preprint arXiv:1711.05101   5  ( 5 ),  pp. 5 .
+ 
+ Cited by:   §4.1  .
+  
+  [18] 
+  G. Parmar, T. Park, S. Narasimhan, and J. Zhu   (2024) 
+ 
+  One-step image translation with text-to-image models .
+ 
+  arXiv preprint arXiv:2403.12036 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  §3.2.1  .
+  
+  [19] 
+  M. Pharr, W. Jakob, and G. Humphreys   (2023) 
+ 
+  Physically based rendering: from theory to implementation .
+ 
+   MIT Press .
+ 
+ Cited by:   §2.3  .
+  
+  [20] 
+  F. Reda, J. Kontkanen, E. Tabellion, D. Sun, C. Pantofaru, and B. Curless   (2022) 
+ 
+  Film: frame interpolation for large motion .
+ 
+ In  European Conference on Computer Vision ,
+ 
+  pp. 250–266 .
+ 
+ Cited by:   §3.2.2  .
+  
+  [21] 
+  T. Ren, S. Liu, A. Zeng, J. Lin, K. Li, H. Cao, J. Chen, X. Huang, Y. Chen, F. Yan,  et al.    (2024) 
+ 
+  Grounded sam: assembling open-world models for diverse visual tasks .
+ 
+  arXiv preprint arXiv:2401.14159 .
+ 
+ Cited by:   §8.2  .
+  
+  [22] 
+  B. Singh, V. Kulharia, L. Yang, A. Ravichandran, A. Tyagi, and A. Shrivastava   (2024) 
+ 
+  Genmm: geometrically and temporally consistent multimodal data generation for video and lidar .
+ 
+  arXiv preprint arXiv:2406.10722 .
+ 
+ Cited by:   §1  ,
+  §2.2  .
+  
+  [23] 
+  P. Sun, H. Kretzschmar, X. Dotiwalla, A. Chouard, V. Patnaik, P. Tsui, J. Guo, Y. Zhou, Y. Chai, B. Caine,  et al.    (2020) 
+ 
+  Scalability in perception for autonomous driving: waymo open dataset .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 2446–2454 .
+ 
+ Cited by:   §1  ,
+  §3.3  ,
+  §8.3  .
+  
+  [24] 
+  Y. Sun, L. Sun, S. Liu, R. Wu, Z. Zhang, and L. Zhang   (2025) 
+ 
+  One-step diffusion for detail-rich and temporally consistent video super-resolution .
+ 
+ In  The Thirty-ninth Annual Conference on Neural Information Processing Systems ,
+ 
+ Cited by:   §4.1  .
+  
+  [25] 
+  T. Wan, A. Wang, B. Ai, B. Wen, C. Mao, C. Xie, D. Chen, F. Yu, H. Zhao, J. Yang,  et al.    (2025) 
+ 
+  Wan: open and advanced large-scale video generative models .
+ 
+  arXiv preprint arXiv:2503.20314 .
+ 
+ Cited by:   §3.2.1  .
+  
+  [26] 
+  S. Wang, H. Zhang, X. Shen, D. Wang, and X. Yu   (2025) 
+ 
+  Blind bitstream-corrupted video recovery via metadata-guided diffusion model .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 22975–22984 .
+ 
+ Cited by:   §2.2  .
+  
+  [27] 
+  T. Wang, M. Liu, J. Zhu, G. Liu, A. Tao, J. Kautz, and B. Catanzaro   (2018) 
+ 
+  Video-to-video synthesis .
+ 
+  arXiv preprint arXiv:1808.06601 .
+ 
+ Cited by:   §4.1  .
+  
+  [28] 
+  Z. Wang, C. Lu, Y. Wang, F. Bao, C. Li, H. Su, and J. Zhu   (2023) 
+ 
+  Prolificdreamer: high-fidelity and diverse text-to-3d generation with variational score distillation .
+ 
+  Advances in neural information processing systems   36 ,  pp. 8406–8441 .
+ 
+ Cited by:   §2.1  .
+  
+  [29] 
+  Z. Wang, A. C. Bovik, H. R. Sheikh, and E. P. Simoncelli   (2004) 
+ 
+  Image quality assessment: from error visibility to structural similarity .
+ 
+  IEEE transactions on image processing   13  ( 4 ),  pp. 600–612 .
+ 
+ Cited by:   §4.1  .
+  
+  [30] 
+  Y. Wen, Y. Zhao, Y. Liu, F. Jia, Y. Wang, C. Luo, C. Zhang, T. Wang, X. Sun, and X. Zhang   (2024) 
+ 
+  Panacea: panoramic and controllable video generation for autonomous driving .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,
+ 
+  pp. 6902–6912 .
+ 
+ Cited by:   §1  .
+  
+  [31] 
+  J. Z. Wu, Y. Zhang, H. Turki, X. Ren, J. Gao, M. Z. Shou, S. Fidler, Z. Gojcic, and H. Ling   (2025) 
+ 
+  Difix3d+: improving 3d reconstructions with single-step diffusion models .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 26024–26035 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  §3.2.1  ,
+  §3.2  .
+  
+  [32] 
+  J. Xiang, Z. Lv, S. Xu, Y. Deng, R. Wang, B. Zhang, D. Chen, X. Tong, and J. Yang   (2025) 
+ 
+  Structured 3d latents for scalable and versatile 3d generation .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+  pp. 21469–21480 .
+ 
+ Cited by:   §4.1  ,
+  Figure 8  ,
+  Figure 8  ,
+  §8.3  .
+  
+  [33] 
+  Z. Yang, J. Teng, W. Zheng, M. Ding, S. Huang, J. Xu, Y. Yang, W. Hong, X. Zhang, G. Feng,  et al.    (2024) 
+ 
+  Cogvideox: text-to-video diffusion models with an expert transformer .
+ 
+  arXiv preprint arXiv:2408.06072 .
+ 
+ Cited by:   §3.2.1  ,
+  §3.2  ,
+  §4.1  .
+  
+  [34] 
+  T. Yin, M. Gharbi, R. Zhang, E. Shechtman, F. Durand, W. T. Freeman, and T. Park   (2024) 
+ 
+  One-step diffusion with distribution matching distillation .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 6613–6623 .
+ 
+ Cited by:   §2.1  .
+  
+  [35] 
+  L. Yu, J. Lezama, N. B. Gundavarapu, L. Versari, K. Sohn, D. Minnen, Y. Cheng, V. Birodkar, A. Gupta, X. Gu,  et al.    (2023) 
+ 
+  Language model beats diffusion–tokenizer is key to visual generation .
+ 
+  arXiv preprint arXiv:2310.05737 .
+ 
+ Cited by:   §3.2.1  .
+  
+  [36] 
+  L. Zhang, A. Rao, and M. Agrawala   (2025) 
+ 
+  Scaling in-the-wild training for diffusion-based illumination harmonization and editing by imposing consistent light transport .
+ 
+ In  The Thirteenth International Conference on Learning Representations ,
+ 
+ Cited by:   §2.3  .
+  
+  [37] 
+  R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang   (2018) 
+ 
+  The unreasonable effectiveness of deep features as a perceptual metric .
+ 
+ In  Proceedings of the IEEE conference on computer vision and pattern recognition ,
+ 
+  pp. 586–595 .
+ 
+ Cited by:   §3.2.1  ,
+  §4.1  .
+  
+  [38] 
+  Z. Zhang, Y. Li, Y. Wu, A. Kag, I. Skorokhodov, W. Menapace, A. Siarohin, J. Cao, D. Metaxas, S. Tulyakov,  et al.    (2024) 
+ 
+  Sf-v: single forward video generation model .
+ 
+  Advances in Neural Information Processing Systems   37 ,  pp. 103599–103618 .
+ 
+ Cited by:   §2.1  .
+  
+  [39] 
+  G. Zhao, X. Wang, Z. Zhu, X. Chen, G. Huang, X. Bao, and X. Wang   (2025) 
+ 
+  Drivedreamer-2: llm-enhanced world models for diverse driving video generation .
+ 
+ In  Proceedings of the AAAI Conference on Artificial Intelligence ,
+ 
+ Vol.  39 ,  pp. 10412–10420 .
+ 
+ Cited by:   §1  .
+  
+  [40] 
+  M. Zhou, H. Zheng, Z. Wang, M. Yin, and H. Huang   (2024) 
+ 
+  Score identity distillation: exponentially fast distillation of pretrained diffusion models for one-step generation .
+ 
+ In  Forty-first International Conference on Machine Learning ,
+ 
+ Cited by:   §2.1  .
+  
+  [41] 
+  P. Zhou, F. Feng, G. Liu, R. Li, and X. Wang   (2024) 
+ 
+  DiffHarmony++: enhancing image harmonization with harmony-vae and inverse harmonization model .
+ 
+ In  Proceedings of the 32nd ACM International Conference on Multimedia ,
+ 
+  pp. 10592–10601 .
+ 
+ Cited by:   §2.3  .
+  
+ 
+ 
+  
+  
+ 
+ 
+ 
+ 
+  Supplementary Material 
+   
+ 
+ 
+ This supplementary material is organized as follows: 
+ 
+  •  
+ 
+ Additional motivation and failure analysis of R3D2 and the R3D3 dataset (Section   6  ). 
+  
+  •  
+ 
+ A detailed study of the temporal behavior of our causal 3D VAE (Section   7  ). 
+  
+  •  
+ 
+ The construction pipeline of MirageDrive and a discussion of the distribution mismatch between scene Gaussians and asset Gaussians (Section   8  ). 
+  
+  •  
+ 
+ Qualitative video demos that highlight temporal consistency and controllable editing (Section   9  ). 
+  
+ 
+ 
+ 
+  6  Motivation of Our Work 
+
+ 
+ The motivation of our work arises from two key observations. 
+ 
+ 
+ First, R3D2 suffers from poor temporal consistency when editing driving videos. As shown in Fig.   4  , the appearance of the inserted vehicle drifts noticeably across frames. This instability undermines downstream applications that rely on coherent multi-frame behavior, such as long-horizon simulation. 
+ 
+ 
+ Second, the R3D3 dataset itself contains geometric inconsistencies. As illustrated in Fig.   5  , the highlighted misalignments result in mismatched supervisory pairs during training, which in turn degrades the performance of subsequent harmonization networks. 
+ 
+ 
+ Together, these issues motivate us to develop a pipeline that ensures both precise spatial alignment and stable temporal behavior, enabling more reliable and photorealistic asset editing in driving scenes. 
+ 
+  
+   Figure 5 :   Qualitative examples from the R3D3 dataset. 
+Horizontal and vertical reference lines, together with arrows, are used to highlight geometric misalignment between the naïvely inserted assets and the ground-truth objects.
+All frames are taken from the R3D2  [ 16 ]  paper (Supp. E).   
+ 
+ 
+ 
+  7  Understanding the Temporal Behavior of the 3D VAE 
+
+ 
+ To better understand the temporal behavior of our 3D VAE, we conduct an intuitive experiment using a 9-frame input clip (Fig.   6  , top).
+Tab.   5   summarizes the feature shapes across encoder and decoder stages, showing a symmetric hierarchy from Enc-1 to Enc-4 and from Dec-4 to Dec-1.
+This structure allows us to examine how temporal information is distributed inside the model. 
+ 
+ 
+ First, we visualize feature maps from the corresponding encoder and decoder layers.
+As shown in Fig.   6   (bottom), the activation map at     T  =  7   T=7    in Enc-1 exhibits strong responses not only at Frame 7 but also at Frame 5.
+This observation indicates that encoder features carry mixed temporal support.
+In contrast, the corresponding decoder feature (Dec-4 at     T  =  7   T=7   ) shows activation concentrated almost exclusively in Frame 7.
+The decoder expects content aligned to Frame 7, but the injected encoder features still retain residual signals from Frame 5.
+This temporal mismatch leads to leakage and frame-inconsistent artifacts in the reconstructed output. 
+ 
+ 
+   Table 5 :   Feature shapes of the 3D VAE follow the     [   C  ,  T  ,  H  ,  W   ]   [C,T,H,W]    layout with a 9-frame input clip.
+The encoder gradually compresses spatial and temporal support from Enc-1 to Enc-4, and the decoder restores them symmetrically from Dec-4 to Dec-1.  
+  
+ 
+ 
+ 
+ Encoder 
+ Decoder  
+ 
+ Stage 
+ Feature Shapes 
+ Stage 
+ Feature Shapes  
+ 
+ 
+ 
+ Enc-1 
+     [   128  ,   9  ,  H  ,  W   ]   [128,\,9,\,H,\,W]    
+ Dec-4 
+     [   256  ,   9  ,  H  ,  W   ]   [256,\,9,\,H,\,W]     
+ 
+ Enc-2 
+     [   128  ,   5  ,   H  /  2   ,   W  /  2    ]   [128,\,5,\,H/2,\,W/2]    
+ Dec-3 
+     [   256  ,   9  ,   H  /  2   ,   W  /  2    ]   [256,\,9,\,H/2,\,W/2]     
+ 
+ Enc-3 
+     [   256  ,   3  ,   H  /  4   ,   W  /  4    ]   [256,\,3,\,H/4,\,W/4]    
+ Dec-2 
+     [   512  ,   5  ,   H  /  4   ,   W  /  4    ]   [512,\,5,\,H/4,\,W/4]     
+ 
+ Enc-4 
+     [   256  ,   3  ,   H  /  8   ,   W  /  8    ]   [256,\,3,\,H/8,\,W/8]    
+ Dec-1 
+     [   512  ,   3  ,   H  /  8   ,   W  /  8    ]   [512,\,3,\,H/8,\,W/8]     
+ 
+ 
+  
+ 
+  
+   Figure 6 :   Top: Input 9-frame video clip.
+Middle: Encoding and decoding process of the 3D VAE.
+Bottom: Visualization of feature maps from Encoder Stage 1 and Decoder Stage 4 at     T  =  7   T=7   , obtained by averaging activations across the channel dimension.  
+ 
+ 
+ Second, we observe that the temporal axes of the earliest decoder stages (Dec-4 and Dec-3) remain nearly one-to-one with the output frame index.
+For example, at     T  =  7   T=7   , the activation at Frame 7 is the dominant response.
+These layers primarily reflect frame-aligned spatial content, confirming that they maintain tightly localized temporal support.
+Such alignment is crucial for preserving temporal consistency in the final reconstruction. 
+ 
+ 
+ 
+  8  More Details about MirageDrive 
+
+ 
+ For each driving scene, we construct MirageDrive in three stages:
+scene reconstruction, object-centric asset generation, and background–foreground compositing, as shown in Fig.   7  . 
+ 
+  
+   Figure 7 :   MirageDrive data generation pipeline. 
+Starting from ground-truth (GT) driving videos and their 3DGS scene reconstructions, we obtain object masks for the target vehicle and reconstruct a 3D asset.
+We then remove the corresponding object node from the 3DGS scene to render a clean background.
+The rendered 3D asset is finally aligned and composited onto the background to form naïve insertion frames, which provide high-quality NI–GT pairs for training Mirage.   
+ 
+ 
+  8.1  Distribution Mismatch Between Scene Gaussians and Asset Gaussians 
+
+ 
+ Although scene reconstruction provides object-centric Gaussians, their distributions differ substantially from those of synthesized assets.
+As shown in Fig.   8  , raw point clouds from 3DGS exhibit irregular density patterns.
+The extracted object Gaussians remain noisy and highly anisotropic.
+In contrast, the generated asset Gaussians produced by Trellis are uniformly distributed.
+This distribution mismatch makes it difficult to directly align the asset with the extracted object Gaussians.
+Their centers and scales patterns are not geometrically compatible, which often leads to unstable or inaccurate pose estimation. 
+ 
+ 
+ To address this issue, MirageDrive adopts a two-stage alignment strategy.
+We first perform coarse 3D alignment using camera poses, followed by temporally consistent 2D refinement based on bounding-box edges.
+This combination effectively compensates for the distribution disparities and yields stable alignment across time. 
+ 
+  
+   Figure 8 :   Distribution mismatch between scene Gaussians and asset Gaussians. 
+Left: raw point clouds reconstructed from the driving scene.
+Middle: object Gaussians extracted from the 3DGS scene.
+Right: asset Gaussians generated by Trellis  [ 32 ]  exhibit uniformly distributed structures.   
+ 
+ 
+ 
+  8.2  Scene Reconstruction and Object Selection 
+
+ 
+ We begin with the ground-truth (GT) driving video and reconstruct its 3D Gaussian Splatting (3DGS) scene using SplatAD  [ 7 ] .
+For each frame, we obtain per-object segmentation masks and temporal tracks of the target vehicle using Grounding-SAM2  [ 21 ] .
+Among all tracked instances, we select the one whose segmentation masks remain fully inside the image and exhibit the largest average mask area.
+We then crop an image patch around the selected vehicle and use this crop as the reference for asset generation. 
+ 
+ 
+ 
+  8.3  Asset Generation and Alignment 
+
+ 
+ Using the object masks, we first identify the actor node in the 3DGS representation and extract all Gaussians associated with this vehicle, forming an object-centric Gaussian subset.
+On the asset side, we employ Trellis  [ 32 ]  to generate a high-quality 3D asset from the cropped vehicle image.
+We then render this asset using the original camera poses and the poses of the extracted object Gaussians, producing isolated asset renderings that are coarsely aligned in 3D space. 
+ 
+ 
+ Next, we refine the alignment in the 2D image plane.
+We use the per-frame 2D bounding boxes provided by the Waymo Open Dataset  [ 23 ]  for the original vehicle and adjust the asset placement based on the bounding-box edges over time.
+This refinement enforces temporally consistent alignment across all frames. 
+ 
+ 
+ 
+  8.4  Background Rendering and Data Pair Construction 
+
+ 
+ On the background side, we remove the corresponding vehicle node from the 3DGS scene and re-render the scene to obtain object-removed frames with a clean background.
+We then composite the rendered asset onto these background frames to form naïve insertion (NI) images.
+In practice, we perform this process for each candidate asset individually, rather than replacing all vehicles in the scene at once as done in R3D2. 
+ 
+ 
+ 
+  8.5  Usage at Training and Inference 
+
+ 
+ The goal of MirageDrive is to construct high-quality NI–GT training pairs that enable our harmonization model to effectively learn spatial and temporal consistency.
+During training, MirageDrive provides these paired examples to supervise Mirage. 
+ 
+ 
+ At inference time, however, our method is not restricted to this specific data construction pipeline.
+Any upstream editing system that produces naïve insertion videos can serve as input to Mirage for harmonization.
+Furthermore, because the assets are rendered independently of the 3DGS scene, MirageDrive is compatible with a wide range of 3D asset generation pipelines.
+In contrast, R3D2 requires dedicated modifications to the scene reconstruction process in order to jointly render both the assets and the background. 
+ 
+ 
+ 
+ 
+  9  Video Demo 
+
+ 
+ We also provide demo videos to showcase the results evaluated in additional scenarios from our test set.
+Please refer to the supplementary materials for the  Demo-qU5gAXQ5.mp4  and  Demo-O0ipbuwo.mp4  videos. 
+ 
+ 
+ 
+  •  
+ 
+  Demo-O0ipbuwo.mp4  compares naïve insertion, R3D2, Mirage, and the ground truth over a frame sequence.
+It highlights the superior temporal consistency of Mirage in terms of vehicle identity, appearance stability, and frame-to-frame alignment. 
+  
+  •  
+ 
+  Demo-qU5gAXQ5.mp4  presents an edited scenario where the front vehicle performs a U-turn, corresponding to the teaser example in the main paper.
+This demo illustrates controllable editing and realistic temporal behavior under challenging maneuvers. 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

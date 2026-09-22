@@ -1,0 +1,1807 @@
+  
+ 
+ 
+ Towards Holistic Modeling for Video Frame Interpolation with Auto-regressive Diffusion Transformers 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+    1  Introduction   
+    2  Related work  
+ 
+    2.1  Video frame interpolation   
+    2.2  Auto-regressive generative modeling   
+  
+    3  Methodology  
+ 
+    3.1  Preliminaries  
+ 
+   Flow matching   
+   Tiled VAE encoding   
+  
+    3.2  Holistic modeling for VFI  
+ 
+   Modeling entire video sequence   
+   Latent space generation   
+  
+    3.3  Model architecture  
+ 
+   Video conditioning   
+   Local VAE encoding   
+   Sparse attention mechanism   
+   Conditional VAE   
+  
+    3.4  Auto-regressive inference with diffusion forcing  
+ 
+   Diffusion forcing training   
+   Skip-concatenate sampling   
+  
+  
+    4  Experiments  
+ 
+    4.1  Implementation Details  
+ 
+   DiT training   
+   VAE training   
+   Inference   
+   Datasets   
+   Metrics   
+  
+    4.2  Comparison with prior work  
+ 
+   Baselines   
+   Quantitative results.   
+   Qualitative results   
+  
+    4.3  Ablation study  
+ 
+   Effectiveness of skip-concatenate sampling   
+   Effectiveness of conditional VAE   
+   Computational cost and attention mechanism   
+   Effectiveness of nearest-neighbor upsampling   
+  
+  
+    5  Conclusion   
+   References   
+   More visualization   
+   Impact of temporal chunk length   
+  
+ 
+ 
+ 
+   
+    License: CC BY 4.0
+   
+   
+arXiv:2601.14959v2 [cs.CV] 30 Mar 2026 
+  
+ 
+ Towards Holistic Modeling for Video Frame Interpolation with 
+ Auto-regressive Diffusion Transformers 
+ 
+ 
+ Xinyu Peng
+   
+  Affiliation:  Shanghai Jiao Tong University
+    
+     
+ Han Li
+   
+  Affiliation:  Shanghai Jiao Tong University
+    
+     
+ Yuyang Huang
+   
+  Affiliation:  Shanghai Jiao Tong University
+    
+     
+ Ziyang Zheng
+  
+     
+ Yaoming Wang
+  
+     
+ Xin Chen
+   
+  Affiliation:  Fudan University. {xypeng9903, qingshi9974, huangyuyang, zhengziyang, wang_yaoming, daiwenrui,lcl1985, zoujunni, xionghongkai}@sjtu.edu.cn 
+,  chenxin061@gmail.com 
+    
+     
+ Wenrui Dai
+   
+  Affiliation:  Shanghai Jiao Tong University
+    
+     
+ Chenglin Li
+   
+  Affiliation:  Shanghai Jiao Tong University
+    
+     
+ Junni Zou
+   
+  Affiliation:  Shanghai Jiao Tong University
+    
+     
+ Hongkai Xiong
+   
+  Affiliation:  Shanghai Jiao Tong University
+     
+
+  Abstract 
+    
+ Existing video frame interpolation (VFI) methods often adopt a frame-centric approach, processing videos as independent short segments (e.g., triplets), which leads to temporal inconsistencies and motion artifacts. To overcome this, we propose a holistic, video-centric paradigm named  L ocal  D iffusion  F orcing for  V ideo  F rame  I nterpolation (LDF-VFI). Our framework is built upon an auto-regressive diffusion transformer that models the entire video sequence to ensure long-range temporal coherence. To mitigate error accumulation inherent in auto-regressive generation, we introduce a novel skip-concatenate sampling strategy that effectively maintains temporal stability. Furthermore, LDF-VFI incorporates sparse, local attention and tiled VAE encoding, a combination that not only enables efficient processing of long sequences but also allows generalization to arbitrary spatial resolutions (e.g., 4K) at inference without retraining. An enhanced conditional VAE decoder, which leverages multi-scale features from the input video, further improves reconstruction fidelity. Empirically, LDF-VFI achieves state-of-the-art performance on challenging VFI benchmarks, demonstrating superior per-frame quality and temporal consistency, especially in scenes with large motion. The source code is available at  https://github.com/xypeng9903/LDF-VFI . 
+  
+ 
+  
+ 
+    
+   †    † 
+      
+      
+      
+      
+      
+      
+      †   Indicates equal contribution.     †    † 
+      
+      
+      
+      
+      
+      
+          🖂   {}^{\textrm{\Letter}}    Correspondence to: Ziyang Zheng &lt;zhengziyang@sjtu.edu.cn&gt;, Yaoming Wang &lt;wang_yaoming@sjtu.edu.cn&gt;.   
+ 
+  1  Introduction 
+
+   
+   Figure 1 :    Comparison between prior works and our framework. We illustrate     2  ×   2\times    VFI for simplicity. Prior methods treat VFI as a set of independent triplets, ignoring dependencies among interpolated frames. In contrast, our framework models the entire video holistically, leading to improved temporal coherence.  
+ 
+ 
+ Video frame interpolation (VFI), a classic computer vision task, aims to synthesize intermediate frames between existing ones and is essential for applications like slow-motion  [ 22 ,  26 ] , novel view synthesis  [ 8 ] , and video generation  [ 50 ,  47 ] . However, conventional VFI methods that rely on optical flow  [ 22 ,  31 ,  61 ,  45 ]  often struggle with complex, non-linear motions, leading to a recent shift towards diffusion models  [ 12 ,  66 ,  36 ,  23 ] . 
+ 
+ 
+ While promising, these methods suffer from two primary limitations.  First , as illustrated in   Figure   1  , they typically operate on independent frame triplets (i.e., synthesizing a middle frame      x  ^   1   \widehat{x}_{1}    from adjacent input frames     y  0   y_{0}    and     y  1   y_{1}   ), while ignoring the temporal dependencies between subsequently interpolated frames (e.g.,     {     x  ^   1   ,    x  ^   2   ,    x  ^   3   ,  ⋯   }   \{\widehat{x}_{1},\widehat{x}_{2},\widehat{x}_{3},\cdots\}   ). This  frame-centric  approach can lead to significant temporal inconsistencies and motion artifacts.  Second , using vanilla diffusion transformer (DiT) architecture  [ 39 ]  faces prohibitive computational costs, as the quadratic complexity of full attention renders them infeasible for supporting high-resolution videos (e.g., 4K). 
+ 
+ 
+ An ideal approach for maintaining VFI temporal consistency would be to synthesize all frames for the entire video in a single inference. However, this is computationally intractable. To overcome these limitations, we introduce a new VFI paradigm designed to: 1) decompose the input video into multiple temporal chunks, and synthesize all frames for each chunk in a single inference to ensure intra-chunk consistency; 2) connect the synthesized frames of all chunks auto-regressively to maintain long-range inter-chunk consistency; and 3) scale efficiently to high resolutions such as 4K videos. 
+ 
+ 
+ To achieve the objectives, we propose a  video-centric  framework,  L ocal  D iffusion  F orcing for  V ideo  F rame  I nterpolation (LDF-VFI), built upon an auto-regressive diffusion transformer. LDF-VFI first processes video in fixed-length temporal chunks, enabling processing arbitrarily long sequences with constant memory per step. In each chunk, all frames are synthesized in a single inference, ensuring intra-chunk consistency. 
+ 
+ 
+ To address the challenge of inter-chunk modeling, we employ auto-regressive generation for VFI. A key challenge in this paradigm is error accumulation, also known as  exposure bias   [ 44 ] . This phenomenon occurs when the model conditions on its own imperfect outputs, causing errors to propagate and degrade quality over time. We mitigate this by introducing a novel  skip-concatenate sampling  strategy. Unlike traditional causal inference, where each newly generated segment depends on the immediately preceding (and potentially imperfect) output, our method periodically generates a chunk independently of the most recent context. This  skip  chunk effectively resets the accumulated error. A subsequent  concatenate  chunk is then generated, conditioned on both the new  skip  chunk and the prior context, thereby seamlessly bridging the temporal gap. This strategy ensures temporal stability over long sequences by preventing uncontrolled error propagation. 
+ 
+ 
+ To efficiently achieve resolution scalability, we adopt a sparse, local attention scheme, which is spatially local but temporally dense. This design avoids the quadratic complexity of full attention and, combined with tiled VAE encoding, enabling seamless generalization to resolutions unseen during training. Furthermore, to enhance the visual quality and fidelity of the generated frames, we design a  conditional VAE decoder . Standard VAEs often lose fine-grained details during reconstruction from the latent space. Our enhanced decoder mitigates this by incorporating multi-scale features extracted from the input low-frame-rate video. By injecting this rich contextual information throughout the decoding process, our model produces sharper and more accurate reconstructions that are faithful to the original scene. 
+ 
+ 
+ To validate the effectiveness of our video-centric design, we develop  video-centric benchmarks , SNU-FILM-entire and X4K-entire, which evaluate interpolation quality on full videos rather than isolated frame triplets. Extensive experiments show that LDF-VFI achieves state-of-the-art performance, with clear gains in both per-frame perceptual quality and long-range temporal coherence, particularly under large and complex motion. 
+ 
+ 
+ 
+  2  Related work 
+
+ 
+  2.1  Video frame interpolation 
+
+ 
+ Video frame interpolation (VFI) methods fall into two major categories: optical-flow-based (and kernel-based) and diffusion-based approaches. Flow-based methods  [ 22 ,  31 ,  61 ,  45 ]  estimate intermediate motion and warp input frames forward or backward, while kernel-based methods predict adaptive local kernels to aggregate pixels from input frames for interpolation  [ 38 ,  37 ,  28 ] . Recent flow-based variants such as SGM-VFI  [ 34 ]  and VFIMamba  [ 60 ]  enhance robustness through sparse global matching or global receptive fields. These approaches work well for simple and approximately linear motions, but their performance degrades significantly in complex scenarios with non-linear dynamics, occlusions, or large displacements. Diffusion-based VFI has recently emerged, including latent-diffusion-based LDMVFI  [ 12 ]  and EDEN  [ 66 ] , Brownian-bridge diffusion in LBBDM  [ 36 ] , motion-conditioned diffusion in MADIFF  [ 23 ] , and cascaded diffusion models in VIDIM  [ 26 ] .
+Recent diffusion-based methods interpolate frames pairwise, which eases computation but often causes temporal inconsistency under challenging large motion scenarios. These limitations make existing VFI solutions difficult to apply in real-world settings. 
+ 
+ 
+ 
+  2.2  Auto-regressive generative modeling 
+
+ 
+ Auto-regressive (AR) models represent a fundamental approach to generative modeling, factorizing the joint probability distribution of a sequence into a product of conditionals via the chain rule:      p  ⁡   (  x  )    =    ∏   i  =  1   N    p  ⁡   (   x  i   |   x     &lt;  i    )      p(x)=\prod_{i=1}^{N}p(x_{i}|x_{&lt;i})   . This principle has been widely applied across various domains, from text models  [ 41 ,  3 ]  to high-dimensional data such as images  [ 6 ,  14 ,  52 ,  17 ]  and videos  [ 59 ,  35 ] , as well as large-scale AR modeling across various data modalities  [ 54 ,  30 ,  7 ,  29 ,  10 ,  40 ] . 
+ 
+ 
+ More recently, a promising direction has emerged in hybrid models that integrate auto-regressive frameworks with diffusion models, particularly for tasks like video generation  [ 5 ,  32 ,  64 ,  65 ,  21 ] . These approaches typically operate by auto-regressively generating a sequence of data segments (e.g., frames), where each new segment is conditioned on previously generated ones. Despite their power, these methods inherit a fundamental challenge of AR modeling known as  exposure bias   [ 44 ] . This issue arises from the discrepancy between training, which uses ground-truth context, and inference, which conditions on the model’s own imperfect outputs. This mismatch can lead to an accumulation of errors, progressively degrading the quality of long sequences. Various strategies have been proposed to mitigate this problem—such as scheduled sampling  [ 1 ] , optimizing alternative objectives like reverse KL-divergence  [ 21 ] , or directly training the model on corrupted condition  [ 17 ,  43 ,  56 ] . In this paper, we propose a VFI-specific solution, called skip-concatenate sampling, to mitigate exposure bias and achieve temporal consistency for arbitrary long generation. 
+ 
+ 
+ 
+ 
+  3  Methodology 
+
+ 
+  3.1  Preliminaries 
+
+ 
+ Flow matching 
+
+ 
+ Flow matching  [ 33 ] , closely related to diffusion models  [ 18 ,  48 ,  19 ] , is popular for modeling high dimensional distributions by learning the velocity field that transports a simple prior distribution (e.g., Gaussian noise) to a complex data distribution. Given a data sample      𝐱  0   ∼    q  0   ​   (  𝐱  )     \mathbf{x}_{0}\sim q_{0}(\mathbf{x})    and a noise sample      𝐱  1   ∼    q  1   ​   (  𝐱  )     \mathbf{x}_{1}\sim q_{1}(\mathbf{x})   , we define a linear interpolation path      𝐱  t   =     (   1  −  t   )   ​   𝐱  0    +   t  ​   𝐱  1      \mathbf{x}_{t}=(1-t)\mathbf{x}_{0}+t\mathbf{x}_{1}    for     t  ∈   [   0  ,  1   ]    t\in[0,1]   . Denote the distribution of     𝐱  t   \mathbf{x}_{t}    is     q  t   q_{t}   , the time derivative of     q  t   q_{t}    can be described by  the continuity equation       ∂  t    q  t    (  𝐱  )   =  −  ∇  ⋅   (   q  t    (  𝐱  )    𝐯  t    (  𝐱  )   )    \partial_{t}q_{t}(\mathbf{x})=-\nabla\cdot(q_{t}(\mathbf{x})\,\mathbf{v}_{t}(\mathbf{x}))   . Therefore, the sample evolving according to the ODE:      d  ​   𝐱  t    =    𝐯  t   ​   (   𝐱  t   )   ​  d  ​  t    \mathrm{d}\mathbf{x}_{t}=\mathbf{v}_{t}(\mathbf{x}_{t})\mathrm{d}t    also follows      𝐱  t   ∼   q  t    \mathbf{x}_{t}\sim q_{t}   . Remarkably, a simple L2 regression objective     ℒ  FM   \mathcal{L}_{\text{FM}}    admits the true velocity field      𝐯  t   ​   (   𝐱  t   )    \mathbf{v}_{t}(\mathbf{x}_{t})    as its global minimizer that is leveraged to train the flow matching model      𝐯  θ   ​   (   𝐱  t   ,  t  )    \mathbf{v}_{\theta}(\mathbf{x}_{t},t)   : 
+ 
+
+  
+  
+       ℒ  FM   =    𝔼   t  ,    q  0   ​   (   𝐱  0   )   ​   q  1   ​   (   𝐱  1   )      ​   [    ‖     𝐯  θ   ​   (   𝐱  t   ,  t  )    −   (    𝐱  1   −   𝐱  0    )    ‖   2   ]     .   \mathcal{L}_{\text{FM}}=\mathbb{E}_{t,q_{0}(\mathbf{x}_{0})q_{1}(\mathbf{x}_{1})}\big[\|\mathbf{v}_{\theta}(\mathbf{x}_{t},t)-(\mathbf{x}_{1}-\mathbf{x}_{0})\|^{2}\big].    
+  
+  (1)    
+ 
+ At inference time, starting from      𝐱  1   ∼   q  1    \mathbf{x}_{1}\sim q_{1}   , we simulate the ODE      d  ​   𝐱  t    =    𝐯  θ   ​   (   𝐱  t   ,  t  )   ​  d  ​  t    \mathrm{d}\mathbf{x}_{t}=\mathbf{v}_{\theta}(\mathbf{x}_{t},t)\mathrm{d}t    from     t  =  1   t=1    to    0  0    using numerical ODE solver to obtain an approximate data sample     𝐱  0   \mathbf{x}_{0}   . 
+ 
+ 
+ 
+ Tiled VAE encoding 
+
+ 
+ Tiled VAE encoding is a technique to scale VAE encoding to high resolutions while avoiding seams at tiles’ boundaries. Each frame is split into tiles of size     (   H  min   ,   W  min   )   (H_{\min},W_{\min})    with stride     (   s  H   ,   s  W   )   (s_{H},s_{W})   . Every tile is encoded independently by the VAE, then overlaps are blended in latent space with a simple linear ramp: rows from the tile above and columns from the tile to the left are mixed proportionally across the overlap width/height. After blending, only the stride region of each latent tile (the non-overlapped interior) is kept and arranged into a compact latent. Decoding inverts the procedure: latent tiles are decoded, then blended in pixel space with the same vertical and horizontal ramps, and their stride regions are concatenated to form a seam‑free reconstruction. This yields (1) constant memory cost, (2) smooth boundaries, and (3) a regular latent grid that downstream sparse attention can exploit.   1    1 
+                 1 
+                
+                
+                
+                
+                
+                
+                
+              For practical considerations, please refer to the open-source implementation:  https://github.com/huggingface/diffusers/blob/main/src/diffusers/models/autoencoders/autoencoder_kl_wan.py     
+ 
+ 
+ 
+ 
+  3.2  Holistic modeling for VFI 
+
+ 
+ We revisit the fundamental problem of video frame interpolation (VFI). Prevailing approaches typically frame VFI as an independent prediction task, where an intermediate frame      I  ^   t   \hat{I}_{t}    is synthesized from two adjacent frames,     I  0   I_{0}    and     I  1   I_{1}     [ 22 ,  15 ,  61 ,  27 ,  31 ] . This frame-centric formulation, while direct, presents two significant limitations. First, by treating each interpolation in isolation, it overlooks the crucial temporal correlations required for motion consistency across a sequence of newly generated frames. Second, it disregards the broader temporal context available in non-adjacent frames (e.g.,      I   −  1    ,   I  2    I_{-1},I_{2}   ). 
+ 
+  
+   Figure 2 :   Model architecture overview. Our model first aligns the low-quality (LQ) video with the high-quality (HQ) ground-truth (GT) video’s temporal dimension using nearest-neighbor upsampling. Both the GT video and the upsampled LQ video, along with a corresponding binary mask, are then processed through a spatial-tiled and temporal non-overlapping chunk encoder to generate latent representations. During training, we employ diffusion forcing on these temporal chunks, a strategy that enables auto-regressive inference. Furthermore, the model incorporates sparse attention to efficiently handle high-resolution video inputs, ensuring scalability.  
+ 
+   
+   Figure 3 :   The architecture of conditional VAE decoder.  
+ 
+ 
+ Modeling entire video sequence 
+
+ 
+ To overcome these limitations, we advocate for a  video-centric perspective . Instead of predicting individual frames, we model the joint conditional probability distribution of the  entire high-frame-rate video sequence  conditioned on the  entire sparse input frames . Formally, given a low-frame-rate video     𝐲  ∈   ℝ   T  ×  H  ×  W  ×  3     \mathbf{y}\in\mathbb{R}^{T\times H\times W\times 3}    of    T  T    frames, our objective is to learn the full conditional distribution     q  ⁡   (  𝐱  ∣  𝐲  )    q(\mathbf{x}\mid\mathbf{y})    of the corresponding high-frame-rate video     𝐱  ∈   ℝ    (   s  ​  T   )   ×  H  ×  W  ×  3     \mathbf{x}\in\mathbb{R}^{(sT)\times H\times W\times 3}   , where    s  s    is the temporal upsampling factor. By modeling the entire sequence holistically, this approach ensures the generated intermediate frames are both visually plausible and temporally coherent, preserving the natural dynamics of the video. 
+ 
+ 
+ 
+ Latent space generation 
+
+ 
+ Motivated by the success of latent diffusion for modeling high-dimensional continuous data  [ 42 ,  2 ,  51 ] , we introduce a latent variable     𝐳  ∈   ℝ    T  ′   ×   H  ′   ×   W  ′   ×  C     \mathbf{z}\in\mathbb{R}^{T^{\prime}\times H^{\prime}\times W^{\prime}\times C}    to perform generative modeling in a compact, computationally efficient latent space. Specifically, we extend     q  ⁡   (  𝐱  ∣  𝐲  )    q(\mathbf{x}\mid\mathbf{y})    to     q  ⁡   (   𝐱  ,  𝐳   ∣  𝐲  )    q(\mathbf{x},\mathbf{z}\mid\mathbf{y})    and define a generative model      p  θ   ​   (   𝐱  ,  𝐳   ∣  𝐲  )    p_{\theta}(\mathbf{x},\mathbf{z}\mid\mathbf{y})    learned to fit     q  ⁡   (   𝐱  ,  𝐳   ∣  𝐲  )    q(\mathbf{x},\mathbf{z}\mid\mathbf{y})    as follows: 
+ 
+
+  
+  
+  
+      q  ⁡   (   𝐱  ,  𝐳   ∣  𝐲  )    :=      q  ⁡   (  𝐱  ∣  𝐲  )    ⏟   Target   ​     q  ⁡   (  𝐳  ∣  𝐱  )    ⏟   VAE encoder     \displaystyle q(\mathbf{x},\mathbf{z}\mid\mathbf{y}):=\underbrace{q(\mathbf{x}\mid\mathbf{y})}_{\text{Target}}\underbrace{q(\mathbf{z}\mid\mathbf{x})}_{\text{VAE encoder}}    
+  
+  (2)    
+  
+  
+  
+       p  θ   ​   (   𝐱  ,  𝐳   ∣  𝐲  )    :=       p  θ   ​   (  𝐳  ∣  𝐲  )    ⏟   Latent diffusion   ​      p  θ   ​   (  𝐱  ∣   𝐳  ,  𝐲   )    ⏟   VAE decoder     \displaystyle p_{\theta}(\mathbf{x},\mathbf{z}\mid\mathbf{y}):=\underbrace{p_{\theta}(\mathbf{z}\mid\mathbf{y})}_{\text{Latent diffusion}}\underbrace{p_{\theta}(\mathbf{x}\mid\mathbf{z},\mathbf{y})}_{\text{VAE decoder}}    
+  
+  (3)    
+ 
+ Here, the joint distribution     q  ⁡   (   𝐱  ,  𝐳   ∣  𝐲  )    q(\mathbf{x},\mathbf{z}\mid\mathbf{y})    is defined by our target distribution     q  ⁡   (  𝐱  ∣  𝐲  )    q(\mathbf{x}\mid\mathbf{y})    and an off-the-shelf VAE encoder     q  ⁡   (  𝐳  ∣  𝐱  )    q(\mathbf{z}\mid\mathbf{x})   . Our generative VFI model,      p  θ   ​   (   𝐱  ,  𝐳   ∣  𝐲  )    p_{\theta}(\mathbf{x},\mathbf{z}\mid\mathbf{y})   , comprises two key components: i) a latent diffusion (or flow-matching) model      p  θ   ​   (  𝐳  ∣  𝐲  )    p_{\theta}(\mathbf{z}\mid\mathbf{y})    that fits the marginal latent distribution      q  ⁡   (  𝐳  ∣  𝐲  )    =   ∫    q  ⁡   (   𝐱  ,  𝐳   ∣  𝐲  )    ​   𝑑  𝐱      q(\mathbf{z}\mid\mathbf{y})=\int q(\mathbf{x},\mathbf{z}\mid\mathbf{y})\,\mathrm{d}\mathbf{x}   , and ii) a conditional VAE decoder      p  θ   ​   (  𝐱  ∣   𝐳  ,  𝐲   )    p_{\theta}(\mathbf{x}\mid\mathbf{z},\mathbf{y})    that reconstructs the final high-frame-rate video from latents    𝐳  \mathbf{z}   , conditioned on the input low-frame-rate video    𝐲  \mathbf{y}   . We detail our architectural choices in Section   3.3  , including the DiT backbone for      p  θ   ​   (  𝐳  ∣  𝐲  )    p_{\theta}(\mathbf{z}\mid\mathbf{y})   , and a modified VAE decoder for      p  θ   ​   (  𝐱  ∣   𝐳  ,  𝐲   )    p_{\theta}(\mathbf{x}\mid\mathbf{z},\mathbf{y})   . 
+ 
+  
+   Figure 4 :   Qualitative comparisons of     16  ×   16\times    interpolation on SNU-FILM-entire benchmark.  
+ 
+   
+   Figure 5 :   Causal vs. skip-concatenate auto-regressive inference. A bold blue border marks the current chunk being generated, and a blue arrow indicates its context. Darker chunks signify greater error accumulation.  
+ 
+ 
+ 
+ 
+  3.3  Model architecture 
+
+ 
+ We modified a 3D DiT backbone from Wan2.1  [ 51 ]  with local spatio-temporal attention, optimized for latent-space generation under strong video conditioning. Specifically, our modifications include: 1) restricting attention to be local in space but global in time, which enables high-resolution processing while capturing complex motion; 2) introducing nearest-neighbor temporal upsampling for improved LQ information preservation; and 3) injecting LQ video embeddings into the original VAE decoder to better guide the VAE reconstruction. An overview of our model architecture is presented in Figure   2  . 
+ 
+ 
+ Video conditioning 
+
+ 
+ Recent studies have explored multiple strategies for conditioning DiT models on video inputs, including channel concatenation  [ 51 ] , cross-attention  [ 58 ] , and in-context conditioning  [ 4 ] , among others  [ 16 ] . We adopt channel concatenation for its simplicity and the explicit spatio-temporal correspondence it preserves between low-frame-rate input and target high-frame-rate sequences, e.g., missing frames can be represented via zero padding  [ 51 ] . However, prior work  [ 4 ]  has demonstrated that off-the-shelf pretrained VAEs are not robust to such irregularly padded inputs, necessitating VAE retraining to address the induced distribution shift. To this end, we propose a simple alternative:  nearest-neighbor temporal upsampling  combined with a binary mask that identifies positions corresponding to true observed frames. We encode the LQ video using the same VAE encoder as for HQ video, whereas the binary mask is encoded through simple nearest spatial downsampling and a pixel shuffle (time-to-channels) operator for temporal downsampling. By chunking this properly precomputed binary mask consistently with the output video and assigning the corresponding segment to each chunk, our model naturally extends to VFI at arbitrary and non-integer downsampling ratios. 
+ 
+ 
+ 
+ Local VAE encoding 
+
+ 
+ To enable our method to scale to high-resolution videos, we adapt a  spatial tiled VAE encoding  scheme that processes the video in overlapping spatial patches, significantly reducing memory overhead. In contrast to the spatial domain, we employ a  temporal non-overlapping  strategy. The video is partitioned into fixed-length temporal chunks, and each chunk is encoded independently by the VAE. This design provides discrete latent units that are essential for our auto-regressive inference framework, as will be detailed in Section   3.4  . Empirically, we find that this non-overlap encoding introduces no discernible temporal incoherence, and the DiT model is able to learn the temporal continuity between the generated chunks. 
+ 
+ 
+ 
+ Sparse attention mechanism 
+
+ 
+ To manage the computational demands of high-resolution video, we employ a sparse attention strategy within our DiT that leverages the native locality from the tiled VAE encoding. The latent video is naturally partitioned into a grid of spatio-temporal chunks, for which we design a hybrid sparse attention mechanism. For spatial dimensions, we implement a chunk-based sliding window attention. This approach confines attention within local chunks and allows the receptive field to grow efficiently without the quadratic computational cost of full attention. For the temporal dimension, we apply full attention across all chunks within the processing window. Since the temporal length is fixed and relatively short, this enables the model to capture complex, non-local temporal correlations without computational bottlenecks. This hybrid strategy—sparse in space but dense in time—is tailored for video processing, enabling the model to learn intricate motion patterns while remaining scalable. 
+ 
+ 
+   Table 1 :   Quantitative results on SNU-FILM-entire benchmarks. We use  bold  and  underline  to highlight the best and second-best results.  
+ 
+ 
+ 
+  Method  
+  SNU-FILM-4   ×  \times     
+  SNU-FILM-8   ×  \times     
+  SNU-FILM-16   ×  \times      
+ 
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow     
+  VFIPS   ↓  \downarrow     
+  FloLPIPS   ↓  \downarrow     
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow     
+  VFIPS   ↓  \downarrow     
+  FloLPIPS   ↓  \downarrow     
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow     
+  VFIPS   ↓  \downarrow     
+  FloLPIPS   ↓  \downarrow      
+ 
+ 
+ 
+  RIFE  [ 22 ]  [ECCV’22]  
+  0.028  
+  9.02  
+  -90.14  
+  0.047  
+  0.054  
+  25.30  
+  -83.11  
+  0.098  
+  0.110  
+  69.76  
+  -65.41  
+  0.182   
+ 
+  AMT  [ 31 ]  [CVPR’23]  
+  0.125  
+  21.02  
+  -73.08  
+  0.147  
+  0.230  
+  93.31  
+  -43.55  
+  0.283  
+  0.360  
+  263.60  
+  -4.74  
+  0.419   
+ 
+  EMA-VFI  [ 61 ]  [CVPR’23]  
+  0.050  
+  15.28  
+  -86.33  
+  0.069  
+  0.083  
+  38.16  
+  -78.46  
+  0.121  
+  0.115  
+  101.67  
+  -62.93  
+  0.209   
+ 
+  BiM-VFI  [ 45 ]  [CVPR’25]  
+  0.032  
+  10.78  
+  -88.60  
+  0.044  
+  0.046  
+  21.52  
+  -62.92  
+  0.209  
+  0.074  
+  38.26  
+  -72.31  
+  0.118   
+ 
+  EDEN  [ 66 ]  [CVPR’25]  
+  0.021  
+  10.64  
+  -89.16  
+  0.036  
+  0.040  
+  26.03  
+  -82.66  
+  0.070  
+  0.078  
+  58.83  
+  -68.13  
+  0.128   
+ 
+  LDF-VFI  (ours)   
+  0.032  
+  8.21  
+  -87.14  
+  0.042  
+  0.045  
+  15.01  
+  -83.78  
+  0.063  
+  0.078  
+  26.26  
+  -71.48  
+  0.117   
+ 
+ 
+ 
+ 
+   Table 2 :   Quantitative results on X4K-entire benchmark. We use  bold  and  underline  to highlight the best and second-best results.  
+  
+ 
+ 
+ 
+  Method  
+ X4K-16   ×  \times     
+ 
+ LPIPS   ↓  \downarrow    
+ FVD   ↓  \downarrow    
+ VFIPS   ↓  \downarrow    
+ FloLPIPS   ↓  \downarrow     
+ 
+ 
+ 
+ RIFE  [ 22 ]  [ECCV’2022] 
+ 0.176 
+ 328.56 
+ -28.88 
+ 0.201  
+ 
+ AMT  [ 31 ]  [CVPR’2023] 
+ 0.123 
+ 157.29 
+ -55.71 
+ 0.151  
+ 
+ EMA-VFI  [ 61 ]  [CVPR’2023] 
+ 0.109 
+ 76.67 
+ -63.91 
+ 0.158  
+ 
+ BiM-VFI  [ 45 ]  [CVPR’2025] 
+  0.055  
+  69.83  
+  -69.98  
+  0.065   
+ 
+ EDEN  [ 66 ]  [CVPR’2025] 
+ 0.454 
+ 1586.99 
+ 21.23 
+ 0.491  
+ 
+  LDF-VFI  (ours)   
+  0.071  
+  51.41  
+  -64.80  
+  0.082   
+ 
+ 
+  
+ 
+ 
+ 
+ Conditional VAE 
+
+ 
+ To enhance reconstruction quality, we introduce a  conditional VAE decoder  inspired by ControlNet  [ 62 ] . As illustrated in Figure   3  , this architecture uses a dedicated conditional encoder, which mirrors the main decoder’s structure, to extract multi-scale spatio-temporal features from the low-frame-rate input video. These features are then injected into the corresponding layers of the main decoder via zero-initialized convolutional layers and residual connections. This multi-scale conditioning strategy provides fine-grained guidance throughout the reconstruction process, leveraging both global and local details from the input video to significantly improve the temporal coherence and visual quality of the final output. 
+ 
+ 
+ 
+ 
+  3.4  Auto-regressive inference with diffusion forcing 
+
+ 
+ While modeling the full video sequence is ideal, the unbounded length of real-world videos makes it impractical to process the entire sequence at once due to prohibitive memory and computational requirements. To address this scalability challenge, we adopt an  temporal auto-regressive approach  that enables handling videos of arbitrary length with constant memory and computational cost per step, regardless of the total duration, as elaborated below. 
+ 
+ 
+ Diffusion forcing training 
+
+ 
+ We adopt  diffusion forcing   [ 5 ]  at the temporal chunk level to train the DiT. Specifically, we partition the ground-truth video, the upsampled low-frame-rate input, and the corresponding binary mask into a sequence of fixed-length temporal chunks. Instead of applying a single noise level to the entire sequence, we sample an  independent  noise level for each encoded VAE latent of ground-truth chunk. The model then learns to predict the velocity conditioned on other chunks at  arbitrary noise levels . This allows the model to predict the velocity conditioned on cleaned, previous generated chunks, enabling auto-regressive sampling at the inference time. 
+ 
+ 
+ 
+ Skip-concatenate sampling 
+
+ 
+ To mitigate the error accumulation in AR inference, we introduce the  skip-concatenate sampling  strategy that achieves error accumulation at a constant level, regardless of the duration of the generated video. Our key insight is that for a strongly conditioned task like VFI, generating a new segment without referring to previous context will not introduce significant incoherence, as the global structure of the video has already been determined by the strong input condition. Therefore, we can generate an independent segment to reset the generative state and suppress accumulated errors. As illustrated in Figure   5  , unlike previous works that adapt the causal auto-regressive order  [ 21 ] , our method first generates a  skip chunk  independent of the most recent context, breaking the dependency chain to prevent error propagation. It then generates a  concatenate chunk  conditioned on both the previous skip chunk and the new skip chunk, bridging the temporal gap to ensure temporal coherence. By periodically resetting the generative context with an independent skip chunk, this strategy effectively curbs long-term error accumulation while maintaining temporal continuity. 
+ 
+ 
+ 
+ 
+ 
+  4  Experiments 
+
+ 
+  4.1  Implementation Details 
+
+ 
+ DiT training 
+
+ 
+ We train our DiT model on the large-scale LAVIB  [ 49 ]  dataset. The model is initialized from pretrained WAN2.1 T2V model and is trained for 16,000 steps with a total batch size of 256, using flow matching loss (Eq.   1  ) with timestep shift of 5  [ 13 ] . We use a fixed spatio-temporal resolution of     60  ×  512  ×  512   60\times 512\times 512    by applying random spatial cropping. The spatial tiling size is set to     256  ×  256   256\times 256    with a stride of 192, and the temporal chunk length is 20 frames. The temporal downsample factors for generating LQ videos are uniformly sampled from 2 to 16. We use AdamW optimizer and a constant learning rate schedule of 5e-5 with a ramp-up of 0.5 million samples. 
+ 
+ 
+ 
+ VAE training 
+
+ 
+ We finetune the VAE decoder from Wan2.1  [ 51 ]  on the LAVIB dataset, keeping its encoder frozen. Following  [ 42 ] , the VAE is trained with a composite loss function comprising an L1 loss, a perceptual LPIPS loss  [ 63 ] , an adversarial loss  [ 24 ] , and a KL-divergence penalty to regularize the latent space. These components are weighted by 1.0, 1.0, 0.5, and 1.0e-6, respectively. The training runs for 10,000 steps with a batch size of 256 and a learning rate of 2e-5 for both the VAE and discriminator. The discriminator is activated after 5,000 training steps. We use a fixed resolution of     256  ×  256   256\times 256    and a temporal sequence length of 17 frames. Same as training DiT, the temporal downsample factors for generating LQ videos are uniformly sampled from 2 to 16. 
+ 
+ 
+ 
+ Inference 
+
+ 
+ All the results are obtained using Euler ODE solver of 16 sampling steps with timestep shift of 8. To address the challenge of processing ultra-high-resolution (e.g., 4K) videos, we leverage  Ulysses Sequence Parallelism (USP)   [ 25 ] , which distributes the computation of a single long token sequence across multiple GPUs. Experiments show that using USP on two 80GB GPUs is sufficient for performing inference on 4K resolution videos. In the experiments, we use 4 GPUs for 4K resolution to further accelerate inference. 
+ 
+ 
+ 
+ Datasets 
+
+ 
+ Our model operates on video chunks rather than adjacent frames, which makes direct comparison with prior works on conventional frame-centric benchmarks challenging, as these benchmarks typically only provide pairs of adjacent frames for each test case  [ 57 ,  9 ,  46 ] . To address this limitation, we introduce two new video-centric benchmarks: SNU-FILM-entire and X4K-entire based on SNU-FILM  [ 9 ]  and X4K1000FPS  [ 46 ]  datasets, respectively. Specifically, for SNU-FILM-entire benchmark, we downsample each test video from the SNU-FILM dataset for     4  ×   4\times   ,     8  ×   8\times   , and     16  ×   16\times   , to construct low-frame-rate input videos. For X4K-entire, we downsample each test video from the X4K1000FPS dataset only for     16  ×   16\times    to construct low-frame-rate input videos since we observed that     4  ×   4\times   ,     8  ×   8\times    is relatively easy for current methods. Importantly, evaluated methods are allowed to access  entire low-frame-rate videos  on these benchmarks. This not only allows for a comprehensive evaluation of our model’s capabilities but also aims to foster future VFI research that can exploit broader temporal contexts beyond immediately adjacent frames. 
+ 
+ 
+ 
+ Metrics 
+
+ 
+ We report four metrics that jointly assess per-frame fidelity and temporal coherence: LPIPS  [ 63 ] , FVD  [ 53 ] , VFIPS  [ 20 ] , and FloLPIPS  [ 11 ] . We prioritize these metrics over conventional PSNR/SSIM because pixel-wise metrics correlate poorly with human perception  [ 63 ] , and generative models often achieve worse scores despite being rated better by human observers  [ 55 ,  26 ] . 
+ 
+ 
+ 
+ 
+  4.2  Comparison with prior work 
+
+ 
+ Baselines 
+
+ 
+ We compare against representative and widely-adopted VFI methods that support  arbitrary-timestep VFI , including optical flow-based RIFE  [ 22 ] , AMT  [ 31 ] , EMA-VFI  [ 61 ] , BiM-VFI  [ 45 ] , and diffusion-based EDEN  [ 66 ] . As these models accept only adjacent frames, we run them frame-by-frame over the entire sequence to obtain the high-frame-rate videos. For EDEN, we achieve VFI beyond     2  ×   2\times    via recursive inference. 
+ 
+ 
+ 
+ Quantitative results. 
+
+ 
+ As shown in Tables   1   and   2  , LDF-VFI demonstrates superior performance across multiple challenging benchmarks. Notably, it achieves state-of-the-art FVD scores across all evaluated settings—including SNU-FILM (    4  ×   4\times   ,     8  ×   8\times   ,     16  ×   16\times   ) and X4K (    16  ×   16\times   )—while maintaining highly competitive VFIPS and FloLPIPS scores. The strong performance on these motion-aware metrics underscores the effectiveness of our video-centric approach in modeling and synthesizing large, complex motions. Furthermore, our significant improvements in motion-aware metrics over EDEN, a frame-centric diffusion-based baseline, highlight the inherent advantages of a video-centric paradigm. Finally, our method remains highly competitive in terms of per-frame visual quality, achieving LPIPS scores comparable to those of leading baselines. 
+ 
+ 
+ 
+ Qualitative results 
+
+ 
+ Figure   4   provides a qualitative comparison of our method against other VFI techniques on the SNU-FILM benchmark for     16  ×   16\times    interpolation. In challenging scenes with large and complex motion—such as the rapid flapping of a bird’s wings or the fast movement of human legs. Our LDF-VFI generates significantly more plausible and temporally consistent intermediate frames. For instance, while baseline methods produce blurry or distorted results for the moving objects, our method successfully synthesizes sharp and coherent frames. This demonstrates the effectiveness of our approach in capturing long-range motion dynamics and preserving visual quality, even at high interpolation rates. 
+ 
+ 
+   Table 3 :   Ablation study on model components. We conduct study on auto-regressive (AR) order (“causal”: conventional causal sampling v.s. “skip-concate”: proposed skip-concatenate sampling), and VAE type (“Uncond.”: original WAN2.1 VAE decoder v.s. “Cond.”: proposed conditional VAE decoder).  
+ 
+ 
+ 
+  AR order  
+  VAE type  
+ SNU-FILM-4   ×  \times    
+ SNU-FILM-8   ×  \times    
+ SNU-FILM-16   ×  \times    
+ Averaged  
+ 
+ LPIPS   ↓  \downarrow    
+ FVD   ↓  \downarrow    
+ LPIPS   ↓  \downarrow    
+ FVD   ↓  \downarrow    
+ LPIPS   ↓  \downarrow    
+ FVD   ↓  \downarrow    
+ LPIPS   ↓  \downarrow    
+ FVD   ↓  \downarrow     
+ 
+ 
+ 
+ Causal 
+ Uncond. 
+ 0.045 
+ 14.22 
+ 0.055 
+ 19.48 
+ 0.087 
+ 34.32 
+ 0.062 
+ 22.67  
+ 
+ Skip-concate 
+ Uncond. 
+ 0.043 
+ 9.05 
+ 0.053 
+  14.55  
+ 0.084 
+ 27.55 
+ 0.060  (   ↓  \downarrow   3.2%)  
+ 17.05  (   ↓  \downarrow   24.8%)   
+ 
+  Skip-concate  
+  Cond.  
+  0.032  
+  8.21  
+  0.045  
+  15.01  
+  0.078  
+  26.26  
+  0.051   (   ↓  \downarrow   17.8%)    
+  16.49   (   ↓  \downarrow   27.2%)     
+ 
+ 
+ 
+  
+   Figure 6 :   Temporal coherence analysis (non-AR vs. skip-concatenate AR). Spatio-temporal slices and mean     L  1   L_{1}    pixel differences between adjacent frames show that our skip-concatenate approach resolves discontinuity artifacts at chunk boundaries.  
+ 
+ 
+   Table 4 :   Inference efficiency comparisons. Running Time (RT) indicates the average generation time per frame on an NVIDIA H100 GPU (      ×  4   \times 4    denotes USP on 4 GPUs).  
+ 
+ 
+ 
+  Method  
+  SNU-FILM-8   ×  \times     
+  X4K-16   ×  \times      
+ 
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow     
+  RT (s)   ↓  \downarrow     
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow     
+  RT (s)   ↓  \downarrow      
+ 
+  BiM-VFI  
+  0.046  
+  21.52  
+  0.15  
+  0.055  
+  69.83  
+  1.4   
+ 
+  EDEN (2 steps)  
+  0.040  
+  26.03  
+  0.26  
+  0.454  
+  1586.99  
+  4.8   
+ 
+  LDF-VFI (2 steps)  
+  0.046  
+  21.25  
+  0.42  
+  0.087  
+  50.63  
+  2.0    ×  \times   4   
+ 
+  LDF-VFI (4 steps)  
+  0.045  
+  19.00  
+  0.84  
+  0.074  
+  48.45  
+  4.0    ×  \times   4   
+ 
+  LDF-VFI (8 steps)  
+  0.044  
+  16.85  
+  1.68  
+  0.074  
+  51.60  
+  8.1    ×  \times   4   
+ 
+  LDF-VFI (16 steps)  
+  0.045  
+  15.01  
+  3.36  
+  0.071  
+  51.41  
+  16.3    ×  \times   4   
+ 
+ 
+ 
+ 
+   Table 5 :   Comparative analysis of Full attention vs. Sparse attention. Evaluated at 6K training steps and 4 sampling steps.  
+ 
+ 
+ 
+  Attention  
+  SNU-FILM-8   ×  \times     
+  X4K-16   ×  \times      
+ 
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow     
+  RT (s)   ↓  \downarrow     
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow     
+  RT (s)   ↓  \downarrow      
+ 
+ 
+ 
+  Full  
+  0.074  
+  31.73  
+  4.68  
+  0.468  
+  772.32  
+  22.6    ×  \times    4   
+ 
+  Sparse  
+  0.070  
+  24.98  
+  3.36  
+  0.157  
+  120.40  
+  4.0    ×  \times    4   
+ 
+ 
+ 
+ 
+ 
+ 
+  4.3  Ablation study 
+
+ 
+ Effectiveness of skip-concatenate sampling 
+
+ 
+ Table   3   contrasts the conventional causal AR order with our proposed  skip-concatenate  order. We observe that the skip-concatenate sampling strategy primarily improves temporal stability, yielding a significant reduction in FVD (e.g., from 22.67 to 17.05). This confirms that the proposed sampling order effectively mitigates temporal drift during auto-regressive generation. Furthermore, as shown in Figure   6  , we visualize spatio-temporal slices extracted along the time axis to compare with a non-AR baseline (using all skip chunks). Our AR approach with skip-concatenate effectively suppresses discontinuous jumps in temporal mean     L  1   L_{1}    pixel differences between adjacent frames (     D  t   =    ‖    I  t   −   I   t  −  1     ‖   1    D_{t}=\|I_{t}-I_{t-1}\|_{1}   ), avoiding the inconsistency artifacts observed in completely independent chunk generation. 
+ 
+ 
+ 
+ Effectiveness of conditional VAE 
+
+ 
+ Table   3   shows that the conditional VAE further boosts visual quality over the unconditioned WAN2.1 decoder, primarily improving perceptual metrics like LPIPS. By injecting low-frame-rate (LQ) video embeddings throughout the multiscale features, the conditional VAE achieves sharper spatial fidelity. Together with the skip-concatenate sampling, it provides both superior temporal consistency and high per-frame quality. 
+ 
+ 
+ 
+ Computational cost and attention mechanism 
+
+ 
+ Table   4   presents an inference efficiency comparison measured by the running time (RT) per generated frame on a single H100 GPU. By adjusting the sampling steps, LDF-VFI flexibly trades off visual quality for computational speed, remaining highly competitive even at just 2 steps. Furthermore, we examine the impact of full versus sparse attention in Table   5  . For a fair comparison under high-resolution conditions, we analyze models with 6K training steps and 4 sampling steps. Full attention fails to generalize effectively to 4K resolution and requires significant longer RT. In contrast, our sparse attention dramatically reduces inference time and effectively generalize to 4K resolution, demonstrating its necessity for efficient scalability. 
+ 
+ 
+   Table 6 :   Key frame VAE reconstruction performance under different temporal upsampling on SNU-FILM-4   ×  \times    dataset. The results are averaged over 16 test videos of 17 frames.  
+ 
+ 
+ 
+  Method  
+  PSNR   ↑  \uparrow     
+  LPIPS   ↓  \downarrow     
+     L  1   L_{1}      ↓  \downarrow     
+ 
+ 
+ 
+  Zero padding  
+  28.40  
+  0.011  
+  0.004   
+ 
+  Nearest-neighbor  
+  30.87  
+  0.006  
+  0.002   
+ 
+ 
+ 
+ 
+ 
+ Effectiveness of nearest-neighbor upsampling 
+
+ 
+ Table   6   shows that the proposed nearest-neighbor upsampling strategy minimizes the reconstruction error of key frames and consistently outperforms conventional zero-padding upsampling across all evaluation metrics. 
+ 
+ 
+ 
+ 
+ 
+  5  Conclusion 
+
+ 
+ In this paper, we propose LDF-VFI, a holistic, video-centric framework that overcomes the fundamental limitations of conventional frame-centric VFI. Built upon an auto-regressive diffusion transformer, our approach leverages a novel skip-concatenate sampling strategy to effectively suppress error propagation, enabling temporally stable generation for videos of arbitrary length. Furthermore, we designed a conditional VAE decoder that incorporates LQ video information to further enhance reconstruction fidelity. Extensive evaluations on challenging video-centric benchmarks demonstrate that LDF-VFI achieves state-of-the-art performance. Our work marks a meaningful step toward exploring novel video-centric formulations for VFI. 
+ 
+ 
+ 
+ Acknowledgments 
+
+ 
+ This work was supported in part by the National Natural Science Foundation of China under Grant 62431017, Grant 62125109, Grant 62401357, Grant 62320106003, Grant U24A20251, Grant 62371288, in part by the National Key R&amp;D Program of China under Grant 2025YFF0515602, and in part by the Fundamental and Interdisciplinary Disciplines Breakthrough Plan of the Ministry of Education of China (JYB2025XDXM611). 
+ 
+ 
+ 
+ References 
+
+ 
+  [1] 
+  S. Bengio, O. Vinyals, N. Jaitly, and N. Shazeer   (2015) 
+ 
+  Scheduled sampling for sequence prediction with recurrent neural networks .
+ 
+  Advances in neural information processing systems   28 .
+ 
+ Cited by:   §2.2  .
+  
+  [2] 
+  T. Brooks, B. Peebles, C. Holmes, W. DePue, Y. Guo, L. Jing, D. Schnurr, J. Taylor, T. Luhman, E. Luhman, C. Ng, R. Wang, and A. Ramesh   (2024) 
+ 
+  Video generation models as world simulators .
+ 
+  OpenAI .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §3.2  .
+  
+  [3] 
+  T. Brown, B. Mann, N. Ryder, M. Subbiah, J. D. Kaplan, P. Dhariwal, A. Neelakantan, P. Shyam, G. Sastry, A. Askell,  et al.    (2020) 
+ 
+  Language models are few-shot learners .
+ 
+  Advances in neural information processing systems   33 ,  pp. 1877–1901 .
+ 
+ Cited by:   §2.2  .
+  
+  [4] 
+  M. Cai, Q. Wang, Z. Ye, W. Liu, Q. Liu, W. Ye, X. Wang, P. Wan, K. Gai, and X. Yue   (2025) 
+ 
+  VideoCanvas: unified video completion from arbitrary spatiotemporal patches via in-context conditioning .
+ 
+  arXiv preprint arXiv:2510.08555 .
+ 
+ Cited by:   §3.3  .
+  
+  [5] 
+  B. Chen, D. Martí Monsó, Y. Du, M. Simchowitz, R. Tedrake, and V. Sitzmann   (2024) 
+ 
+  Diffusion forcing: next-token prediction meets full-sequence diffusion .
+ 
+  Advances in neural information processing systems   37 ,  pp. 24081–24125 .
+ 
+ Cited by:   §2.2  ,
+  §3.4  .
+  
+  [6] 
+  M. Chen, A. Radford, R. Child, J. Wu, H. Jun, D. Luan, and I. Sutskever   (2020) 
+ 
+  Generative pretraining from pixels .
+ 
+ In  International conference on machine learning ,
+ 
+  pp. 1691–1703 .
+ 
+ Cited by:   §2.2  .
+  
+  [7] 
+  X. Chen, Z. Wu, X. Liu, Z. Pan, W. Liu, Z. Xie, X. Yu, and C. Ruan   (2025) 
+ 
+  Janus-pro: unified multimodal understanding and generation with data and model scaling .
+ 
+  arXiv preprint arXiv:2501.17811 .
+ 
+ Cited by:   §2.2  .
+  
+  [8] 
+  Z. Chen, Y. Chen, J. Liu, X. Xu, V. Goel, Z. Wang, H. Shi, and X. Wang   (2022) 
+ 
+  VideoINR: learning video implicit neural representation for continuous space-time super-resolution .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 2047–2057 .
+ 
+ Cited by:   §1  .
+  
+  [9] 
+  M. Choi, H. Kim, B. Han, N. Xu, and K. M. Lee   (2020) 
+ 
+  Channel attention is all you need for video frame interpolation .
+ 
+ In  Proceedings of the AAAI conference on artificial intelligence ,
+ 
+ Vol.  34 ,  pp. 10663–10671 .
+ 
+ Cited by:   §4.1  .
+  
+  [10] 
+  Y. Cui, H. Chen, H. Deng, X. Huang, X. Li, J. Liu, Y. Liu, Z. Luo, J. Wang, W. Wang,  et al.    (2025) 
+ 
+  Emu3. 5: native multimodal models are world learners .
+ 
+  arXiv preprint arXiv:2510.26583 .
+ 
+ Cited by:   §2.2  .
+  
+  [11] 
+  D. Danier, F. Zhang, and D. Bull   (2022) 
+ 
+  FloLPIPS: a bespoke video quality metric for frame interpolation .
+ 
+  arXiv preprint arXiv:2207.08119 .
+ 
+ Cited by:   §4.1  .
+  
+  [12] 
+  D. Danier, F. Zhang, and D. Bull   (2024) 
+ 
+  Ldmvfi: video frame interpolation with latent diffusion models .
+ 
+ In  Proceedings of the AAAI Conference on Artificial Intelligence ,
+ 
+ Vol.  38 ,  pp. 1472–1480 .
+ 
+ Cited by:   §1  ,
+  §2.1  .
+  
+  [13] 
+  P. Esser, S. Kulal, A. Blattmann, R. Entezari, J. Müller, H. Saini, Y. Levi, D. Lorenz, A. Sauer, F. Boesel,  et al.    (2024) 
+ 
+  Scaling rectified flow transformers for high-resolution image synthesis .
+ 
+ In  Forty-first international conference on machine learning ,
+ 
+ Cited by:   §4.1  .
+  
+  [14] 
+  P. Esser, R. Rombach, and B. Ommer   (2021) 
+ 
+  Taming transformers for high-resolution image synthesis .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 12873–12883 .
+ 
+ Cited by:   §2.2  .
+  
+  [15] 
+  Z. Guo, W. Li, and C. C. Loy   (2024) 
+ 
+  Generalizable implicit motion modeling for video frame interpolation .
+ 
+ In  Advances in neural information processing systems ,
+ 
+ Vol.  37 ,  pp. 63747–63770 .
+ 
+ Cited by:   §3.2  .
+  
+  [16] 
+  Y. HaCohen, N. Chiprut, B. Brazowski, D. Shalem, D. Moshe, E. Richardson, E. Levin, G. Shiran, N. Zabari, O. Gordon,  et al.    (2024) 
+ 
+  Ltx-video: realtime video latent diffusion .
+ 
+  arXiv preprint arXiv:2501.00103 .
+ 
+ Cited by:   §3.3  .
+  
+  [17] 
+  J. Han, J. Liu, Y. Jiang, B. Yan, Y. Zhang, Z. Yuan, B. Peng, and X. Liu   (2025) 
+ 
+  Infinity: scaling bitwise autoregressive modeling for high-resolution image synthesis .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 15733–15744 .
+ 
+ Cited by:   §2.2  ,
+  §2.2  .
+  
+  [18] 
+  J. Ho, A. Jain, and P. Abbeel   (2020) 
+ 
+  Denoising diffusion probabilistic models .
+ 
+  Advances in neural information processing systems   33 ,  pp. 6840–6851 .
+ 
+ Cited by:   §3.1  .
+  
+  [19] 
+  F. Hong, J. Yao, Y. Shen, D. Li, Y. Zhang, and Y. Wang   (2026) 
+ 
+  Improving diffusion models for class-imbalanced training data via capacity manipulation .
+ 
+ In  The Fourteenth international conference on learning representations ,
+ 
+ Cited by:   §3.1  .
+  
+  [20] 
+  Q. Hou, A. Ghildyal, and F. Liu   (2022) 
+ 
+  A perceptual quality metric for video frame interpolation .
+ 
+ In  European conference on computer vision ,
+ 
+  pp. 234–253 .
+ 
+ Cited by:   §4.1  .
+  
+  [21] 
+  X. Huang, Z. Li, G. He, M. Zhou, and E. Shechtman   (2025) 
+ 
+  Self forcing: bridging the train-test gap in autoregressive video diffusion .
+ 
+  arXiv preprint arXiv:2506.08009 .
+ 
+ Cited by:   §2.2  ,
+  §3.4  .
+  
+  [22] 
+  Z. Huang, T. Zhang, W. Heng, B. Shi, and S. Zhou   (2022) 
+ 
+  Real-time intermediate flow estimation for video frame interpolation .
+ 
+ In  European conference on computer vision ,
+ 
+  pp. 624–642 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  §3.2  ,
+  Table 1  ,
+  Table 2  ,
+  §4.2  .
+  
+  [23] 
+  Z. Huang, Y. Yu, L. Yang, C. Qin, B. Zheng, X. Zheng, Z. Zhou, Y. Wang, and W. Yang   (2024) 
+ 
+  Motion-aware latent diffusion models for video frame interpolation .
+ 
+ In  Proceedings of the 32nd ACM International Conference on Multimedia ,
+ 
+  pp. 1043–1052 .
+ 
+ Cited by:   §1  ,
+  §2.1  .
+  
+  [24] 
+  P. Isola, J. Zhu, T. Zhou, and A. A. Efros   (2017) 
+ 
+  Image-to-image translation with conditional adversarial networks .
+ 
+ In  Proceedings of the IEEE conference on computer vision and pattern recognition ,
+ 
+  pp. 1125–1134 .
+ 
+ Cited by:   §4.1  .
+  
+  [25] 
+  S. A. Jacobs, M. Tanaka, C. Zhang, M. Zhang, S. L. Song, S. Rajbhandari, and Y. He   (2023) 
+ 
+  Deepspeed ulysses: system optimizations for enabling training of extreme long sequence transformer models .
+ 
+  arXiv preprint arXiv:2309.14509 .
+ 
+ Cited by:   §4.1  .
+  
+  [26] 
+  S. Jain, D. Watson, E. Tabellion, B. Poole, J. Kontkanen,  et al.    (2024) 
+ 
+  Video interpolation with diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 7341–7351 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  §4.1  .
+  
+  [27] 
+  X. Jin, L. Wu, J. Chen, Y. Chen, J. Koo, and C. Hahm   (2023) 
+ 
+  A unified pyramid recurrent network for video frame interpolation .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 1578–1587 .
+ 
+ Cited by:   §3.2  .
+  
+  [28] 
+  H. Lee, T. Kim, T. Chung, D. Pak, Y. Ban, and S. Lee   (2020) 
+ 
+  Adacof: adaptive collaboration of flows for video frame interpolation .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 5316–5325 .
+ 
+ Cited by:   §2.1  .
+  
+  [29] 
+  H. Li, X. Peng, Y. Wang, Z. Peng, X. Chen, R. Weng, J. Wang, X. Cai, W. Dai, and H. Xiong   (2025) 
+ 
+  Onecat: decoder-only auto-regressive model for unified understanding and generation .
+ 
+  arXiv preprint arXiv:2509.03498 .
+ 
+ Cited by:   §2.2  .
+  
+  [30] 
+  H. Li, C. Tian, J. Shao, X. Zhu, Z. Wang, J. Zhu, W. Dou, X. Wang, H. Li, L. Lu,  et al.    (2025) 
+ 
+  Synergen-vl: towards synergistic image understanding and generation with vision experts and token folding .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 29767–29779 .
+ 
+ Cited by:   §2.2  .
+  
+  [31] 
+  Z. Li, Z. Zhu, L. Han, Q. Hou, C. Guo, and M. Cheng   (2023) 
+ 
+  AMT: all-pairs multi-field transforms for efficient frame interpolation .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 9801–9810 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  §3.2  ,
+  Table 1  ,
+  Table 2  ,
+  §4.2  .
+  
+  [32] 
+  Z. Li, S. Hu, S. Liu, L. Zhou, J. Choi, L. Meng, X. Guo, J. Li, H. Ling, and F. Wei   (2025) 
+ 
+  Arlon: boosting diffusion transformers with autoregressive models for long video generation .
+ 
+ In  The Thirteenth international conference on learning representations ,
+ 
+ Cited by:   §2.2  .
+  
+  [33] 
+  Y. Lipman, R. T. Chen, H. Ben-Hamu, M. Nickel, and M. Le   (2022) 
+ 
+  Flow matching for generative modeling .
+ 
+  arXiv preprint arXiv:2210.02747 .
+ 
+ Cited by:   §3.1  .
+  
+  [34] 
+  C. Liu, G. Zhang, R. Zhao, and L. Wang   (2024) 
+ 
+  Sparse global matching for video frame interpolation with large motion .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 19125–19134 .
+ 
+ Cited by:   §2.1  .
+  
+  [35] 
+  J. Liu, J. Han, B. Yan, H. Wu, F. Zhu, X. Wang, Y. Jiang, B. Peng, and Z. Yuan   (2025) 
+ 
+  Infinitystar: unified spacetime autoregressive modeling for visual generation .
+ 
+  arXiv preprint arXiv:2511.04675 .
+ 
+ Cited by:   §2.2  .
+  
+  [36] 
+  Z. Lyu, M. Li, J. Jiao, and C. Chen   (2024) 
+ 
+  Frame interpolation with consecutive brownian bridge diffusion .
+ 
+ In  Proceedings of the 32nd ACM International Conference on Multimedia ,
+ 
+  pp. 3449–3458 .
+ 
+ Cited by:   §1  ,
+  §2.1  .
+  
+  [37] 
+  S. Niklaus and F. Liu   (2018) 
+ 
+  Context-aware synthesis for video frame interpolation .
+ 
+ In  Proceedings of the IEEE conference on computer vision and pattern recognition ,
+ 
+  pp. 1701–1710 .
+ 
+ Cited by:   §2.1  .
+  
+  [38] 
+  S. Niklaus, L. Mai, and F. Liu   (2017) 
+ 
+  Video frame interpolation via adaptive separable convolution .
+ 
+ In  Proceedings of the IEEE international conference on computer vision ,
+ 
+  pp. 261–270 .
+ 
+ Cited by:   §2.1  .
+  
+  [39] 
+  W. Peebles and S. Xie   (2023) 
+ 
+  Scalable diffusion models with transformers .
+ 
+ In  Proceedings of the IEEE/CVF international conference on computer vision ,
+ 
+  pp. 4195–4205 .
+ 
+ Cited by:   §1  .
+  
+  [40] 
+  Z. Peng, Z. Xu, Q. Liu, X. Yang, and W. Shen   (2025) 
+ 
+  HyperET: efficient training in hyperbolic space for multi-modal large language models .
+ 
+  Advances in neural information processing systems .
+ 
+ Cited by:   §2.2  .
+  
+  [41] 
+  M. Ranzato, S. Chopra, M. Auli, and W. Zaremba   (2015) 
+ 
+  Sequence level training with recurrent neural networks .
+ 
+  arXiv preprint arXiv:1511.06732 .
+ 
+ Cited by:   §2.2  .
+  
+  [42] 
+  R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer   (2022) 
+ 
+  High-resolution image synthesis with latent diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 10684–10695 .
+ 
+ Cited by:   §3.2  ,
+  §4.1  .
+  
+  [43] 
+  D. Ruhe, J. Heek, T. Salimans, and E. Hoogeboom   (2024) 
+ 
+  Rolling diffusion models .
+ 
+  arXiv preprint arXiv:2402.09470 .
+ 
+ Cited by:   §2.2  .
+  
+  [44] 
+  F. Schmidt   (2019) 
+ 
+  Generalization in generation: a closer look at exposure bias .
+ 
+  arXiv preprint arXiv:1910.00292 .
+ 
+ Cited by:   §1  ,
+  §2.2  .
+  
+  [45] 
+  W. Seo, J. Oh, and M. Kim   (2025) 
+ 
+  BiM-vfi: bidirectional motion field-guided frame interpolation for video with non-uniform motions .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 7244–7253 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  Table 1  ,
+  Table 2  ,
+  §4.2  .
+  
+  [46] 
+  H. Sim, J. Oh, and M. Kim   (2021) 
+ 
+  XVFI: extreme video frame interpolation .
+ 
+ In  Proceedings of the IEEE/CVF international conference on computer vision ,
+ 
+  pp. 14489–14498 .
+ 
+ Cited by:   §4.1  .
+  
+  [47] 
+  U. Singer, A. Polyak, T. Hayes, X. Yin, J. An, S. Zhang, Q. Hu, H. Yang, O. Ashual, O. Gafni, D. Parikh, S. Gupta, and Y. Taigman   (2022) 
+ 
+  Make-A-Video: text-to-video generation without text-video data .
+ 
+  arXiv preprint arXiv:2209.14792 .
+ 
+ Cited by:   §1  .
+  
+  [48] 
+  Y. Song, J. Sohl-Dickstein, D. P. Kingma, A. Kumar, S. Ermon, and B. Poole   (2020) 
+ 
+  Score-based generative modeling through stochastic differential equations .
+ 
+  arXiv preprint arXiv:2011.13456 .
+ 
+ Cited by:   §3.1  .
+  
+  [49] 
+  A. Stergiou   (2024) 
+ 
+  LAVIB: a large-scale video interpolation benchmark .
+ 
+ In  Advances in neural information processing systems ,
+ 
+ Vol.  37 ,  pp. 29091–29105 .
+ 
+ Cited by:   §4.1  .
+  
+  [50] 
+  M. L. Team, X. Cai, Q. Huang, Z. Kang, H. Li, S. Liang, L. Ma, S. Ren, X. Wei, R. Xie,  et al.    (2025) 
+ 
+  LongCat-video technical report .
+ 
+  arXiv preprint arXiv:2510.22200 .
+ 
+ Cited by:   §1  .
+  
+  [51] 
+  W. Team   (2025) 
+ 
+  Wan: open and advanced large-scale video generative models .
+ 
+  arXiv preprint arXiv:2503.20314 .
+ 
+ Cited by:   §3.2  ,
+  §3.3  ,
+  §3.3  ,
+  §4.1  .
+  
+  [52] 
+  K. Tian, Y. Jiang, Z. Yuan, B. Peng, and L. Wang   (2024) 
+ 
+  Visual autoregressive modeling: scalable image generation via next-scale prediction .
+ 
+  Advances in neural information processing systems   37 ,  pp. 84839–84865 .
+ 
+ Cited by:   §2.2  .
+  
+  [53] 
+  T. Unterthiner, S. Van Steenkiste, K. Kurach, R. Marinier, M. Michalski, and S. Gelly   (2018) 
+ 
+  Towards accurate generative models of video: a new metric &amp; challenges .
+ 
+  arXiv preprint arXiv:1812.01717 .
+ 
+ Cited by:   §4.1  .
+  
+  [54] 
+  X. Wang, X. Zhang, Z. Luo, Q. Sun, Y. Cui, J. Wang, F. Zhang, Y. Wang, Z. Li, Q. Yu,  et al.    (2024) 
+ 
+  Emu3: next-token prediction is all you need .
+ 
+  arXiv preprint arXiv:2409.18869 .
+ 
+ Cited by:   §2.2  .
+  
+  [55] 
+  D. Watson, W. Chan, R. Martin-Brualla, J. Ho, A. Tagliasacchi, and M. Norouzi   (2022) 
+ 
+  Novel view synthesis with diffusion models .
+ 
+  arXiv preprint arXiv:2210.04628 .
+ 
+ Cited by:   §4.1  .
+  
+  [56] 
+  D. Xie, Z. Xu, Y. Hong, H. Tan, D. Liu, F. Liu, A. Kaufman, and Y. Zhou   (2025) 
+ 
+  Progressive autoregressive video diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 6322–6332 .
+ 
+ Cited by:   §2.2  .
+  
+  [57] 
+  T. Xue, B. Chen, J. Wu, D. Wei, and W. T. Freeman   (2019) 
+ 
+  Video enhancement with task-oriented flow .
+ 
+  International Journal of Computer Vision   127  ( 8 ),  pp. 1106–1125 .
+ 
+ Cited by:   §4.1  .
+  
+  [58] 
+  Z. Ye, H. Huang, X. Wang, P. Wan, D. Zhang, and W. Luo   (2025) 
+ 
+  Stylemaster: stylize your video with artistic generation and translation .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 2630–2640 .
+ 
+ Cited by:   §3.3  .
+  
+  [59] 
+  L. Yu, J. Lezama, N. B. Gundavarapu, L. Versari, K. Sohn, D. Minnen, Y. Cheng, V. Birodkar, A. Gupta, X. Gu,  et al.    (2023) 
+ 
+  Language model beats diffusion–tokenizer is key to visual generation .
+ 
+  arXiv preprint arXiv:2310.05737 .
+ 
+ Cited by:   §2.2  .
+  
+  [60] 
+  G. Zhang, C. Liu, Y. Cui, X. Zhao, K. Ma, and L. Wang   (2024) 
+ 
+  Vfimamba: video frame interpolation with state space models .
+ 
+  Advances in Neural Information Processing Systems   37 ,  pp. 107225–107248 .
+ 
+ Cited by:   §2.1  .
+  
+  [61] 
+  G. Zhang, Y. Zhu, H. Wang, Y. Chen, G. Wu, and L. Wang   (2023) 
+ 
+  Extracting motion and appearance via inter-frame attention for efficient video frame interpolation .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 5682–5692 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  §3.2  ,
+  Table 1  ,
+  Table 2  ,
+  §4.2  .
+  
+  [62] 
+  L. Zhang, A. Rao, and M. Agrawala   (2023) 
+ 
+  Adding conditional control to text-to-image diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF international conference on computer vision ,
+ 
+  pp. 3836–3847 .
+ 
+ Cited by:   §3.3  .
+  
+  [63] 
+  R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang   (2018) 
+ 
+  The unreasonable effectiveness of deep features as a perceptual metric .
+ 
+ In  Proceedings of the IEEE conference on computer vision and pattern recognition ,
+ 
+  pp. 586–595 .
+ 
+ Cited by:   §4.1  ,
+  §4.1  .
+  
+  [64] 
+  T. Zhang, S. Bi, Y. Hong, K. Zhang, F. Luan, S. Yang, K. Sunkavalli, W. T. Freeman, and H. Tan   (2025) 
+ 
+  Test-time training done right .
+ 
+  arXiv preprint arXiv:2505.23884 .
+ 
+ Cited by:   §2.2  .
+  
+  [65] 
+  Y. Zhang, J. Jiang, G. Ma, Z. Lu, H. Huang, J. Yuan, and N. Duan   (2025) 
+ 
+  Generative pre-trained autoregressive diffusion transformer .
+ 
+  arXiv preprint arXiv:2505.07344 .
+ 
+ Cited by:   §2.2  .
+  
+  [66] 
+  Z. Zhang, H. Chen, H. Zhao, G. Lu, Y. Fu, H. Xu, and Z. Wu   (2025) 
+ 
+  Eden: enhanced diffusion for high-quality large-motion video frame interpolation .
+ 
+ In  Proceedings of the IEEE/CVF conference on computer vision and pattern recognition ,
+ 
+  pp. 2105–2115 .
+ 
+ Cited by:   §1  ,
+  §2.1  ,
+  Table 1  ,
+  Table 2  ,
+  §4.2  .
+  
+ 
+ 
+  
+  
+  
+ 
+ 
+ 
+ 
+  Supplementary Material 
+   
+ 
+ 
+ More visualization 
+
+ 
+ See Figure   . 
+ 
+ 
+ 
+ Impact of temporal chunk length 
+
+ 
+ Table   A1   compares chunk sizes under similar training computation (32K steps for length 5 vs. 8K steps for length 20). Longer chunk improves temporal continuity, e.g., reducing X4K FVD from 510.63 to 121.29. 
+ 
+ 
+   Table A1 :   Impact of temporal chunk length under similar total computation.  
+ 
+ 
+ 
+  Temporal chunk  
+  SNU-FILM-8   ×  \times     
+  X4K-16   ×  \times      
+ 
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow     
+  LPIPS   ↓  \downarrow     
+  FVD   ↓  \downarrow      
+ 
+ 
+ 
+  Length 5  
+  0.059  
+  42.15  
+  0.198  
+  510.63   
+ 
+  Length 20  
+  0.066  
+  24.87  
+  0.126  
+  121.29   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

@@ -1,0 +1,3313 @@
+  
+ 
+ 
+ TempoControl: Temporal Attention Guidance for Text-to-Video Models 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+    1  Introduction   
+    2  Related Work   
+    3  Preliminaries  
+ 
+    3.1  Cross-attention in video diffusion models   
+  
+    4  Method  
+ 
+   Temporal correlation term.   
+   Attention magnitude term.   
+   Attention entropy regularization.   
+   Full objective.   
+   Correlation-based early stopping.   
+  
+    5  Experiments  
+ 
+   Experimental setup.   
+   Baseline.   
+   Metrics.   
+   Benchmark.   
+    5.1  Quantitative Results  
+ 
+   Single-object temporal control.   
+   Two objects temporal control.   
+   Movement temporal control.   
+   Multiple objects benchmark.   
+   Ablation.   
+   Human evaluation.   
+  
+    5.2  Qualitative Results   
+    5.3  Audio-Visual Alignment  
+ 
+   Limitations.   
+  
+    5.4  Conclusions   
+  
+   References   
+    .5  Algorithm Pseudo-code   
+    .6  Experimental Setup   
+    .7  Applications Setup  
+ 
+   Single-Object Temporal Control.   
+   Two-Object Temporal Control.   
+   Motion Temporal Control.   
+  
+    .8  Human Evaluation Protocol   
+    .9  Latency Discussion   
+    .10  Dense Diffusion vs. TempoControl   
+    .11  Optimization Steps and Update Frequency   
+    .12  Multi-Object Evaluation   
+    .13  Loss Component Ablation   
+    .14  Cosine Similarity vs. TempoControl   
+    .15  Limitations of Explicit Temporal Cues in State-of-the-Art Text-to-Video Models   
+    .16  Additional Qualitative Examples   
+  
+ 
+ 
+ 
+   
+    License: CC BY 4.0
+   
+   
+arXiv:2510.02226v3 [cs.CV] 01 Apr 2026 
+  
+ 
+  TempoControl : Temporal Attention Guidance for Text-to-Video Models 
+ 
+ 
+ Shira Schiber
+  
+     
+ Ofir Lindenbaum
+  
+     
+ Idan Schwartz
+   
+  Affiliation:  Bar-Ilan University
+ 
+  Affiliation:   {shira-dvora.schiber, ofir.lindenbaum, idan.schwartz}@biu.ac.il 
+     
+
+  Abstract 
+    
+ Recent advances in generative video models have enabled the creation of high-quality videos based on natural language prompts. However, these models frequently lack fine-grained temporal control, meaning they do not allow users to specify when particular visual elements should appear within a generated sequence. In this work, we introduce  TempoControl , a method that allows for temporal alignment of visual concepts during inference, without requiring retraining or additional supervision.  TempoControl  utilizes cross-attention maps, a key component of text-to-video diffusion models, to guide the timing of concepts through a novel optimization approach. Our method steers attention using three complementary principles: aligning its temporal pattern with a control signal (correlation), adjusting its strength where visibility is required (magnitude), and preserving semantic consistency (entropy).  TempoControl  provides precise temporal control while maintaining high video quality and diversity. We demonstrate its effectiveness across various applications, including temporal reordering of single and multiple objects, action timing, and audio-aligned video generation. Project page:  https://shira-schiber.github.io/TempoControl/ . 
+  
+ 
+  
+ 
+    
+ 
+  
+   Figure 1 :   Applications of our inference-time temporal control method ( TempoControl ), which enables multi-object and single-object control, motion control, and audio alignment. Words that are controlled to appear throughout the entire video are shown in blue. Words that appear according to a temporally varying control signal are shown in orange.  
+ 
+ 
+  1  Introduction 
+
+ 
+ Generative video models have improved dramatically, enabling the synthesis of high-quality, temporally coherent videos from natural language descriptions  [ 23 ,  6 ,  35 ,  3 ,  24 ] . These models have enabled creative applications in animation, design, and virtual content creation by generating visually compelling sequences that align with textual descriptions. However, while current models offer strong spatial consistency and global semantics, they lack fine-grained  temporal control . Specifically, guiding the model to generate visual elements at specific time points is particularly challenging. This includes making an object appear in the middle of a scene or aligning visual aspects of lighting with the sound of thunder (see Figure   1  ). 
+ 
+ 
+ Recent work on generative video modeling has proposed various spatial and motion control mechanisms, including object masking, layout conditioning, or added camera controls  [ 10 ,  26 ,  9 ,  11 ] . In contrast, temporal control has received significantly less attention. Incorporating such control typically requires additional supervision in the form of temporally annotated datasets. Since video data is often scarce, extending annotations to capture temporal variation is expensive and usually impractical at scale. Synthetic data could be used; however, generating diverse and temporally accurate video-text pairs, especially for abstract concepts such as movement, is a highly non-trivial challenge. 
+ 
+ 
+ In this work, we propose a lightweight yet effective inference-time control method,  TempoControl , which introduces temporal control for generated video. Instead of retraining the generative model,  TempoControl  leverages a property already embedded in these systems: the text-vision cross-attention mechanism. 
+ 
+ 
+ Cross-attention layers inherently encode strong signals about  which  specific words in the prompt are realized in each generated frame. By directly influencing these attention maps during the denoising process, we can shift the temporal alignment of visual concepts without sacrificing quality or requiring additional data. The approach is data-efficient and preserves both the fidelity and diversity of the original generation process. 
+ 
+ 
+ Attention control is achieved by carefully steering the latent variables during the diffusion process. At each denoising step, we apply a few stochastic gradient descent iterations  [ 7 ,  5 ]  until a satisfactory level of temporal alignment is achieved, notably, without updating the model parameters. 
+ 
+ 
+ To guide temporal alignment,  TempoControl  introduces a novel loss with three complementary components, based on Pearson correlation, magnitude, and entropy. The Pearson term encourages the temporal shape of attention to match that of an external control signal, operating on the normalized attention vector to align the presence of a concept with the desired timing. However, since correlation is scale-invariant, it may yield high scores even when attention values are too low to render the object visible. To mitigate this, we incorporate a magnitude term that directly promotes stronger attention in frames where the temporal signal is high, and suppresses it elsewhere. Additionally, we introduce an entropy regularization term to maintain spatial focus, ensuring that when attention is activated, it remains coherent and not diffusely spread across the frame. 
+ 
+ 
+ Beyond single-object scenarios, as shown in Figure   1  , our method generalizes well to multi-object scenes. In such cases, it is crucial to maintain the visual grounding of non-target entities. We find that preserving one object (e.g., the bird) while selectively manipulating another (e.g., the cat) helps retain the overall scene structure. In addition to nouns, our method can also manipulate verbs (e.g., clapping), effectively modifying the motion depicted in the video. Finally, we explore the potential of aligning external audio cues with video generation. Although we focus on simple cases involving a single audio event (e.g., a lightning strike), we observe promising results, suggesting that our approach may naturally extend to zero-shot multimodal control without additional training. 
+ 
+ 
+ Our contributions are threefold:
+(i) We introduce the first inference-time method for temporally controlling the appearance of specific words in text-to-video diffusion models, without additional supervision or model finetuning, allowing temporal control while preserving the fidelity and diversity of existing models.
+(ii) We propose a set of spatiotemporal attention losses that shape both the timing and strength of word grounding, together with an entropy-based regularization term that maintains semantic consistency.
+(iii) We demonstrate broad applicability across multi-object control, motion timing, and audio-to-video alignment, and introduce a new metric for temporal alignment, a dimension not covered by current benchmarks. 
+ 
+  
+   Figure 2 :   Motivation for our approach.  Top:  We show a video generated for the prompt “The video begins with a serene view centered on the cat, with no sign of the dog. In the second half, the dog unexpectedly appears, altering the dynamic of the scene.” The top row displays the attention maps for the tokens  cat  and  dog , extracted from the denoising step     t  =  3   t{=}3   , for frames      j  =  2   ,  6  ,  10  ,  14  ,  19   j{=}2,6,10,14,19   . On the left, the video is generated without our optimization. Despite the prompt specifying that the dog should appear in the second half, it appears early. This behavior is common, as Wan 2.1 often fails to depict objects or movements according to temporal cues in the prompt. On the right, after applying our conditioning method, the dog correctly appears in the second half of the video.  Bottom:  Temporal attention     a   i  ,  j   t   a_{i,j}^{t}    (blue) versus target mask     m   i  ,  j    m_{i,j}    (orange), with the corresponding Pearson correlation loss shown.  
+ 
+ 
+ 
+  2  Related Work 
+
+ 
+  Attention-based Control.  Attention manipulation has become a powerful tool for controlling semantics in text-to-image generation. Methods such as Attend-and-Excite  [ 7 ,  18 ,  4 ,  8 ]  perform inference-time optimization over cross-attention maps to ensure that all textual entities are faithfully represented in the generated image. Stable Flow  [ 1 ]  further introduces a training-free editing framework that selectively injects attention features into key layers of a diffusion transformer. Additional approaches, including Prompt-to-Prompt  [ 12 ] , leverage attention restructuring for fine-grained, text-driven edits. 
+ 
+ 
+  Inference time optimization.  Inference-time optimization for text-to-video diffusion has only recently attracted attention.  [ 17 ]  pre-compute a spatio-temporal sketch and inject plan-consistent noise during sampling to tighten prompt alignment.  [ 29 ]  converts a single keyframe into a textured, deformable 3D mesh that is re-rendered at every denoising step to maintain consistency in the garment’s appearance.  [ 22 ]  derive variance-based optical-flow cues from the model’s latent predictions and add a flow-coherence loss on-the-fly, smoothing motion without retraining.  [ 19 ]  let a large language model generate scene graphs and temporal layouts that act as attention masks, improving complex spatio-temporal grounding. While these methods improve fidelity and consistency without necessitating additional training, none offer explicit, user-defined control over the timing of textual element unfolding. 
+ 
+ 
+  Controllable Video Generation 
+Controllable video generation has advanced rapidly, with methods exploring a broad set of control modalities. Early multimodal systems, such as VideoComposer  [ 27 ] , incorporate depth, sketch, and motion vector guidance to steer video synthesis. More recent approaches introduce explicit camera and object motion control on top of text-to-video generation  [ 28 ,  11 ,  16 ,  34 ,  9 ,  2 ] . Another line of work investigates the controllability of image-to-video object motion  [ 26 ,  33 ] . While effective, these training approaches rely on large paired datasets and extensive supervision, which can be costly and limit generalization. 
+ 
+ 
+ A parallel line of work studies training-free controllability, including CamTrol  [ 13 ]  for camera motion, MotionClone and DiTFlow  [ 20 ,  21 ]  for transferring motion from reference videos, and MOFT  [ 32 ]  for editing motion at inference. These rely on dense motion trajectories, but cannot specify when a concept should appear or disappear. 
+ 
+ 
+ The most related work, MinT  [ 31 ] , arranges multiple textual instructions in temporal order by learning when each should begin. However, MinT provides only coarse event sequencing, whereas our method offers fine-grained timing for individual concepts. Moreover, MinT requires fine-tuning on temporally annotated caption datasets centered on human activities, which limits its generality across diverse prompts. Our approach operates entirely at inference time and generalizes across settings without any training or domain-specific supervision. 
+ 
+ 
+ 
+  3  Preliminaries 
+
+ 
+ We build  TempoControl  on top of Wan 2.1  [ 24 ] , a state-of-the-art diffusion model that serves as our backbone for text-to-video generation. Let     v  ∈   ℝ    T  v   ×   H  v   ×   W  v   ×  3     v\in\mathbb{R}^{T_{v}\times H_{v}\times W_{v}\times 3}    represent the input video, where     T  v   T_{v}    is the number of frames,      H  v   ×   W  v    H_{v}\times W_{v}    denotes the spatial resolution of each frame, and the final dimension corresponds to the three RGB color channels. A 3D causal variational autoencoder first encodes the video into a latent tensor 
+ 
+
+  
+  
+      z  ∈   ℝ    T  ′   ×   H  ′   ×   W  ′   ×  C     ,   z\in\mathbb{R}^{T^{\prime}\times H^{\prime}\times W^{\prime}\times C},    
+  
+  (1)    
+ 
+ where     T  ′   T^{\prime}   ,     H  ′   H^{\prime}   , and     W  ′   W^{\prime}    denote the temporal and spatial dimensions of the latent representation, which are reduced relative to the input video.
+Flattening the spatial and temporal dimensions,    z  z    is reshaped into a sequence of     n  v   n_{v}    video tokens, where      n  v   =    T  ′   ⋅   H  ′   ⋅   W  ′     n_{v}=T^{\prime}\cdot H^{\prime}\cdot W^{\prime}   , and each token is a    C  C   -dimensional feature vector representing a specific spatiotemporal region of the video. 
+ 
+ 
+ The text prompt     𝒫  =   [    p  1   ,  …  ,   p   n  p     ]    \mathcal{P}=[p_{1},\dots,p_{n_{p}}]    is embedded using a pretrained text encoder. For brevity, we refer to tokens as words, although a word may consist of multiple subtokens. All operations described for words are applied to the average of their corresponding subtokens.
+Video synthesis is then performed as a denoising diffusion process in the latent space, where the model iteratively refines latent variables      {   z  t   }    t  =  T   0   \{z_{t}\}_{t=T}^{0}   , gradually denoising     z  T   z_{T}    into     z  0   z_{0}   . At each timestep    t  t   , a transformer-based network     DiT  ⁡   (   z  t   ,  𝒫  ,  t  )    \operatorname{DiT}(z_{t},\mathcal{P},t)    predicts the noise in     z  t   z_{t}   , conditioned on the prompt    𝒫  \mathcal{P}    and the timestep    t  t   . 
+ 
+ 
+  3.1  Cross-attention in video diffusion models 
+
+ 
+ A key challenge in text-to-video generation is maintaining semantic and temporal alignment with the input prompt. In diffusion-based architectures, this alignment is achieved through cross-attention layers within the transformer blocks at each denoising step    t  t   . 
+ 
+ 
+ During cross-attention, video tokens act as queries that attend to text tokens, which serve as keys and values. This mechanism enables the model to inject contextually relevant linguistic information into each video token representation. The attention weights are computed via scaled dot products between queries and keys, producing a set of attention tensors across layers,      A  t   ∈   ℝ   L  ×  h  ×   n  v   ×   n  p      A^{t}\in\mathbb{R}^{L\times h\times n_{v}\times n_{p}}   , where    L  L    is the number of cross-attention layers,    h  h    is the number of attention heads,     n  v   n_{v}    is the number of video tokens, and     n  p   n_{p}    is the number of text tokens. A softmax is applied along the text-token dimension, yielding a probability distribution over prompt words for each video token, per head and per layer. 
+ 
+ 
+ To obtain a global view of token-level influence, we average attention maps across heads and cross-attention layers, producing an aggregate attention matrix       A  ¯   t   ∈   ℝ    n  v   ×   n  p      \bar{A}^{t}\in\mathbb{R}^{n_{v}\times n_{p}}   . This matrix quantifies the influence of each text token on each video token. 
+ 
+ 
+ The effect of a specific word    i  i    is measured by extracting the corresponding column       A  ¯   i  t   ∈   ℝ   n  v     \bar{A}^{t}_{i}\in\mathbb{R}^{n_{v}}   . The vector      A  ¯   i  t   \bar{A}^{t}_{i}    can be reshaped at temporal index    j  j   , yielding       A  ¯    j  ,  i   t   ∈   ℝ    H  ′   ×   W  ′      \bar{A}^{t}_{j,i}\in\mathbb{R}^{H^{\prime}\times W^{\prime}}   , which represents the spatial influence of word    i  i    at temporal position    j  j    and denoising step    t  t   . Figure   2   illustrates this for the words  cat  and  dog  in the prompt “A cat and a dog. In the second half of the video, the dog appears.” Attention maps are upsampled to frame resolution for display. 
+ 
+ 
+ The attention map captures the spatiotemporal grounding of words in the generated video;  TempoControl  is specifically designed to steer the  temporal  influence of a token. Thus, we focus on the scalar attention value       A  ^    j  ,  i   t   =    ⟨    A  ¯    j  ,  i   t   ⟩    x  ,  y    ∈  ℝ   \hat{A}^{t}_{j,i}=\langle\bar{A}^{t}_{j,i}\rangle_{x,y}\in\mathbb{R}   , where      ⟨  ⋅  ⟩    x  ,  y    \langle\cdot\rangle_{x,y}    denotes summation over the spatial coordinates     x  ∈   [   1  ,   H  ′    ]    x\in[1,H^{\prime}]    and     y  ∈   [   1  ,   W  ′    ]    y\in[1,W^{\prime}]   . Intuitively,      A  ^    j  ,  i   t   \hat{A}^{t}_{j,i}    measures the influence of word    i  i    on the latent representation at temporal position    j  j    during denoising step    t  t   . 
+ 
+ 
+ To aggregate the temporal attention pattern of word    i  i    at denoising step    t  t   , we collect the scalar values across frames into a vector: 
+ 
+
+  
+  
+       a  i  t   =   [     A  ^    1  ,  i   t   ,    A  ^    2  ,  i   t   ,  …  ,    A  ^     T  ′   ,  i   t    ]   ∈   ℝ   T  ′     .   a_{i}^{t}=[\hat{A}^{t}_{1,i},\hat{A}^{t}_{2,i},\ldots,\hat{A}^{t}_{T^{\prime},i}]\in\mathbb{R}^{T^{\prime}}.    
+  
+  (2)    
+ 
+ 
+ 
+ We omit the first frame due to unstable attention values that do not reliably reflect word grounding. This vector serves as the target for our steering method, described next. 
+ 
+  
+   Figure 3 :   Illustration of  TempoControl . During a single denoising step    t  t   , we extract spatial attention maps      A  ¯    j  ,  i   t   \bar{A}^{t}_{j,i}    (for word    i  i    at temporal index    j  j   ), aggregate to a temporal attention signal     a  i  t   a_{i}^{t}   , and align it with the target mask vector     m  i   m_{i}    via temporal and spatial losses. Gradients     ∇  ℒ   \nabla\mathcal{L}    are used to update the latent code     z  t   z_{t}   .  
+ 
+ 
+ 
+ 
+  4  Method 
+
+ 
+ Given a video    v  v   , our objective is to generate an edited version     v  ′   v^{\prime}    such that specific tokens appear according to a temporal condition. To achieve fine-grained temporal control, we employ masks, which provide a more precise and less ambiguous mechanism than textual descriptions. We denote as input a binary mask      m  i   =   [    m   i  ,  1    ,  …  ,   m   i  ,   T  ′      ]    m_{i}=[m_{i,1},\ldots,m_{i,T^{\prime}}]   , where each element      m   i  ,  j    ∈   {   0  ,  1   }    m_{i,j}\in\{0,1\}    indicates whether token     p  i   p_{i}    should appear at temporal position    j  j    (see Figure   2  , bottom, orange line). In this example, the mask specifies that the token  dog  should appear only in the second half of the video (i.e., frames 10–20). In general,     m   i  ,  j    m_{i,j}    may also take continuous values to represent the strength of appearance. In most experiments, we use binary masks, except in the audio-alignment setting, where the mask encodes sound intensity. The main steps of our approach are illustrated in Figure   3   and discussed below. We also provide an algorithmic description in the appendix. 
+ 
+ 
+ We steer the latent representation during the first    k  k    denoising steps by applying    l  l    gradient-based updates at each step, optimized with AdamW. Let     z  t   z_{t}    denote the latent at step    t  t   ; the update is: 
+ 
+
+  
+  
+       z  t  ′   =    z  t   −   α  ​    ∇   z  t     ℒ  t       ,   z^{\prime}_{t}=z_{t}-\alpha\nabla_{z_{t}}\mathcal{L}^{t},    
+  
+  (3)    
+ 
+ where    α  \alpha    is the learning rate.
+The loss     ℒ  t   \mathcal{L}^{t}    consists of a single main component: a temporal correlation term that aligns the attention pattern with the target mask. While this term is most significant for aligning with the temporal condition, we also include two terms that further improve the results: (ii) a magnitude term that amplifies or suppresses token-level activation, and (iii) an attention entropy regularization term that preserves spatial consistency. We describe each component in detail below. 
+ 
+ 
+ Temporal correlation term. 
+
+ 
+ The main loss term encourages the temporal attention vector     a  i  t   a_{i}^{t}    to match the target mask     m  i   m_{i}    using the Pearson correlation: 
+ 
+
+  
+  
+       ℒ  corr  t   =   −    Cov  ​   (   m  i   ,    a  ~   i  t   )      σ   m  i    ​   σ    a  ~   i  t        ,   \mathcal{L}_{\text{corr}}^{t}=-\frac{\text{Cov}(m_{i},\tilde{a}_{i}^{t})}{\sigma_{m_{i}}\sigma_{\tilde{a}_{i}^{t}}},    
+  
+  (4)    
+ 
+ where      a  ~   i  t   \tilde{a}_{i}^{t}    is the min–max normalized version of     a  i  t   a_{i}^{t}   , defined as
+      a  ~   i  t   =     a  i  t   −   min  ⁡   (   a  i  t   )       max  ⁡   (   a  i  t   )    −   min  ⁡   (   a  i  t   )       \tilde{a}_{i}^{t}=\frac{a_{i}^{t}-\min(a_{i}^{t})}{\max(a_{i}^{t})-\min(a_{i}^{t})}   .
+Here,     Cov  ​   (  ⋅  ,  ⋅  )    \text{Cov}(\cdot,\cdot)    denotes the empirical covariance, and     σ   m  i    \sigma_{m_{i}}    and     σ    a  ~   i  t    \sigma_{\tilde{a}_{i}^{t}}    are the corresponding standard deviations. Note that if     m  i   m_{i}    has zero variance, such as when encouraging an object to appear throughout the entire video, the correlation term becomes undefined; in such cases, it is omitted from the loss. 
+ 
+ 
+ The Pearson correlation measures the linear relationship between the mask     m  i   m_{i}    and the attention term     a  i  t   a_{i}^{t}   , but it does not capture their scale. In our experiments, we observe two phenomena: (i) words that are initially invisible may remain so, and (ii) completely suppressing the appearance of a token is difficult. The following loss term is therefore designed to modulate the temporal strength of attention. 
+ 
+ 
+ 
+ Attention magnitude term. 
+
+ 
+ The magnitude term adjusts the overall strength of attention for each word token    i  i    according to the temporal mask     m  i   m_{i}   , complementing the correlation-based term by restoring scale sensitivity. We employ the indicator function     𝟙   {  ⋅  }    \mathbb{1}_{\{\cdot\}}   , which equals one when the specified condition holds and zero otherwise. The positive magnitude component encourages attention in regions where the word is expected to be active: 
+ 
+
+  
+  
+     ℒ     ⊕      t   =   1   T  ′    ∑      j  =  1        T  ′    𝟙      {  m      i  ,  j    &gt;  τ  }    ⋅  a      i  ,  j       t   .   \mathcal{L}_{\oplus}^{t}=\frac{1}{T^{\prime}}\sum_{j=1}^{T^{\prime}}\mathbb{1}_{\{m_{i,j}&gt;\tau\}}\cdot a_{i,j}^{t}.    
+  
+  (5)    
+ 
+ The negative magnitude component penalizes attention where the word should not be visible: 
+ 
+
+  
+  
+     ℒ     ⊖      t   =   1   T  ′    ∑      j  =  1        T  ′    𝟙      {  m      i  ,  j    ≤  τ  }    ⋅  a      i  ,  j       t   .   \mathcal{L}_{\ominus}^{t}=\frac{1}{T^{\prime}}\sum_{j=1}^{T^{\prime}}\mathbb{1}_{\{m_{i,j}\leq\tau\}}\cdot a_{i,j}^{t}.    
+  
+  (6)    
+ 
+ 
+ 
+ The final magnitude loss is defined as the net difference: 
+ 
+
+  
+  
+       ℒ  mag  t   =    ℒ  ⊖  t   −   ℒ  ⊕  t     .   \mathcal{L}_{\text{mag}}^{t}=\mathcal{L}_{\ominus}^{t}-\mathcal{L}_{\oplus}^{t}.    
+  
+  (7)    
+ 
+ 
+  
+   Figure 4 :   
+Entropy regularization helps preserve semantic fidelity.
+  
+ 
+ 
+ Here,     τ  ∈   [   0  ,  1   ]    \tau\in[0,1]    is a threshold that determines whether a given time index is considered active for token     p  i   p_{i}   . While     m  i   m_{i}    is often binary (i.e., 0 or 1), it may also take continuous values (e.g., for soft audio-driven conditioning). In such cases, the indicator     𝟙      {  m      i  ,  j    &gt;  τ  }     \mathbb{1}_{\{m_{i,j}&gt;\tau\}}    selects time steps where the target activation is sufficiently strong. 
+ 
+ 
+ Both the correlation and magnitude terms target the temporal objective but can harm spatial consistency. In our experiments, these terms sometimes corrupt object semantics, such as a smartphone turning into a distorted two-screen tablet (Figure   4  ; more examples in the appendix). To address this and preserve spatial coherence, we introduce an entropy-based regularization term. 
+ 
+ 
+ 
+ Attention entropy regularization. 
+
+ 
+ Optimizing for the temporal objective may compromise spatial properties, often resulting in overly spread attention. We counter this by regularizing the entropy of the spatial attention maps at temporal indices where the word is active (i.e.,      m   i  ,  j    &gt;  τ   m_{i,j}&gt;\tau   ), resulting in: 
+ 
+
+  
+  
+      ℒ  entropy  t   =   1   T  ′     ∑   j  =  1    T  ′     𝟙   {  m      i  ,  j    &gt;  τ  }    ⋅  ℋ   (    A  ¯    j  ,  i   t   )   .   \mathcal{L}_{\text{entropy}}^{t}=\frac{1}{T^{\prime}}\sum_{j=1}^{T^{\prime}}\mathbb{1}_{\{m_{i,j}&gt;\tau\}}\cdot\mathcal{H}(\bar{A}^{t}_{j,i}).    
+  
+  (8)    
+ 
+ Here,     ℋ  ⁡   (   A  ¯   )    \mathcal{H}(\bar{A})    denotes the Shannon entropy computed over the spatial dimensions. 
+ 
+ 
+ In our experiments, we find that discouraging excessive spreading of attention not only improves temporal presence but also enhances overall image quality (see ablations), suggesting that this term may be beneficial for video generation more broadly. 
+ 
+ 
+ 
+ Full objective. 
+
+ 
+ The combined loss at step    t  t    is: 
+ 
+
+  
+  
+       ℒ  t   =    ℒ  corr  t   +    λ  1   ​   ℒ  magnitude  t    +    λ  2   ​   ℒ  entropy  t      ,   \mathcal{L}^{t}=\mathcal{L}_{\text{corr}}^{t}+\lambda_{1}\mathcal{L}_{\text{magnitude}}^{t}+\lambda_{2}\mathcal{L}_{\text{entropy}}^{t},    
+  
+  (9)    
+ 
+ where     λ  1   \lambda_{1}    and     λ  2   \lambda_{2}    control the auxiliary terms. The correlation term is sufficient for most cases and provides strong temporal alignment. The magnitude term is helpful when the base model fails to accurately depict a token or when the token must be removed entirely. The entropy term maintains spatial focus and enhances video quality. The objective is optimized over latents during inference, while the model weights remain fixed. 
+ 
+ 
+ 
+ Correlation-based early stopping. 
+
+ 
+ Some videos naturally align more closely with the temporal objective and therefore require fewer optimization steps. To adaptively allocate compute, we introduce a stopping rule based on the Pearson correlation in the temporal loss     ℒ  corr  t   \mathcal{L}_{\text{corr}}^{t}   . Specifically, for each denoising step    t  t   , we perform up to    l  l    optimization iterations. If the correlation exceeds a threshold     τ  corr   \tau_{\text{corr}}   , we terminate optimization early for that step; otherwise, we continue refining until the limit is reached. 
+ 
+ 
+ 
+ 
+  5  Experiments 
+
+ 
+ Experimental setup. 
+
+ 
+ All experiments are conducted on a single NVIDIA B200 GPU. Due to limited resources, we focus on the smaller model. We optimize the latent representation during the first five denoising steps (see Appendix Sec.   .9   for ablations), applying up to 10 gradient updates per step with a learning rate of     5  ×   10   −  4     5\times 10^{-4}   , increased to     1  ×   10   −  3     1\times 10^{-3}    for the two-object setting. We use      λ  1   =  0.3   \lambda_{1}{=}0.3    and      λ  2   =  10   \lambda_{2}{=}10   . See the appendix for ablation details. 
+ 
+ 
+ 
+ Baseline. 
+
+ 
+ We evaluate our method on several text-to-video backbones, including Wan 2.1 (1.3B and 14B), Wan 2.2-TI2V (5B), CogX1.5-L (5B) and LTX-2 (19B). As a baseline, we use each model with explicit temporal cues in the prompt (e.g., “…at the third second …”). The exact phrasing templates are provided in the appendix. Note that we also use the same timing templates in our approach for fair comparison. The lack of dedicated baselines stems from the novelty of our objective, which involves fine-grained temporal control and necessitates the definition of new evaluation metrics, discussed next. 
+ 
+ 
+ 
+ Metrics. 
+
+ 
+ Current benchmarks such as VBench  [ 14 ]  do not measure temporal control. To address this, we introduce  Temporal Accuracy , which checks whether each token appears in the correct frames specified by the prompt, with separate scores for presence and absence. VBench relies on the GRiT detector  [ 30 ] , which we find unreliable for small or partially visible objects. Instead, we detect objects using the more recent YOLOv10  [ 25 ] . 
+ 
+ 
+ For motion-centric prompts, Temporal Accuracy aligns the prompt-specified action time with the second exhibiting the strongest motion, as determined by per-second optical flow magnitude computed from videos sampled at 4 fps. 
+ 
+ 
+ We also report results on the VBench Multiple Object benchmark (detecting object appearance throughout the video), and the Imaging Quality metric that uses a perceptual image-quality model. 
+ 
+ 
+ 
+ Benchmark. 
+
+ 
+ In the single-object setup, we utilize 80 YOLOv10 classes, which span animals, everyday objects, vehicles, and more. For the two-object setting, we use 82 object pairs based on the VBench multiple-object benchmark. For movement, we curate 100 types of actions. Temporal masks are generated together with the prompt templates to ensure alignment. Full prompt patterns and categories are provided in the appendix. 
+ 
+ 
+   Table 1 :   
+Comparison on one-object, two-object, and movement temporal-control benchmarks.
+Baselines rely on text-only temporal cues, while Ours applies  TempoControl  on the corresponding backbone. Bold denotes the best result in each block.
+  
+  
+ 
+ 
+ Method 
+ Params 
+ Temporal 
+ Img    ↑  \uparrow     
+ 
+  
+  
+ Acc    ↑  \uparrow    
+ Abs    ↑  \uparrow    
+ Pres    ↑  \uparrow    
+   
+ 
+  One Object   
+ 
+ LTX-2 
+ 19B 
+ 74.23 
+ 85.23 
+ 62.12 
+ 42.79  
+ 
+ CogX-S 
+ 2B 
+ 58.15 
+ 74.77 
+ 39.88 
+ 45.16  
+ 
+ CogX1.5-L 
+ 5B 
+ 61.43 
+ 48.64 
+ 75.50 
+ 65.36  
+ 
+ Wan2.1-S 
+ 1.3B 
+ 63.94 
+ 67.38 
+ 60.50 
+ 53.76  
+ 
+ Wan2.1-L 
+ 14B 
+ 64.23 
+ 55.34 
+ 74.00 
+  66.89   
+ 
+ Wan2.2 
+ 5B 
+ 78.02 
+  87.42  
+ 68.00 
+ 48.13  
+ 
+ Ours (CogX-S) 
+ 2B 
+ 63.75 
+ 78.41 
+ 47.62 
+ 46.67  
+ 
+ Ours (Wan2.1-S) 
+ 1.3B 
+  83.56  
+ 87.38 
+  79.75  
+ 56.92  
+ 
+  Two Objects   
+ 
+ LTX-2 
+ 19B 
+ 39.31 
+  64.88  
+ 16.08 
+ 58.62  
+ 
+ CogX1.5-L 
+ 5B 
+ 24.68 
+ 46.46 
+ 4.88 
+ 63.78  
+ 
+ Wan2.1-S 
+ 1.3B 
+ 37.50 
+ 45.85 
+ 29.15 
+ 68.56  
+ 
+ Wan2.1-L 
+ 14B 
+ 40.07 
+ 54.15 
+ 27.27 
+ 69.01  
+ 
+ Wan2.2 
+ 5B 
+ 47.05 
+ 56.86 
+ 36.59 
+ 67.83  
+ 
+ Ours (Wan2.1-S) 
+ 1.3B 
+  53.17  
+ 57.32 
+  49.02  
+  70.82   
+ 
+  Movement   
+ 
+ LTX-2 
+ 19B 
+ 28.00 
+ – 
+ – 
+ 51.61  
+ 
+ CogX1.5-L 
+ 5B 
+ 21.00 
+ – 
+ – 
+ 61.39  
+ 
+ Wan2.1-S 
+ 1.3B 
+ 19.00 
+ – 
+ – 
+ 60.46  
+ 
+ Wan2.1-L 
+ 14B 
+ 18.00 
+ – 
+ – 
+ 61.31  
+ 
+ Wan2.2 
+ 5B 
+ 23.00 
+ – 
+ – 
+ 60.61  
+ 
+ Ours (Wan2.1-S) 
+ 1.3B 
+  54.00  
+ – 
+ – 
+  63.24   
+ 
+  
+ 
+ 
+ 
+  5.1  Quantitative Results 
+
+ 
+ Single-object temporal control. 
+
+ 
+ Table   1   shows that  TempoControl  significantly improves temporal control across backbones. On Wan2.1-S, we achieve a +19.62% gain in Temporal Accuracy, with improvements of +20.0% in absence and +19.25% in presence accuracy, while also increasing Imaging Quality by    ∼  \sim   3%. 
+ 
+ 
+ We find that Wan2.2 achieves high absence accuracy, but suffers from low Imaging Quality (48.13%), largely due to explicit temporal phrases in the prompt that degrade visual fidelity and lead to missed detections (see Limitations). Removing these cues improves Imaging Quality to 57.78% but reduces absence accuracy to 71.25% (see Appendix). 
+ 
+ 
+ Similar, though smaller, gains are observed on CogX-S reflecting a stronger bias toward its training distribution. In practice, this also makes more complex settings difficult to evaluate reliably: multi-object prompts often fail to generate all requested objects, and motion prompts frequently produce little or no discernible motion peak. 
+ 
+ 
+ 
+ Two objects temporal control. 
+
+ 
+ In Table   1   (Two Objects), the two-object setting is notably challenging. Wan2.1-S baseline achieves only 37.50% temporal accuracy, while our method improves this to 53.17% (+15.67). Absence and presence accuracies also increase by 11.47% and 19.87%, respectively, and Imaging Quality improves by 2.26%. 
+ 
+ 
+ Larger models also show similar degradation in temporal control in the two-object setting. Conversely, Imaging Quality is consistently higher across all methods, suggesting a possible bias in the perceptual metric toward multi-object scenes. Our method achieves the highest Imaging Quality. 
+ 
+ 
+ 
+ Movement temporal control. 
+
+ 
+ Table   1   (Movement) evaluates temporal accuracy when conditioning is indicative of a peak of action. The temporal accuracy measures the timing of when the action peaks (see Metrics). Wan2.1-S baseline achieves only 19% temporal accuracy, indicating that the model does not follow action timing from text alone.  TempoControl  improves this to 54%, showing a substantial gain in aligning motion onset with the prompt. 
+ 
+ 
+ Low performance in movement conditioning is consistent across all models. Our Imaging Quality remains the best in this setup as well. 
+ 
+ 
+ 
+ Multiple objects benchmark. 
+
+ 
+ We also report results on the VBench Multiple Objects benchmark in Table   2  , which tests the ability to generate two objects described in the input text throughout the entire video. We observe improved performance on the Multiple Object metric (76.37% vs. 74.13%). Detailed results are provided in the appendix. 
+ 
+ 
+ 
+ Ablation. 
+
+ 
+ Table   3   shows that each component contributes differently to temporal control and visual quality. Pearson correlation (C) drives strong temporal alignment, mainly through gains in absence accuracy, but degrades image quality and often leads to missed detections and inflated absence scores. Entropy (E) improves presence accuracy and stabilizes attention, while their combination (C+E) achieves a balanced trade-off. Notably, entropy alone yields the highest Imaging Quality (59.52%), even surpassing the text baseline, highlighting the general benefit of attention smoothing. Additional ablations on loss weights, optimization steps and alternative objectives are provided in the appendix. 
+ 
+ 
+ 
+ Human evaluation. 
+
+ 
+ We conducted a user study with 50 computer science graduate students, each comparing 16 video pairs (8 one-object and 8 two-object) generated by  TempoControl  and Wan 2.1 with text-based temporal cues. Annotators judged temporal accuracy and visual quality, or indicated no difference, which we asked them to use sparingly (full protocol details are provided in the appendix). As shown in Table   4  , our method is preferred for temporal accuracy (61.51% vs. 16.94%) and also improves visual quality. Notably, 21.55% of temporal comparisons reported no preference, reflecting that humans struggle to perceive minor timing differences. 
+ 
+ 
+   Table 2 :   
+Comparison on the multiple-object benchmark.
+Baselines rely on text-only temporal cues, while Ours applies  TempoControl .
+Bold denotes the best result in each column.
+  
+ 
+ 
+ Method 
+ Temporal 
+ Img    ↑  \uparrow     
+ 
+  
+     
+ 
+ 
+ GRiT    ↑  \uparrow     
+     
+     
+ 
+ 
+ YOLO    ↑  \uparrow     
+     
+   
+ 
+ Text 
+ 74.13% 
+ 61.54% 
+  70.25%   
+ 
+ Ours 
+  76.37%  
+  65.73%  
+ 70.21%  
+ 
+ 
+ 
+   Table 3 :   
+Ablation study on the one-object benchmark.
+C denotes Pearson correlation and E denotes entropy.
+Bold denotes the best result in each column.
+  
+ 
+ 
+ Method 
+ Temporal 
+ Img    ↑  \uparrow     
+ 
+  
+ Acc    ↑  \uparrow    
+ Abs    ↑  \uparrow    
+ Pres    ↑  \uparrow    
+   
+ 
+ Text 
+ 63.94% 
+ 67.38% 
+ 60.50% 
+  53.76%   
+ 
+ Only C 
+ 81.19% 
+  91.50%  
+ 70.88% 
+ 50.96%  
+ 
+ Only E 
+ 72.94% 
+ 66.88% 
+ 79.00% 
+  59.52%   
+ 
+ C + E 
+ 78.38% 
+ 77.38% 
+ 79.38% 
+ 57.60%  
+ 
+ Ours 
+  82.50%  
+ 83.25% 
+  81.75%  
+ 56.51%  
+ 
+ 
+ 
+  Table 4:  
+User study comparing our method with Wan2.1 in terms of temporal accuracy and visual quality.
+ 
+ 
+ 
+  Question Type  
+  Ours  
+  Baseline  
+  Same  
+   
+ 
+  Temporal Accuracy  
+  61.51%  
+  16.94%  
+  21.55%  
+   
+ 
+  Visual Quality  
+  62.66%  
+  25.99%  
+  11.35%  
+   
+ 
+ 
+  
+   Figure 5 :   Examples generated by Wan 2.1 (left) and our temporally conditioned method (right) for prompts with timing constraints. Prompts are simplified for brevity. Shown are frames from the first, middle, and final thirds of each video.  
+ 
+  
+   Figure 6 :   Examples of video alignment to an audio signal.  
+ 
+ 
+ 
+ 
+  5.2  Qualitative Results 
+
+ 
+ In Figure   5  , each row illustrates a different temporal-control task.
+For a one-object prompt (apple appearing late), Wan 2.1 places the object near the middle, while our method correctly places it at the end.
+For a two-object prompt (car appearing in the second half), Wan 2.1 shows the car too early, whereas our method aligns it with the specified time.
+For movement-based prompts, Wan 2.1 fails to control timing (e.g., the rabbit appears throughout or the tiger leaps at incorrect times), while our method accurately localizes these events.
+Additional examples are provided in the supplementary material. 
+ 
+ 
+ 
+  5.3  Audio-Visual Alignment 
+
+ 
+ We also explore zero-shot alignment of video to external audio by using a preprocessed audio envelope as the temporal condition. Given a waveform    y  y   , we compute its onset-strength envelope     s  t   s_{t}   , pool it to the number of frames, and normalize it to     [  0  ,  1  ]   [0,1]   . Peaks are preserved through thresholding and otherwise smoothed with a Gaussian filter: 
+ 
+
+  
+  
+       s  ~   t   =   {        s  ^   t   ,         s  ^   t   ≥   τ   a  ​  u  ​  d  ​  i  ​  o     ,         GaussianSmooth  ​   (    s  ^   t   ,  σ  )    ,      otherwise  .        \tilde{s}_{t}=\begin{cases}\hat{s}_{t},&amp;\hat{s}_{t}\geq\tau_{audio},\\
+\text{GaussianSmooth}(\hat{s}_{t};\sigma),&amp;\text{otherwise}.\end{cases}    
+  
+  (10)    
+ 
+ 
+ 
+ Figure   6   shows examples where video motion aligns with peaks in the audio envelope, with additional results in the appendix. While tested on simple cases with clear peaks, these results suggest that audio-driven temporal conditioning is a promising approach for achieving audio-video alignment without requiring training on paired datasets. 
+ 
+ 
+ Limitations. 
+
+ 
+  TempoControl  increases inference time, although it remains an inference-only method and avoids retraining. It can also introduce mild attribute shifts (e.g., color changes), as the current objectives do not explicitly enforce full semantic consistency. 
+ 
+ 
+ Our evaluation also relies on proxy metrics based on object detection (YOLOv10) and optical flow. A limitation is that temporal absence can be sensitive to detection failures or degraded image quality, and may be artificially inflated. In contrast, temporal presence is more reliably captured. Notably, our improvements are primarily driven by gains in temporal presence rather than absence, making the evaluation more robust. Future work may incorporate semantic alignment metrics for a more comprehensive assessment. 
+ 
+ 
+ 
+ 
+  5.4  Conclusions 
+
+ 
+ Current text-to-video models generate high-quality videos but lack precise control over when objects and actions appear. We find that adding explicit timing cues does not improve temporal control and can substantially degrade visual quality (e.g., for Wan 2.1, Temporal Accuracy changes from 65.18% without timing cues to 63.94% with them, while Imaging Quality drops from 59.99% to 53.76%). To address this, we introduce a data-free temporal conditioning method that preserves visual quality while enabling fine-grained temporal control through attention steering. 
+ 
+ 
+ These results suggest that temporal control is not a prompting problem. Even with explicit timing cues, models fail to produce correct temporal behavior, indicating a gap in how temporal information is represented. This motivates the use of explicit control mechanisms, such as ours, for reliable temporal alignment. 
+ 
+ 
+ 
+ 
+ References 
+
+ 
+      
+   [1]  
+  
+Omri Avrahami, Or Patashnik, Ohad Fried, Egor Nemchinov, Kfir Aberman, Dani Lischinski, and Daniel Cohen-Or.
+ 
+ 
+  Stable flow: Vital layers for training-free image editing.
+ 
+ 
+  In   Proceedings of the Computer Vision and Pattern Recognition Conference  , pages 7877–7888, 2025.
+ 
+  
+      
+   [2]  
+  
+Sherwin Bahmani, Ivan Skorokhodov, Guocheng Qian, Aliaksandr Siarohin, Willi Menapace, Andrea Tagliasacchi, David B Lindell, and Sergey Tulyakov.
+ 
+ 
+  Ac3d: Analyzing and improving 3d camera control in video diffusion transformers.
+ 
+ 
+  In   Proceedings of the Computer Vision and Pattern Recognition Conference  , pages 22875–22889, 2025.
+ 
+  
+      
+   [3]  
+  
+Omer Bar-Tal, Hila Chefer, Omer Tov, Charles Herrmann, Roni Paiss, Shiran Zada, Ariel Ephrat, Junhwa Hur, Guanghui Liu, Amit Raj, et al.
+ 
+ 
+  Lumiere: A space-time diffusion model for video generation.
+ 
+ 
+  In   SIGGRAPH Asia 2024 Conference Papers  , pages 1–11, 2024.
+ 
+  
+      
+   [4]  
+  
+Barak Battash, Amit Rozner, Lior Wolf, and Ofir Lindenbaum.
+ 
+ 
+  Obtaining favorable layouts for multiple object generation.
+ 
+ 
+  arXiv preprint arXiv:2405.00791  , 2024a.
+ 
+  
+      
+   [5]  
+  
+Barak Battash, Lior Wolf, and Ofir Lindenbaum.
+ 
+ 
+  Revisiting the noise model of stochastic gradient descent.
+ 
+ 
+  In   International Conference on Artificial Intelligence and Statistics  , pages 4780–4788. PMLR, 2024b.
+ 
+  
+      
+   [6]  
+  
+Andreas Blattmann, Robin Rombach, Huan Ling, Tim Dockhorn, Seung Wook Kim, Sanja Fidler, and Karsten Kreis.
+ 
+ 
+  Align your latents: High-resolution video synthesis with latent diffusion models.
+ 
+ 
+  In   Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition  , pages 22563–22575, 2023.
+ 
+  
+      
+   [7]  
+  
+Hila Chefer, Yuval Alaluf, Yael Vinker, Lior Wolf, and Daniel Cohen-Or.
+ 
+ 
+  Attend-and-excite: Attention-based semantic guidance for text-to-image diffusion models.
+ 
+ 
+  ACM transactions on Graphics (TOG)  , 42(4):1–10, 2023.
+ 
+  
+      
+   [8]  
+  
+Omer Dahary, Or Patashnik, Kfir Aberman, and Daniel Cohen-Or.
+ 
+ 
+  Be yourself: Bounded attention for multi-subject text-to-image generation.
+ 
+ 
+  In   European Conference on Computer Vision  , pages 432–448. Springer, 2024.
+ 
+  
+      
+   [9]  
+  
+Weixi Feng, Chao Liu, Sifei Liu, William Yang Wang, Arash Vahdat, and Weili Nie.
+ 
+ 
+  Blobgen-vid: Compositional text-to-video generation with blob video representations.
+ 
+ 
+  In   Proceedings of the Computer Vision and Pattern Recognition Conference  , pages 12989–12998, 2025.
+ 
+  
+      
+   [10]  
+  
+Agrim Gupta, Lijun Yu, Kihyuk Sohn, Xiuye Gu, Meera Hahn, Fei-Fei Li, Irfan Essa, Lu Jiang, and José Lezama.
+ 
+ 
+  Photorealistic video generation with diffusion models.
+ 
+ 
+  In   European Conference on Computer Vision  , pages 393–411. Springer, 2024.
+ 
+  
+      
+   [11]  
+  
+Hao He, Yinghao Xu, Yuwei Guo, Gordon Wetzstein, Bo Dai, Hongsheng Li, and Ceyuan Yang.
+ 
+ 
+  Cameractrl: Enabling camera control for text-to-video generation, 2024.
+ 
+  
+      
+   [12]  
+  
+Amir Hertz, Ron Mokady, Jay Tenenbaum, Kfir Aberman, Yael Pritch, and Daniel Cohen-or.
+ 
+ 
+  Prompt-to-Prompt Image Editing with Cross-Attention Control.
+ 
+ 
+  In   The Eleventh International Conference on Learning Representations  , 2023.
+ 
+  
+      
+   [13]  
+  
+Chen Hou and Zhibo Chen.
+ 
+ 
+  Training-free camera control for video generation.
+ 
+ 
+  arXiv preprint arXiv:2406.10126  , 2024.
+ 
+  
+      
+   [14]  
+  
+Ziqi Huang, Yinan He, Jiashuo Yu, Fan Zhang, Chenyang Si, Yuming Jiang, Yuanhan Zhang, Tianxing Wu, Qingyang Jin, Nattapol Chanpaisit, et al.
+ 
+ 
+  Vbench: Comprehensive benchmark suite for video generative models.
+ 
+ 
+  In   Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition  , pages 21807–21818, 2024.
+ 
+  
+      
+   [15]  
+  
+Yunji Kim, Jiyoung Lee, Jin-Hwa Kim, Jung-Woo Ha, and Jun-Yan Zhu.
+ 
+ 
+  Dense text-to-image generation with attention modulation.
+ 
+ 
+  In   ICCV  , 2023.
+ 
+  
+      
+   [16]  
+  
+Zhengfei Kuang, Shengqu Cai, Hao He, Yinghao Xu, Hongsheng Li, Leonidas J Guibas, and Gordon Wetzstein.
+ 
+ 
+  Collaborative video diffusion: Consistent multi-video generation with camera control.
+ 
+ 
+  Advances in Neural Information Processing Systems  , 37:16240–16271, 2024.
+ 
+  
+      
+   [17]  
+  
+Jialu Li, Shoubin Yu, Han Lin, Jaemin Cho, Jaehong Yoon, and Mohit Bansal.
+ 
+ 
+  Training-free guidance in text-to-video generation via multimodal planning and structured noise initialization.
+ 
+ 
+  arXiv preprint arXiv:2504.08641  , 2025.
+ 
+  
+      
+   [18]  
+  
+Yumeng Li, Margret Keuper, Dan Zhang, and Anna Khoreva.
+ 
+ 
+  Divide &amp; bind your attention for improved generative semantic nursing.
+ 
+ 
+  arXiv preprint arXiv:2307.10864  , 2023.
+ 
+  
+      
+   [19]  
+  
+Long Lian, Baifeng Shi, Adam Yala, Trevor Darrell, and Boyi Li.
+ 
+ 
+  Llm-grounded video diffusion models.
+ 
+ 
+  arXiv preprint arXiv:2309.17444  , 2023.
+ 
+  
+      
+   [20]  
+  
+Pengyang Ling, Jiazi Bu, Pan Zhang, Xiaoyi Dong, Yuhang Zang, Tong Wu, Huaian Chen, Jiaqi Wang, and Yi Jin.
+ 
+ 
+  Motionclone: Training-free motion cloning for controllable video generation.
+ 
+ 
+  arXiv preprint arXiv:2406.05338  , 2024.
+ 
+  
+      
+   [21]  
+  
+Alexander Pondaven, Aliaksandr Siarohin, Sergey Tulyakov, Philip Torr, and Fabio Pizzati.
+ 
+ 
+  Video motion transfer with diffusion transformers.
+ 
+ 
+  In   Proceedings of the Computer Vision and Pattern Recognition Conference  , pages 22911–22921, 2025.
+ 
+  
+      
+   [22]  
+  
+Ariel Shaulov, Itay Hazan, Lior Wolf, and Hila Chefer.
+ 
+ 
+  Flowmo: Variance-based flow guidance for coherent motion in video generation.
+ 
+ 
+  arXiv preprint arXiv:2506.01144  , 2025.
+ 
+  
+      
+   [23]  
+  
+Uriel Singer, Adam Polyak, Thomas Hayes, Xi Yin, Jie An, Songyang Zhang, Qiyuan Hu, Harry Yang, Oron Ashual, Oran Gafni, et al.
+ 
+ 
+  Make-a-video: Text-to-video generation without text-video data.
+ 
+ 
+  arXiv preprint arXiv:2209.14792  , 2022.
+ 
+  
+      
+   [24]  
+  
+Team Wan, Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haiming Zhao, Jianxiao Yang, et al.
+ 
+ 
+  Wan: Open and advanced large-scale video generative models.
+ 
+ 
+  arXiv preprint arXiv:2503.20314  , 2025.
+ 
+  
+      
+   [25]  
+  
+Ao Wang, Hui Chen, Lihao Liu, Kai Chen, Zijia Lin, Jungong Han, et al.
+ 
+ 
+  Yolov10: Real-time end-to-end object detection.
+ 
+ 
+  Advances in Neural Information Processing Systems  , 37:107984–108011, 2024a.
+ 
+  
+      
+   [26]  
+  
+Jiawei Wang, Yuchen Zhang, Jiaxin Zou, Yan Zeng, Guoqiang Wei, Liping Yuan, and Hang Li.
+ 
+ 
+  Boximator: Generating rich and controllable motions for video synthesis.
+ 
+ 
+  arXiv preprint arXiv:2402.01566  , 2024b.
+ 
+  
+      
+   [27]  
+  
+Xiang Wang, Hangjie Yuan, Shiwei Zhang, Dayou Chen, Jiuniu Wang, Yingya Zhang, Yujun Shen, Deli Zhao, and Jingren Zhou.
+ 
+ 
+  Videocomposer: Compositional video synthesis with motion controllability.
+ 
+ 
+  Advances in Neural Information Processing Systems  , 36:7594–7611, 2023.
+ 
+  
+      
+   [28]  
+  
+Zhouxia Wang, Ziyang Yuan, Xintao Wang, Yaowei Li, Tianshui Chen, Menghan Xia, Ping Luo, and Ying Shan.
+ 
+ 
+  Motionctrl: A unified and flexible motion controller for video generation.
+ 
+ 
+  In   ACM SIGGRAPH 2024 Conference Papers  , pages 1–11, 2024c.
+ 
+  
+      
+   [29]  
+  
+Min Wei, Chaohui Yu, Jingkai Zhou, and Fan Wang.
+ 
+ 
+  3dv-ton: Textured 3d-guided consistent video try-on via diffusion models.
+ 
+ 
+  arXiv preprint arXiv:2504.17414  , 2025.
+ 
+  
+      
+   [30]  
+  
+Jialian Wu, Jianfeng Wang, Zhengyuan Yang, Zhe Gan, Zicheng Liu, Junsong Yuan, and Lijuan Wang.
+ 
+ 
+  Grit: A generative region-to-text transformer for object understanding.
+ 
+ 
+  In   European Conference on Computer Vision  , pages 207–224. Springer, 2024.
+ 
+  
+      
+   [31]  
+  
+Ziyi Wu, Aliaksandr Siarohin, Willi Menapace, Ivan Skorokhodov, Yuwei Fang, Varnith Chordia, Igor Gilitschenski, and Sergey Tulyakov.
+ 
+ 
+  Mind the time: Temporally-controlled multi-event video generation.
+ 
+ 
+  In   Proceedings of the Computer Vision and Pattern Recognition Conference  , pages 23989–24000, 2025.
+ 
+  
+      
+   [32]  
+  
+Zeqi Xiao, Yifan Zhou, Shuai Yang, and Xingang Pan.
+ 
+ 
+  Video diffusion models are training-free motion interpreter and controller.
+ 
+ 
+  Advances in Neural Information Processing Systems  , 37:76115–76138, 2024.
+ 
+  
+      
+   [33]  
+  
+Dejia Xu, Weili Nie, Chao Liu, Sifei Liu, Jan Kautz, Zhangyang Wang, and Arash Vahdat.
+ 
+ 
+  Camco: Camera-controllable 3d-consistent image-to-video generation.
+ 
+ 
+  arXiv preprint arXiv:2406.02509  , 2024.
+ 
+  
+      
+   [34]  
+  
+Shiyuan Yang, Liang Hou, Haibin Huang, Chongyang Ma, Pengfei Wan, Di Zhang, Xiaodong Chen, and Jing Liao.
+ 
+ 
+  Direct-a-video: Customized video generation with user-directed camera movement and object motion.
+ 
+ 
+  In   ACM SIGGRAPH 2024 Conference Papers  , pages 1–12, 2024a.
+ 
+  
+      
+   [35]  
+  
+Zhuoyi Yang, Jiayan Teng, Wendi Zheng, Ming Ding, Shiyu Huang, Jiazheng Xu, Yuanming Yang, Wenyi Hong, Xiaohan Zhang, Guanyu Feng, et al.
+ 
+ 
+  Cogvideox: Text-to-video diffusion models with an expert transformer.
+ 
+ 
+  arXiv preprint arXiv:2408.06072  , 2024b.
+ 
+  
+    
+ 
+ 
+  
+ 
+ Supplementary Material for  TempoControl : Temporal Attention Guidance for Text-to-Video Models 
+
+ 
+ This supplementary material includes algorithmic pseudocode, ablation studies, experimental design details, application-specific configurations, extended quantitative and qualitative results, and the human-evaluation setup. Videos and code are also provided in the supplementary package. 
+ 
+ 
+ The sections of the supplementary material are as follows: 
+ 
+ 
+ 
+  1.  
+ 
+ Algorithm pseudocode (Section   .5  ). 
+  
+  2.  
+ 
+ Experimental setup and hyperparameters (Section   .6  ). 
+  
+  3.  
+ 
+ Configuration details for each application setting (Section   .7  ). 
+  
+  4.  
+ 
+ Human evaluation protocol and interface (Section   .8  ). 
+  
+  5.  
+ 
+ Latency analysis and trade-off (Section   .9  ). 
+  
+  6.  
+ 
+ Comparison to Dense Diffusion (Section   .10  ). 
+  
+  7.  
+ 
+ Optimization steps and update frequency (Section   .11  ). 
+  
+  8.  
+ 
+ Extended multi-object evaluation (Section   .12  ). 
+  
+  9.  
+ 
+ Ablation of loss components (Section   .13  ). 
+  
+  10.  
+ 
+ Comparison to cosine similarity objective (Section   .14  ). 
+  
+  11.  
+ 
+ Limitations of explicit temporal cues in text-to-video models (Section   .15  ). 
+  
+  12.  
+ 
+ Additional qualitative results (Section   .16  ). 
+  
+ 
+ 
+  
+ 
+  .5  Algorithm Pseudo-code 
+
+ 
+ Algorithm   1   outlines our inference-time optimization procedure. Starting from noise     z  T   z_{T}   , we iteratively steer the latent code during the first    k  k    denoising steps of the diffusion process. At each step    t  t   , we compute cross-attention maps from the video-text model    DiT  \operatorname{DiT}    and derive the scalar temporal attention     a  i  t   a_{i}^{t}    for each token     p  i   p_{i}   . 
+ 
+ 
+ The optimization loss    ℒ  \mathcal{L}    combines three components: correlation alignment     ℒ  c  t   \mathcal{L}_{\text{c}}^{t}   , magnitude modulation     ℒ  enr  t   \mathcal{L}_{\text{enr}}^{t}   , entropy regularization and     ℒ  ent  t   \mathcal{L}_{\text{ent}}^{t}   . The latent code is updated via gradient descent for up to    l  l    steps per denoising timestep, or until the Pearson correlation exceeds a threshold     τ  corr   \tau_{\text{corr}}   . After optimization, the standard denoising process resumes to produce the final latent     z  0   z_{0}   . 
+ 
+ 
+   Algorithm 1     TempoControl : Temporal Attention-Guided Inference-Time Steering 
+  Input:  Prompt    𝒫  \mathcal{P}   , tokens     p  i   p_{i}    with temporal masks     m  i   m_{i}   , total diffusion steps    T  T   , optimized steps    k  k   , max updates per step    l  l   , correlation threshold     τ  corr   \tau_{\text{corr}}   , model    DiT  \operatorname{DiT}   
+  Output:  Final latent     z  0   z_{0}    
+ 
+ 
+ 
+                1:  
+              
+              
+            Initialize      z  T   ∼   𝒩  ⁡   (  0  ,  I  )     z_{T}\sim\mathcal{N}(0,I)   
+
+ 
+ 
+                2:  
+              
+              
+             for       t  =  T   ,   T  −  1   ,  …  ,    T  −  k   +  1    t=T,T{-}1,\dots,T{-}k{+}1     do 
+
+ 
+ 
+                3:  
+              
+              
+               for      u  =  1   u=1    to    l  l     do 
+
+ 
+ 
+                4:  
+              
+              
+               Extract cross-attentions     A  t   A^{t}    from     DiT  ⁡   (   z  t   ,  𝒫  ,  t  )    \operatorname{DiT}(z_{t},\mathcal{P},t)   
+
+ 
+ 
+                5:  
+              
+              
+               Average heads and layers:      A  ¯   t   \bar{A}^{t}   
+
+ 
+ 
+                6:  
+              
+              
+                   ℒ  ←  0   \mathcal{L}\leftarrow 0   
+
+ 
+ 
+                7:  
+              
+              
+                for  each     p  i   p_{i}    with     m  i   m_{i}     do 
+
+ 
+ 
+                8:  
+              
+              
+                      a  i  t   ←    [    ⟨    A  ¯    j  ,  i   t   ⟩    x  ,  y    ]    j  =  1    T  ′     a_{i}^{t}\leftarrow[\langle\bar{A}^{t}_{j,i}\rangle_{x,y}]_{j=1}^{T^{\prime}}   
+
+ 
+ 
+                9:  
+              
+              
+                      ℒ  c  t   ←   −   Corr  ​   (   m  i   ,   minmax  ​   (   a  i  t   )    )      \mathcal{L}_{\text{c}}^{t}\leftarrow-\text{Corr}(m_{i},\text{minmax}(a_{i}^{t}))   
+
+ 
+ 
+                10:  
+              
+              
+                      ℒ  ⊕  t   ←   1   T  ′     ∑   j  =  1    T  ′    𝟙   [   m   i  ,  j    &gt;  τ  ]   ⋅   a   i  ,  j   t    \mathcal{L}_{\oplus}^{t}\leftarrow\frac{1}{T^{\prime}}\sum_{j=1}^{T^{\prime}}\mathbb{1}[m_{i,j}&gt;\tau]\cdot a_{i,j}^{t}   
+
+ 
+ 
+                11:  
+              
+              
+                      ℒ  ⊖  t   ←   1   T  ′     ∑   j  =  1    T  ′    𝟙   [   m   i  ,  j    ≤  τ  ]   ⋅   a   i  ,  j   t    \mathcal{L}_{\ominus}^{t}\leftarrow\frac{1}{T^{\prime}}\sum_{j=1}^{T^{\prime}}\mathbb{1}[m_{i,j}\leq\tau]\cdot a_{i,j}^{t}   
+
+ 
+ 
+                12:  
+              
+              
+                      ℒ  mag  t   ←    ℒ  ⊖  t   −   ℒ  ⊕  t     \mathcal{L}_{\text{mag}}^{t}\leftarrow\mathcal{L}_{\ominus}^{t}-\mathcal{L}_{\oplus}^{t}   
+
+ 
+ 
+                13:  
+              
+              
+                      ℒ  ent  t   ←   1   T  ′     ∑   j  =  1    T  ′    𝟙   [   m   i  ,  j    &gt;  τ  ]   ⋅  ℋ   (    A  ¯    j  ,  i   t   )    \mathcal{L}_{\text{ent}}^{t}\leftarrow\frac{1}{T^{\prime}}\sum_{j=1}^{T^{\prime}}\mathbb{1}[m_{i,j}&gt;\tau]\cdot\mathcal{H}(\bar{A}^{t}_{j,i})   
+
+ 
+ 
+                14:  
+              
+              
+                     ℒ  ←   ℒ  +   ℒ  c  t   +    λ  1   ​   ℒ  enr  t    +    λ  2   ​   ℒ  ent  t      \mathcal{L}\leftarrow\mathcal{L}+\mathcal{L}_{\text{c}}^{t}+\lambda_{1}\mathcal{L}_{\text{enr}}^{t}+\lambda_{2}\mathcal{L}_{\text{ent}}^{t}   
+
+ 
+ 
+                15:  
+              
+              
+                end   for 
+ 
+ 
+                16:  
+              
+              
+                    z  t  ′   ←    z  t   −    α  t   ​    ∇   z  t     (   ℒ  /  N   )       z_{t}^{\prime}\leftarrow z_{t}-\alpha_{t}\nabla_{z_{t}}(\mathcal{L}/N)   
+
+ 
+ 
+                17:  
+              
+              
+                if  All      ℒ  corr  t   ≤   τ  corr    \mathcal{L}_{\text{corr}}^{t}\leq\tau_{\text{corr}}     then  
+
+ 
+ 
+                18:  
+              
+              
+                  break 
+
+ 
+ 
+                19:  
+              
+              
+                end   if 
+ 
+ 
+                20:  
+              
+              
+                    z  t   ←   z  t  ′    z_{t}\leftarrow z_{t}^{\prime}   
+
+ 
+ 
+                21:  
+              
+              
+               end   for 
+ 
+ 
+                22:  
+              
+              
+                   z   t  −  1    ←   DiT  ⁡   (   z  t  ′   ,  𝒫  ,  t  )     z_{t-1}\leftarrow\operatorname{DiT}(z_{t}^{\prime},\mathcal{P},t)   
+
+ 
+ 
+                23:  
+              
+              
+             end   for 
+ 
+ 
+                24:  
+              
+              
+            Continue denoising using the standard denoising diffusion process for      t  =   T  −  k    ,  …  ,  1   t=T{-}k,\dots,1   
+
+ 
+ 
+                25:  
+              
+              
+             return      z  0   z_{0}   
+
+ 
+ 
+ 
+  
+ 
+ 
+  .6  Experimental Setup 
+
+ 
+ All experiments use  Wan 2.1  as the backbone model. We apply a classifier-free guidance scale of 6 and a sample shift of 3 during generation. 
+ 
+ 
+ For single-object scenes, we use      λ  1   =  0.3   \lambda_{1}{=}0.3   ,      λ  2   =  10   \lambda_{2}{=}10   , a learning rate of     5  ×   10   −  4     5{\times}10^{-4}   , a Pearson stopping threshold of      τ  corr   =  0.9   \tau_{\text{corr}}{=}0.9   , and perform optimization over the first     l  =  5   l{=}5    denoising steps with up to     k  =  10   k{=}10    gradient updates per step. 
+ 
+ 
+ For two-object scenes, which demand stronger guidance, we increase the learning rate to     10   −  3    10^{-3}    to improve convergence. For motion-centric prompts, we relax the Pearson threshold to      τ  corr   =  0.85   \tau_{\text{corr}}{=}0.85    to enable more flexible optimization. 
+ 
+ 
+ 
+  .7  Applications Setup 
+
+ 
+ Single-Object Temporal Control. 
+
+ 
+ To evaluate temporal grounding for individual objects, we construct a dataset based on the 80 object categories detectable by the YOLO detector. These categories cover common entities such as animals, vehicles, household items, and everyday objects. The complete class list is provided below: 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  person, bicycle, car, motorcycle, airplane, bus, train, truck, boat, traffic light, fire hydrant, stop sign, parking meter, bench, bird, cat, dog, horse, sheep, cow, elephant, bear, zebra, giraffe, backpack, umbrella, handbag, tie, suitcase, frisbee, skis, snowboard, sports ball, kite, baseball bat, baseball glove, skateboard, surfboard, tennis racket, bottle, wine glass, cup, fork, knife, spoon, bowl, banana, apple, sandwich, orange, broccoli, carrot, hot dog, pizza, donut, cake, chair, couch, potted plant, bed, dining table, toilet, tv, laptop, mouse, remote, keyboard, cell phone, microwave, oven, toaster, sink, refrigerator, book, clock, vase, scissors, teddy bear, hair drier, toothbrush.  
+   
+ 
+ 
+ 
+ 
+ Videos are generated from prompts of the form  ‘An empty scene. Suddenly,     ⟨   o  1   ⟩   \langle o_{1}\rangle    appears out of nowhere, drawing all attention.’  Object classes are uniformly sampled across different temporal intervals. 
+ 
+ 
+ 
+ Two-Object Temporal Control. 
+
+ 
+ We evaluate  TempoControl  on 82 prompts derived from the VBench protocol, each consisting of a pair of objects. The complete numbered list of pairs is provided below: 
+ 
+ 
+ 
+ 
+  1.  
+ 
+  a bird   and   a cat  
+  
+  2.  
+ 
+  a cat   and   a dog  
+  
+  3.  
+ 
+  a dog   and   a horse  
+  
+  4.  
+ 
+  a horse   and   a sheep  
+  
+  5.  
+ 
+  a sheep   and   a cow  
+  
+  6.  
+ 
+  a cow   and   an elephant  
+  
+  7.  
+ 
+  an elephant   and   a bear  
+  
+  8.  
+ 
+  a bear   and   a zebra  
+  
+  9.  
+ 
+  a zebra   and   a giraffe  
+  
+  10.  
+ 
+  a giraffe   and   a bird  
+  
+  11.  
+ 
+  a chair   and   a couch  
+  
+  12.  
+ 
+  a couch   and   a potted plant  
+  
+  13.  
+ 
+  a potted plant   and   a tv  
+  
+  14.  
+ 
+  a tv   and   a laptop  
+  
+  15.  
+ 
+  a laptop   and   a remote  
+  
+  16.  
+ 
+  a remote   and   a keyboard  
+  
+  17.  
+ 
+  a keyboard   and   a cell phone  
+  
+  18.  
+ 
+  a cell phone   and   a book  
+  
+  19.  
+ 
+  a book   and   a clock  
+  
+  20.  
+ 
+  a clock   and   a backpack  
+  
+  21.  
+ 
+  a backpack   and   an umbrella  
+  
+  22.  
+ 
+  an umbrella   and   a handbag  
+  
+  23.  
+ 
+  a handbag   and   a tie  
+  
+  24.  
+ 
+  a tie   and   a suitcase  
+  
+  25.  
+ 
+  a suitcase   and   a vase  
+  
+  26.  
+ 
+  a vase   and   scissors  
+  
+  27.  
+ 
+  scissors   and   a teddy bear  
+  
+  28.  
+ 
+  a teddy bear   and   a frisbee  
+  
+  29.  
+ 
+  a frisbee   and   skis  
+  
+  30.  
+ 
+  skis   and   a snowboard  
+  
+  31.  
+ 
+  a snowboard   and   a sports ball  
+  
+  32.  
+ 
+  a sports ball   and   a kite  
+  
+  33.  
+ 
+  a kite   and   a baseball bat  
+  
+  34.  
+ 
+  a baseball bat   and   a baseball glove  
+  
+  35.  
+ 
+  a baseball glove   and   a skateboard  
+  
+  36.  
+ 
+  a skateboard   and   a surfboard  
+  
+  37.  
+ 
+  a surfboard   and   a tennis racket  
+  
+  38.  
+ 
+  a tennis racket   and   a bottle  
+  
+  39.  
+ 
+  a bottle   and   a chair  
+  
+  40.  
+ 
+  an airplane   and   a train  
+  
+  41.  
+ 
+  a train   and   a boat  
+  
+  42.  
+ 
+  a boat   and   an airplane  
+  
+  43.  
+ 
+  a bicycle   and   a car  
+  
+  44.  
+ 
+  a car   and   a motorcycle  
+  
+  45.  
+ 
+  a motorcycle   and   a bus  
+  
+  46.  
+ 
+  a bus   and   a traffic light  
+  
+  47.  
+ 
+  a traffic light   and   a fire hydrant  
+  
+  48.  
+ 
+  a fire hydrant   and   a stop sign  
+  
+  49.  
+ 
+  a stop sign   and   a parking meter  
+  
+  50.  
+ 
+  a parking meter   and   a truck  
+  
+  51.  
+ 
+  a truck   and   a bicycle  
+  
+  52.  
+ 
+  a toilet   and   a hair drier  
+  
+  53.  
+ 
+  a hair drier   and   a toothbrush  
+  
+  54.  
+ 
+  a toothbrush   and   a sink  
+  
+  55.  
+ 
+  a sink   and   a toilet  
+  
+  56.  
+ 
+  a wine glass   and   a chair  
+  
+  57.  
+ 
+  a cup   and   a couch  
+  
+  58.  
+ 
+  a fork   and   a potted plant  
+  
+  59.  
+ 
+  a knife   and   a tv  
+  
+  60.  
+ 
+  a spoon   and   a laptop  
+  
+  61.  
+ 
+  a bowl   and   a remote  
+  
+  62.  
+ 
+  a banana   and   a keyboard  
+  
+  63.  
+ 
+  an apple   and   a cell phone  
+  
+  64.  
+ 
+  a sandwich   and   a book  
+  
+  65.  
+ 
+  an orange   and   a clock  
+  
+  66.  
+ 
+  broccoli   and   a backpack  
+  
+  67.  
+ 
+  a carrot   and   an umbrella  
+  
+  68.  
+ 
+  a hot dog   and   a handbag  
+  
+  69.  
+ 
+  a pizza   and   a tie  
+  
+  70.  
+ 
+  a donut   and   a suitcase  
+  
+  71.  
+ 
+  a cake   and   a vase  
+  
+  72.  
+ 
+  an oven   and   scissors  
+  
+  73.  
+ 
+  a toaster   and   a teddy bear  
+  
+  74.  
+ 
+  a microwave   and   a frisbee  
+  
+  75.  
+ 
+  a refrigerator   and   skis  
+  
+  76.  
+ 
+  a bicycle   and   an airplane  
+  
+  77.  
+ 
+  a car   and   a train  
+  
+  78.  
+ 
+  a motorcycle   and   a boat  
+  
+  79.  
+ 
+  a person   and   a toilet  
+  
+  80.  
+ 
+  a person   and   a hair drier  
+  
+  81.  
+ 
+  a person   and   a toothbrush  
+  
+  82.  
+ 
+  a person   and   a sink  
+  
+ 
+ 
+ 
+ 
+ Prompts follow the structure:
+ ‘The video begins with a serene view centered on     ⟨   o  1   ⟩   \langle o_{1}\rangle   , with no sign of     ⟨   o  2   ⟩   \langle o_{2}\rangle   . In the second half,     ⟨   o  2   ⟩   \langle o_{2}\rangle    unexpectedly appears, altering the dynamic of the scene.’  
+ 
+ 
+ A static control signal (all ones) is used for     ⟨   o  1   ⟩   \langle o_{1}\rangle   . We sample 20 evenly spaced frames and require     ⟨   o  1   ⟩   \langle o_{1}\rangle    to be present throughout. A frame is counted as successful if both objects are detected when     ⟨   o  2   ⟩   \langle o_{2}\rangle    is active, and only     ⟨   o  1   ⟩   \langle o_{1}\rangle    is detected when     ⟨   o  2   ⟩   \langle o_{2}\rangle    is inactive. 
+ 
+ 
+ 
+ Motion Temporal Control. 
+
+ 
+ To evaluate fine-grained temporal modulation of actions, we generate 100 videos using prompts of the form:
+ ‘A video of     ⟨  s  ⟩   \langle s\rangle        ⟨  v  ⟩   \langle v\rangle        ⟨  a  ⟩   \langle a\rangle    with a strong movement at the     ⟨  t  ⟩   \langle t\rangle    second,’ 
+where     ⟨  s  ⟩   \langle s\rangle   ,     ⟨  v  ⟩   \langle v\rangle   ,     ⟨  a  ⟩   \langle a\rangle   , and     ⟨  t  ⟩   \langle t\rangle    denote the subject, verb, adverb, and time reference, respectively. 
+ 
+ 
+ The full list of subject–verb–adverb triplets is given below: 
+ 
+ 
+ 
+ 
+  1.  
+ 
+  a cat   pouncing   silently  
+  
+  2.  
+ 
+  a dancer   twirling   elegantly  
+  
+  3.  
+ 
+  a bird   flapping   frantically  
+  
+  4.  
+ 
+  a lion   roaring   loudly  
+  
+  5.  
+ 
+  a wave   crashing   violently  
+  
+  6.  
+ 
+  a ballerina   leaping   lightly  
+  
+  7.  
+ 
+  a helicopter   spinning   noisily  
+  
+  8.  
+ 
+  a snake   slithering   smoothly  
+  
+  9.  
+ 
+  a bear   growling   deeply  
+  
+  10.  
+ 
+  a man   running   fast  
+  
+  11.  
+ 
+  a woman   laughing   brightly  
+  
+  12.  
+ 
+  a child   crawling   slowly  
+  
+  13.  
+ 
+  a monkey   swinging   playfully  
+  
+  14.  
+ 
+  a firework   exploding   suddenly  
+  
+  15.  
+ 
+  a wolf   howling   hauntingly  
+  
+  16.  
+ 
+  a dolphin   diving   swiftly  
+  
+  17.  
+ 
+  a plane   ascending   steadily  
+  
+  18.  
+ 
+  a kangaroo   hopping   energetically  
+  
+  19.  
+ 
+  a fox   darting   quickly  
+  
+  20.  
+ 
+  a shadow   moving   mysteriously  
+  
+  21.  
+ 
+  a squirrel   scampering   nervously  
+  
+  22.  
+ 
+  a truck   crashing   loudly  
+  
+  23.  
+ 
+  a child   screaming   unexpectedly  
+  
+  24.  
+ 
+  a penguin   waddling   adorably  
+  
+  25.  
+ 
+  a frog   croaking   rhythmically  
+  
+  26.  
+ 
+  a leaf   drifting   slowly  
+  
+  27.  
+ 
+  a shark   circling   menacingly  
+  
+  28.  
+ 
+  a comet   streaking   brightly  
+  
+  29.  
+ 
+  a dancer   collapsing   dramatically  
+  
+  30.  
+ 
+  a boxer   punching   fiercely  
+  
+  31.  
+ 
+  a tree   swaying   gently  
+  
+  32.  
+ 
+  a man   lifting weights   powerfully  
+  
+  33.  
+ 
+  a windmill   rotating   steadily  
+  
+  34.  
+ 
+  a girl   skipping   cheerfully  
+  
+  35.  
+ 
+  a car   drifting   dangerously  
+  
+  36.  
+ 
+  a train   accelerating   fast  
+  
+  37.  
+ 
+  a snake   striking   quickly  
+  
+  38.  
+ 
+  a fire   burning   intensely  
+  
+  39.  
+ 
+  a glacier   cracking   slowly  
+  
+  40.  
+ 
+  a bee   buzzing   constantly  
+  
+  41.  
+ 
+  a deer   sprinting   fearfully  
+  
+  42.  
+ 
+  a volcano   erupting   violently  
+  
+  43.  
+ 
+  a runner   collapsing   from exhaustion  
+  
+  44.  
+ 
+  a gymnast   flipping   smoothly  
+  
+  45.  
+ 
+  a rocket   launching   thunderously  
+  
+  46.  
+ 
+  a drummer   hitting   rapidly  
+  
+  47.  
+ 
+  a magician   vanishing   mysteriously  
+  
+  48.  
+ 
+  a spider   crawling   delicately  
+  
+  49.  
+ 
+  a tiger   pacing   restlessly  
+  
+  50.  
+ 
+  a surfer   balancing   skillfully  
+  
+  51.  
+ 
+  a leopard   growling   softly  
+  
+  52.  
+ 
+  a swimmer   diving   gracefully  
+  
+  53.  
+ 
+  a baby   clapping   happily  
+  
+  54.  
+ 
+  a mime   gesturing   expressively  
+  
+  55.  
+ 
+  a crow   cawing   sharply  
+  
+  56.  
+ 
+  a goat   headbutting   suddenly  
+  
+  57.  
+ 
+  a girl   blowing bubbles   gently  
+  
+  58.  
+ 
+  a chef   chopping   rapidly  
+  
+  59.  
+ 
+  a horse   shaking its mane   proudly  
+  
+  60.  
+ 
+  a robot   malfunctioning   erratically  
+  
+  61.  
+ 
+  a meteor   falling   fast  
+  
+  62.  
+ 
+  a snake   coiling   tightly  
+  
+  63.  
+ 
+  a rabbit   thumping   nervously  
+  
+  64.  
+ 
+  a man   collapsing   dramatically  
+  
+  65.  
+ 
+  a car   braking   suddenly  
+  
+  66.  
+ 
+  a hawk   diving   precisely  
+  
+  67.  
+ 
+  a wolf   snarling   viciously  
+  
+  68.  
+ 
+  a plane   landing   smoothly  
+  
+  69.  
+ 
+  a firetruck   speeding   urgently  
+  
+  70.  
+ 
+  a chimpanzee   clapping   playfully  
+  
+  71.  
+ 
+  a dancer   stomping   rhythmically  
+  
+  72.  
+ 
+  a snail   inching   slowly  
+  
+  73.  
+ 
+  a lioness   crouching   quietly  
+  
+  74.  
+ 
+  a storm cloud   rolling   ominously  
+  
+  75.  
+ 
+  a bee   landing   precisely  
+  
+  76.  
+ 
+  a magician   pulling a rabbit   suddenly  
+  
+  77.  
+ 
+  a glacier   melting   steadily  
+  
+  78.  
+ 
+  a jellyfish   floating   gracefully  
+  
+  79.  
+ 
+  a tree   falling   loudly  
+  
+  80.  
+ 
+  a drummer   drumming   fiercely  
+  
+  81.  
+ 
+  a torch   blazing   brightly  
+  
+  82.  
+ 
+  a woman   spinning   dramatically  
+  
+  83.  
+ 
+  a child   running   barefoot  
+  
+  84.  
+ 
+  a fox   sniffing   cautiously  
+  
+  85.  
+ 
+  a man   throwing a ball   forcefully  
+  
+  86.  
+ 
+  a bear   shaking off water   heavily  
+  
+  87.  
+ 
+  a lion   walking   regally  
+  
+  88.  
+ 
+  a horse   rearing   suddenly  
+  
+  89.  
+ 
+  a falcon   gliding   silently  
+  
+  90.  
+ 
+  an elephant   raising its trunk   highly  
+  
+  91.  
+ 
+  a dog   barking   forcefully  
+  
+  92.  
+ 
+  a man   sneezing   powerfully  
+  
+  93.  
+ 
+  a child   jumping   joyfully  
+  
+  94.  
+ 
+  a tiger   leaping   fiercely  
+  
+  95.  
+ 
+  a woman   spinning   gracefully  
+  
+  96.  
+ 
+  a robot   marching   stiffly  
+  
+  97.  
+ 
+  a horse   galloping   wildly  
+  
+  98.  
+ 
+  an eagle   soaring   majestically  
+  
+  99.  
+ 
+  a flame   flickering   rapidly  
+  
+  100.  
+ 
+  a skateboarder   flipping   expertly  
+  
+ 
+ 
+ 
+ 
+ The verb is modulated using a binary temporal mask (set to 1 only at time     ⟨  t  ⟩   \langle t\rangle   ), while the subject remains active throughout the video. 
+ 
+  
+ 
+ 
+ 
+  .8  Human Evaluation Protocol 
+
+ 
+ To assess temporal alignment and visual quality, we conducted a human preference study using side-by-side video comparisons. All annotators were graduate students conducting research in computer vision or closely related areas. 
+ 
+ 
+ For each prompt, two videos were shown: one generated by our method and one by the text-only baseline, with their order (Video A or Video B) randomized to avoid bias. 
+ 
+ 
+ Annotators were instructed to read the prompt and answer two questions:
+(1) Which video is more temporally accurate (i.e., does the object appear at the correct time and remain visible)?
+(2) Which video is more visually appealing?
+A “Same (use sparingly)” option was available when no meaningful difference was perceived. 
+ 
+ 
+ After the experiments, several annotators noted that judging temporal control could be challenging when the difference in timing was only 1–2 seconds. They reported that knowing the exact expected trigger time from the control mask would have helped them assess temporal accuracy more reliably. While we chose not to repeat the study, we include this observation as guidance for future temporal evaluation protocols. 
+ 
+ 
+ Example screenshots of the evaluation interface are shown in Figures   7   and   8  . 
+ 
+  
+   Figure 7 :   Evaluation interface showing the prompt and two videos (A and B) for comparison.  
+ 
+  
+   Figure 8 :   Second example of the human evaluation interface.  
+ 
+  
+ 
+ 
+  .9  Latency Discussion 
+
+ 
+ We analyze the tradeoff between inference latency and temporal control by varying the number of inference steps in  TempoControl .
+Figure   9   visualizes the latency–accuracy frontier, while Table   5   reports the corresponding temporal, absence, and presence accuracies. 
+ 
+ 
+ As shown,  TempoControl  consistently outperforms all baselines in comparable latency regimes.
+Even with only 2 inference steps,  TempoControl  achieves 83.25% temporal accuracy, surpassing all baselines while operating within a similar latency range to mid-size models.
+Increasing the number of steps further improves performance, with 5 steps providing the best overall balance between latency and accuracy (83.56% temporal accuracy).
+Beyond this point, the gains are marginal, with the performance largely saturating after 5–10 steps. 
+ 
+ 
+ Importantly,  TempoControl  achieves superior temporal control while using a significantly smaller backbone (1.3B parameters), compared to baselines that scale up to 19B parameters.
+This demonstrates that strong temporal reasoning can be achieved efficiently without requiring large-scale models. 
+ 
+   
+   Figure 9 :   
+Latency vs. temporal accuracy. Each baseline is shown as a single point, while  TempoControl  forms a tradeoff curve as the number of inference steps increases. Labels denote the number of inference steps.
+  
+ 
+ 
+   Table 5 :   
+Latency–performance tradeoff. We compare  TempoControl  (Wan 1.3B) under different inference steps against representative baselines.
+  
+ 
+ 
+ Method 
+ Latency (s)    ↓  \downarrow    
+ Temp    ↑  \uparrow    
+ Abs    ↑  \uparrow    
+ Pres    ↑  \uparrow     
+ 
+ CogX (2B) 
+       ∼  85   \sim 85    
+ 58.15 
+ 74.77 
+ 39.88  
+ 
+ Wan2.1-S (1.3B) 
+       ∼  118   \sim 118    
+ 63.94 
+ 67.38 
+ 60.50  
+ 
+ Wan2.2 (5B) 
+       ∼  284   \sim 284    
+ 78.02 
+  87.42  
+ 68.00  
+ 
+ Wan2.1-L (14B) 
+       ∼  791   \sim 791    
+ 64.23 
+ 55.34 
+ 74.00  
+ 
+ LTX-2 (19B) 
+       ∼  43   \sim 43    
+ 74.23 
+ 85.23 
+ 62.12  
+ 
+ Ours (2 steps) 
+       ∼  191   \sim 191    
+ 83.25 
+ 86.12 
+ 80.38  
+ 
+ Ours (5 steps) 
+       ∼  307   \sim 307    
+  83.56  
+ 87.38 
+ 79.75  
+ 
+ Ours (10 steps) 
+       ∼  536   \sim 536    
+ 82.50 
+ 83.25 
+  81.75   
+ 
+ Ours (15 steps) 
+       ∼  698   \sim 698    
+ 84.00 
+ 86.38 
+ 81.62  
+ 
+ 
+  
+ 
+ 
+  .10  Dense Diffusion vs. TempoControl 
+
+ 
+ We compare TempoControl to Dense Diffusion  [ 15 ] , which applies direct spatiotemporal masking      R  i   ​   (  t  ,  x  ,  y  )    R_{i}(t,x,y)    to cross-attention maps based on a temporal control signal, without explicitly optimizing temporal alignment. 
+ 
+ 
+ While this enables temporal gating, it does not align the attention distribution      A  i   ​   (  t  )    A_{i}(t)    with the desired pattern     m   i  ,  t    m_{i,t}   . Moreover, the lack of regularization leads to spatially incoherent attention, producing visual artifacts. These artifacts degrade object appearance and hinder detection, resulting in artificially inflated absence accuracy rather than correct temporal control. 
+ 
+ 
+ In contrast, TempoControl explicitly optimizes temporal alignment via correlation, controls activation strength via a magnitude term, and enforces spatial coherence through entropy regularization. This yields temporally aligned and visually consistent generations, improving presence accuracy while maintaining image quality. 
+ 
+ 
+ 
+ 
+ Method 
+ Temp. Acc. 
+ Abs. Acc. 
+ Pres. Acc. 
+ Img. Qual.  
+ 
+ Dense diffusion 
+ 77.94 
+  86.25  
+ 69.62 
+ 51.02  
+ 
+ TempoControl 
+  82.50  
+ 83.25 
+  81.75  
+  56.51   
+ 
+   Table 6 :   Comparison between Dense Diffusion and TempoControl with Wan2.1 for the one object setting..  
+ 
+  
+ 
+ 
+  .11  Optimization Steps and Update Frequency 
+
+ 
+ We analyze the effect of optimization depth for  TempoControl . We first ablate the number of gradient updates per step in the one-object setting (Table   7  ). Based on this, we fix the number of updates to 5 and vary the number of optimized diffusion steps across tasks and backbones (Table   8  ). 
+ 
+ 
+ Increasing the number of gradient updates improves temporal alignment, but fewer than five updates per step leads to under-optimized attention, while additional updates yield diminishing returns. 
+ 
+ 
+ The impact of optimizing different diffusion steps depends on when temporal structure is established in the underlying model. In Wan-based one- and two-object settings, performance saturates after 5 steps, as object appearance is determined early in the denoising process. In contrast, movement control and CogVideoX benefit from additional steps, since temporal structure emerges later. Overall, optimizing 5 steps provides a strong trade-off between performance and latency. 
+ 
+ 
+   Table 7 :   
+Effect of gradient updates per step in the one-object setting.
+Bold denotes the best result.
+  
+ 
+ 
+ Setting 
+ Acc    ↑  \uparrow    
+ Abs    ↑  \uparrow    
+ Pres    ↑  \uparrow    
+ Img    ↑  \uparrow     
+ 
+ 2 steps / 2 updates 
+ 72.00% 
+ 74.50% 
+ 69.50% 
+ 57.87%  
+ 
+ 2 steps / 5 updates 
+ 77.75% 
+ 79.00% 
+ 76.50% 
+ 57.41%  
+ 
+ 5 steps / 2 updates 
+ 74.12% 
+ 73.62% 
+ 74.62% 
+  58.03%   
+ 
+ 5 steps / 5 updates 
+ 78.81% 
+ 81.50% 
+ 76.12% 
+ 57.43%  
+ 
+ 5 steps / 10 updates (Ours) 
+  83.56%  
+  87.38%  
+  79.75%  
+ 56.92%  
+ 
+ 
+ 
+   Table 8 :   
+Effect of optimized diffusion steps across tasks and backbones (5 updates).
+Bold denotes the best result within each block.
+  
+ 
+ 
+ Setting 
+ Acc    ↑  \uparrow    
+ Abs    ↑  \uparrow    
+ Pres    ↑  \uparrow    
+ Img    ↑  \uparrow     
+ 
+  One Object (Wan)   
+ 
+ 2 steps 
+ 83.25% 
+ 86.12% 
+ 80.38% 
+ 56.72%  
+ 
+ 5 steps (Ours) 
+  83.56%  
+  87.38%  
+ 79.75% 
+  56.92%   
+ 
+ 10 steps 
+ 82.50% 
+ 83.25% 
+  81.75%  
+ 56.51%  
+ 
+  One Object (CogVideoX)   
+ 
+ 2 steps 
+ 60.12% 
+ 78.07% 
+ 40.38% 
+ 46.35%  
+ 
+ 5 steps (Ours) 
+ 63.75% 
+  78.41%  
+ 47.62% 
+ 46.67%  
+ 
+ 10 steps 
+  65.48%  
+ 77.27% 
+  52.50%  
+  47.88%   
+ 
+  Two Objects (Wan)   
+ 
+ 2 steps 
+ 50.98% 
+  59.88%  
+ 42.07% 
+ 70.61%  
+ 
+ 5 steps (Ours) 
+  53.17%  
+ 57.32% 
+  49.02%  
+ 70.82%  
+ 
+ 10 steps 
+ 52.93% 
+ 58.05% 
+ 47.80% 
+  71.09%   
+ 
+  Movement (Wan)   
+ 
+ 2 steps 
+ 38% 
+ – 
+ – 
+ 62.85%  
+ 
+ 5 steps (Ours) 
+ 54% 
+ – 
+ – 
+ 63.24%  
+ 
+ 10 steps 
+  57%  
+ – 
+ – 
+  63.38%   
+ 
+ 
+  
+ 
+ 
+  .12  Multi-Object Evaluation 
+
+ 
+ We report extended results on multi-object text-to-video generation using the VBench benchmark. In this setting, prompts reference multiple entities (e.g., ‘A dog and a cat’), and the evaluation measures whether all specified objects appear consistently throughout the video. Each video is sampled at 16 evenly spaced frames, and a frame is counted as successful if both target objects are detected; the final score is the average per-frame success rate. In the context of our method, this setup corresponds to applying a constant mask of one for both objects across all frames. 
+ 
+ 
+ For completeness, we briefly summarize the VBench metrics reported in Table   9  : 
+ 
+  •  
+ 
+  Multiple-Objects Accuracy (GriT / YOLO).  Measures whether all referenced objects appear correctly in each sampled frame, using open-vocabulary detectors (GriT) or standard detectors (YOLO). Higher values indicate more reliable object visibility and grounding. 
+  
+  •  
+ 
+  Subject Consistency.  Quantifies how consistently the appearance of the main subject is preserved across frames. It is computed using feature similarity both between consecutive frames and relative to the first frame of the video; higher values indicate a more stable and coherent subject identity. 
+  
+  •  
+ 
+  Background Consistency.  Measures the stability of the background across the video. High scores indicate coherent scene structure without abrupt changes. 
+  
+  •  
+ 
+  Dynamic Degree.  Captures the amount of motion or temporal change in the video. The metric is binary at the video level: a video is marked as dynamic if its average optical flow surpasses a predefined threshold. Higher values indicate more motion, while lower values reflect greater temporal stability. 
+  
+ 
+ 
+ 
+ Table   9   summarizes the results. Our method achieves substantial gains in object-centric metrics: multi-object accuracy improves from 74.1% to 76.4% (GriT) and from 61.5% to 65.7% (YOLO), demonstrating better grounding and more reliable visibility of both entities. We also observe improvements across consistency metrics, including subject consistency (from 97.2% to 97.8%) and background consistency (from 97.6% to 98.1%). 
+ 
+ 
+ The Dynamic Degree decreases from 30.5% to 18.8%, reflecting a trade-off: our method promotes temporal stability, often leading to more consistent object appearance across the video, at the cost of reduced motion. This highlights a limitation of this evaluation protocol: VBench counts an object as correct only when it is present in  every  sampled frame; hence, the benchmark implicitly favors unnatural videos in which objects persist throughout the sequence. 
+ 
+ 
+   Table 9 :   Full results for Multiple object benchmark results. Best results per column are in bold.  
+  
+  
+ 
+ 
+ Method 
+     
+ 
+ 
+ Multiple  
+ 
+ Object (GriT)  
+     
+     
+ 
+ 
+ Multiple  
+ 
+ Object (YOLO)  
+     
+     
+ 
+ 
+ Subject  
+ 
+ Consistency  
+     
+     
+ 
+ 
+ Background  
+ 
+ Consistency  
+     
+     
+ 
+ 
+ Motion  
+ 
+ Smoothness  
+     
+     
+ 
+ 
+ Dynamic  
+ 
+ Degree  
+     
+     
+ 
+ 
+ Aesthetic  
+ 
+ Quality  
+     
+     
+ 
+ 
+ Imaging  
+ 
+ Quality  
+      
+ 
+ Text 
+ 74.13% 
+ 61.54% 
+ 97.22% 
+ 97.56% 
+ 99.18% 
+  30.49%  
+  62.84 % 
+  70.25 %  
+ 
+ Ours 
+  76.37%  
+  65.73%  
+  97.81%  
+  98.10%  
+  99.40%  
+ 18.78% 
+ 62.52% 
+ 70.21%  
+   
+  
+ 
+  
+ 
+ 
+  .13  Loss Component Ablation 
+
+ 
+ We conduct an ablation study to analyze the influence of the magnitude weight     λ  1   \lambda_{1}    and the entropy weight     λ  2   \lambda_{2}    on temporal control and visual quality. The results reveal clear and complementary effects of the two loss components. Increasing the magnitude term     λ  1   \lambda_{1}    reduces Imaging Quality while improving T. Absence Accuracy. This suggests that stronger magnitude guidance more strictly enforces the temporal mask, but may also reduce overall visual fidelity. 
+ 
+ 
+ In contrast, increasing the entropy term     λ  2   \lambda_{2}    improves Imaging Quality and raises T. Presence Accuracy, but it decreases T. Absence Accuracy, indicating that stronger entropy regularization encourages more persistent object appearance. 
+ 
+ 
+ Overall, our chosen hyperparameters (     λ  1   =  0.3   \lambda_{1}=0.3   ,      λ  2   =  10   \lambda_{2}=10   ) provide a balanced tradeoff between these competing effects, achieving strong Temporal Accuracy while maintaining high Imaging Quality. 
+ 
+ 
+
+   Table 10 :   Ablation results with Wan2.1-S for the one object setting. All variants use the same temporal Pearson term; we ablate the magnitude weight     λ  1   \lambda_{1}    and the entropy weight     λ  2   \lambda_{2}   . Best scores per column are in  bold .   
+ 
+ 
+   (a)    Effect of magnitude weight     λ  1   \lambda_{1}    with fixed entropy weight      λ  2   =  10   \lambda_{2}=10   .  
+ 
+ 
+ Method 
+     
+ 
+ 
+ Temporal  
+ 
+ Accuracy  
+     
+     
+ 
+ 
+ T. Absence  
+ 
+ Accuracy  
+     
+     
+ 
+ 
+ T. Presence  
+ 
+ Accuracy  
+     
+     
+ 
+ 
+ Imaging  
+ 
+ Quality  
+      
+ 
+ Text baseline 
+ 63.94% 
+ 67.38% 
+ 60.50% 
+ 53.76%  
+ 
+ Ours (      λ  1   =  0.3   ,    λ  2   =  10    \lambda_{1}{=}0.3,\lambda_{2}{=}10   ) 
+  82.50%  
+ 83.25% 
+  81.75%  
+  56.51%   
+ 
+       λ  1   =  0.1   ,    λ  2   =  10    \lambda_{1}{=}0.1,\lambda_{2}{=}10    
+ 79.50% 
+ 80.62% 
+ 78.38% 
+ 56.37%  
+ 
+       λ  1   =  0.65   ,    λ  2   =  10    \lambda_{1}{=}0.65,\lambda_{2}{=}10    
+ 81.06% 
+ 86.50% 
+ 75.62% 
+ 53.94%  
+ 
+       λ  1   =  1.0   ,    λ  2   =  10    \lambda_{1}{=}1.0,\lambda_{2}{=}10    
+ 83.12% 
+  89.00%  
+ 77.25% 
+ 53.74%  
+ 
+     
+ 
+   (b)    Effect of entropy weight     λ  2   \lambda_{2}    with fixed magnitude weight      λ  1   =  0.3   \lambda_{1}=0.3   .  
+ 
+ 
+ Method 
+     
+ 
+ 
+ Temporal  
+ 
+ Accuracy  
+     
+     
+ 
+ 
+ T. Absence  
+ 
+ Accuracy  
+     
+     
+ 
+ 
+ T. Presence  
+ 
+ Accuracy  
+     
+     
+ 
+ 
+ Imaging  
+ 
+ Quality  
+      
+ 
+ Text baseline 
+ 63.94% 
+ 67.38% 
+ 60.50% 
+ 53.76%  
+ 
+ Ours (      λ  1   =  0.3   ,    λ  2   =  10    \lambda_{1}{=}0.3,\lambda_{2}{=}10   ) 
+  82.50%  
+ 83.25% 
+  81.75%  
+  56.51%   
+ 
+       λ  1   =  0.3   ,    λ  2   =  1    \lambda_{1}{=}0.3,\lambda_{2}{=}1    
+ 80.38% 
+  91.25%  
+ 69.50% 
+ 52.01%  
+ 
+       λ  1   =  0.3   ,    λ  2   =  5    \lambda_{1}{=}0.3,\lambda_{2}{=}5    
+ 81.88% 
+ 88.50% 
+ 75.25% 
+ 54.04%  
+ 
+       λ  1   =  0.3   ,    λ  2   =  15    \lambda_{1}{=}0.3,\lambda_{2}{=}15    
+ 81.56% 
+ 81.62% 
+ 81.50% 
+ 56.31%  
+ 
+   
+ 
+  
+ 
+ 
+  .14  Cosine Similarity vs. TempoControl 
+
+ 
+ We evaluate a variant in which the pearson correlation term is replaced with cosine similarity, a standard measure of alignment between attention patterns. 
+ 
+ 
+ Cosine similarity jointly captures alignment and magnitude, effectively entangling temporal synchronization with activation strength. This coupling allows improvements in the objective without necessarily correcting temporal misalignment, since increased activation can artificially boost similarity. In contrast, TempoControl explicitly separates correlation (for alignment) and magnitude (for visibility), enabling more precise and targeted optimization. This decoupling improves temporal accuracy and presence. 
+ 
+ 
+ 
+ 
+ Method 
+ Temp. Acc. 
+ Abs. Acc. 
+ Pres. Acc. 
+ Img. Qual.  
+ 
+ Cosine similarity 
+ 79.00 
+ 82.38 
+ 75.62 
+ 55.97  
+ 
+ TempoControl 
+  82.50  
+  83.25  
+  81.75  
+  56.51   
+ 
+   Table 11 :   Comparison between cosine similarity objective and TempoControl with Wan2.1-S for the one object setting.  
+ 
+  
+ 
+ Figure   10   illustrates ablation results for the entropy term, revealing the limitation of using the Pearson correlation term alone without entropy regularization. While Pearson-based optimization successfully forces the object to appear at the desired time, it often alters the object’s semantics, leading to noticeable inconsistencies. For example, in the “Cake” row, the Pearson-only variant transforms the cake into a noticeably different shape and texture; in the “Sandwich” row, the sandwich becomes distorted across frames; and in the “Book” row, the open book becomes a closed stack with altered proportions. Similar semantic drift is observed in the “Keyboard,” “Oven,” and “Stop sign” examples. 
+ 
+ 
+ These results highlight that Pearson correlation alone can enforce temporal timing but does not sufficiently constrain the appearance space, resulting in unwanted semantic changes. The entropy regularization helps mitigate those artifacts. 
+ 
+  
+   Figure 10 :   Comparison between Wan2.1 and Pearson-only optimization for single-object temporal control. Pearson correlation alone often satisfies the temporal constraint but alters object semantics, producing distorted or inconsistent appearances (e.g., the cake becoming misshaped, the sandwich warping, the book changing structure, or the keyboard turning into a laptop). Adding entropy regularization prevents these failures by stabilizing the object’s identity across time.  
+ 
+  
+ 
+ 
+  .15  Limitations of Explicit Temporal Cues in State-of-the-Art Text-to-Video Models 
+
+ 
+ We analyze the effect of using explicit temporal phrasing (e.g., ‘in the third second’, ‘in the second part of the video’) in the prompt for the one-object setup. Table   12   compares Wan 2.1, Wan 2.2, and our method, each evaluated with and without such phrasing. 
+ 
+ 
+ For Wan 2.1, explicit temporal cues do not improve temporal grounding. In fact, removing them increases Temporal Accuracy (63.94% to 65.18%) and leads to a clear gain in Imaging Quality (53.76% to 59.99%), indicating that the model struggles to interpret precise timing expressions and performs better without them. 
+ 
+ 
+ Wan 2.2 shows a more nuanced pattern: it handles temporal phrasing better than Wan 2.1, likely due to improved data or training techniques. However, the drop in quality when explicit timing is introduced is still  significant . Imaging Quality decreases sharply from 57.78% (without time) to 48.13% (with time), showing that temporal phrasing introduces confusion even for stronger models. Presence Accuracy also falls (79.50% to 68%), further highlighting that explicit timing signals continue to degrade performance. 
+ 
+ 
+ Our method remains the most robust and accurate across settings. Across all conditions, our method provides the most reliable and precise temporal control, regardless of prompt style. Interestingly, although our approach builds on Wan 2.1 as the base model, explicit temporal phrasing does increase the temporal accuracy. This suggests that our optimization procedure may curate the base model’s timing capabilities. 
+ 
+ 
+   Table 12 :   Effect of temporal phrasing in prompts for the one-object setup. Removing explicit timing improves video quality.  
+ 
+ 
+  Method  
+  Temp. Acc.  
+  T. Abs. Acc.  
+  T. Pres. Acc.  
+  Imaging Quality   
+ 
+ Wan2.1 with time 
+ 63.94% 
+  67.38%  
+ 60.50% 
+ 53.76%  
+ 
+ Wan2.1 without time 
+  65.18%  
+ 65.12% 
+  65.25%  
+  59.99%   
+ 
+ Wan2.2 with time 
+  78.02%  
+  87.42%  
+ 68.00% 
+ 48.13%  
+ 
+ Wan2.2 without time 
+ 75.24% 
+ 71.25% 
+  79.50%  
+  57.78%   
+ 
+ Ours with time 
+  82.50%  
+  83.25%  
+  81.75%  
+ 56.51%  
+ 
+ Ours without time 
+ 78.75% 
+ 82.25% 
+ 75.25% 
+  57.14%   
+ 
+ 
+  
+ 
+ 
+  .16  Additional Qualitative Examples 
+
+ 
+ We provide qualitative results across the one-object, two-object, and motion-based setups. For each example, we show sampled frames from the generated videos, illustrating the temporal grounding of object appearances. Prompts are abbreviated for brevity, indicating the key object and its expected time of appearance. Note that once introduced, the object is expected to persist until the end of the video.  Videos can be viewed on the project page.  
+ 
+ 
+ 
+  a baseball glove and a skateboard          
+  a bicycle and a car          
+  a bicycle and an airplane          
+  a bird and a cat          
+  a boat and an airplane          
+  a book and a clock          
+  a bowl and a remote          
+  a bus and a traffic light          
+  a cake and a vase          
+  a car and a motorcycle          
+  a cat and a dog          
+  a cell phone and a book          
+  a donut and a suitcase          
+ 
+   Figure 11 :   Two Objects Text vs Ours.  
+ 
+ 
+ 
+    Text   Ours  
+  a giraffe and a bird          
+  a handbag and a tie          
+  a horse and a sheep          
+  a laptop and a remote          
+  a motorcycle and a boat          
+  a motorcycle and a bus          
+  a person and a toothbrush          
+  a pizza and a tie          
+  a potted plant and a tv          
+  a spoon and a laptop          
+  a tennis racket and a bottle          
+  a toaster and a teddy bear          
+  a truck and a bicycle          
+  a zebra and a giraffe          
+ 
+   Figure 12 :   Two Objects Text vs Ours.  
+ 
+ 
+ 
+    Text   Ours  
+  airplane 2nd second          
+  apple 4th second          
+  backpack 3rd second          
+  bench 2nd second          
+  bicycle 2nd second          
+  bowl 4th second          
+  bus 2nd second          
+  cell phone last second          
+  clock last second          
+  cow 2nd second          
+  dining table last second          
+  dog last second          
+  donut 4th second          
+  fork 4th second          
+ 
+   Figure 13 :   One Object Text vs Ours.  
+ 
+ 
+ 
+    Text   Ours  
+  hair drier last second          
+  handbag 3rd second          
+  kite 3rd second          
+  knife 4th second          
+  scissors last second          
+  sheep 2nd second          
+  skateboard 3rd second          
+  snowboard 3rd second          
+  sports ball 3rd second          
+  suitcase 3rd second          
+  toilet last second          
+  truck 2nd second          
+  umbrella 3rd second          
+ 
+   Figure 14 :   One Object Text vs Ours.  
+ 
+ 
+ 
+    Text   Ours  
+  bee buzzing 3rd second          
+  bird flapping 2nd second          
+  child crawling 2nd second          
+  child jumping 1st second          
+  child screaming 2nd second          
+  chimpanzee clapping 1st second          
+  crow cawing 4th second          
+  falcon gliding last second          
+  fox darting 2nd second          
+  horse shaking its mane 4th second          
+  jellyfish floating last second          
+  kangaroo hopping 2nd second          
+  leopard growling 4th second          
+ 
+   Figure 15 :   Movement Text vs Ours.  
+ 
+ 
+ 
+    Text   Ours  
+  lion roaring 1st second          
+  lion walking last second          
+  magician pulling rabbit last second          
+  penguin waddling 1st second          
+  rabbit thumping 4th second          
+  robot marching 1st second          
+  rocket launching 3rd second          
+  surfer balancing 4th second          
+  swimmer diving 4th second          
+  wolf snarling 4th second          
+ 
+   Figure 16 :   Movement Text vs Ours.  
+ 
+ 
+ 
+    Text   Ours  
+  elephant ex1          
+  elephant ex2          
+  lightning ex1          
+  lightning ex2          
+  rooster ex1          
+  rooster ex2          
+ 
+   Figure 17 :   Audio-video Alignment Text vs Ours.  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

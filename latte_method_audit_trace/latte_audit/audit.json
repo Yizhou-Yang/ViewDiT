@@ -1,0 +1,88 @@
+{
+  "edit_distance_ab": 1.492526650428772,
+  "P1_loop_detection": {
+    "true_boundary": [
+      {
+        "rank": 2,
+        "prefix_rms": 0.6155490875244141
+      },
+      {
+        "rank": 4,
+        "prefix_rms": 0.5053007006645203
+      },
+      {
+        "rank": 8,
+        "prefix_rms": 0.36552679538726807
+      },
+      {
+        "rank": 16,
+        "prefix_rms": 0.2132185697555542
+      },
+      {
+        "rank": 32,
+        "prefix_rms": 8.167836313077714e-06
+      },
+      {
+        "rank": 64,
+        "prefix_rms": 8.167836313077714e-06
+      }
+    ],
+    "fake_boundary": [
+      {
+        "rank": 2,
+        "prefix_rms": 2.027134418487549
+      },
+      {
+        "rank": 4,
+        "prefix_rms": 2.0511295795440674
+      },
+      {
+        "rank": 8,
+        "prefix_rms": 2.085031747817993
+      },
+      {
+        "rank": 16,
+        "prefix_rms": 2.1026580333709717
+      },
+      {
+        "rank": 32,
+        "prefix_rms": 2.1265549659729004
+      },
+      {
+        "rank": 64,
+        "prefix_rms": 2.112154245376587
+      }
+    ]
+  },
+  "P2_cache_equivalence": {
+    "boundary_prefix_rms": [
+      0.6155490875244141,
+      0.5053007006645203,
+      0.36552679538726807,
+      0.2132185697555542,
+      8.167836313077714e-06,
+      8.167836313077714e-06
+    ],
+    "lowrank_cache_prefix_rms": [
+      0.6155490875244141,
+      0.5053007006645203,
+      0.36552679538726807,
+      0.2132185697555542,
+      8.167836313077714e-06,
+      8.167836313077714e-06
+    ],
+    "equal": [
+      true,
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "P3_coupling": {
+    "latte_temporal_attention": false,
+    "note": "Latte processes frames independently (b*f batch, only temp_embed), so prefix calibration cannot couple into the future in-latent. full_oracle future_err==0 is an in-latent convenience, NOT a verified post-edit generation result.",
+    "future_err_full_oracle": 0.0
+  }
+}

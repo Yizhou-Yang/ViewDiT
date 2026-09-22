@@ -1,0 +1,206 @@
+{
+  "TOPCONF_DIRECTION_DECISION_V3.md": {
+    "bytes": 9912,
+    "sha256": "f9992f45d7e23bd339ef374f627ca347465406fbe3792b63fe45ca248c430d14"
+  },
+  "SEMANTIC_V3_STATUS.md": {
+    "bytes": 4043,
+    "sha256": "f25fa38264bf73ef3b76de74666609b7758704795f7826b9056e81407da5dd03"
+  },
+  "REFERENCE_CAPSULE_SPEC.md": {
+    "bytes": 4605,
+    "sha256": "9e6cf43fa893100dcdbb294c4b137d7392765e1627dae93ec46ee9e64fd3f57e"
+  },
+  "NONINTERFERENCE_CONTRIBUTION_SPEC_V3.md": {
+    "bytes": 5103,
+    "sha256": "1d07e99cf4c4c4132276d02d35180191be0e6b982f1f348723b4d015ee327ef6"
+  },
+  "SEMANTIC_NONINTERFERENCE_V3_PROTOCOL.md": {
+    "bytes": 4592,
+    "sha256": "040242d4bcb0f94636e6c943fd25489ce461372533d0c4eeb58a5af0c6395e17"
+  },
+  "V3_REPRODUCE.md": {
+    "bytes": 6397,
+    "sha256": "ed8800741153cc392b8ef838f955f40035fdbbca4ad3b7fb4372a894736e0ae8"
+  },
+  "v3_research_summary.json": {
+    "bytes": 21728,
+    "sha256": "d50d5cba4ce23f0be8bb3c28976c8237ab8075d21c1fbac4faa6df7962362da3"
+  },
+  "capsule_codec_stats.json": {
+    "bytes": 378,
+    "sha256": "a0f71f3932bd3e58e5c53a4efe210eb194ac6a70f81d0736f99cc74e2c323ee3"
+  },
+  "cog_semantic_index.json": {
+    "bytes": 3622,
+    "sha256": "c51ddf65e1e4c382d82e82bd73e0f46e0b4c7c6ac26b4e42da07b7748e29a390"
+  },
+  "v3_validation_data/manifest.json": {
+    "bytes": 76116,
+    "sha256": "78dc019738eb6dc097d6425cd893464a2caaf20546473175a8514308615600ce"
+  },
+  "cog_boundary_moment_transport.py": {
+    "bytes": 6196,
+    "sha256": "89d462667177d734395a2be01ecc01c66c6194a94e40668f699c6a975c813c2e"
+  },
+  "cog_online_boundary_norm.py": {
+    "bytes": 3630,
+    "sha256": "5128a674eb4ea1c31d39ddf4c88060529b92301bf182ae559755e8c2aeb5bfbd"
+  },
+  "cog_transport_validation.py": {
+    "bytes": 3729,
+    "sha256": "64d0bf854ec722d011d330444a1265dcb9edd86cab8c24054cf56edd460feef6"
+  },
+  "cog_context_capsule.py": {
+    "bytes": 6495,
+    "sha256": "7aa1585e471b2ad4976e47b19673ba0b585a917f06b210c5ea465d32019548c4"
+  },
+  "cog_context_capsule480.py": {
+    "bytes": 6464,
+    "sha256": "c0fac49d1468e11c4eda391f099be48d66c15503a63d6bbd8c84b805953f1e89"
+  },
+  "cog_capsule_compositor.py": {
+    "bytes": 4574,
+    "sha256": "9f7d04737d5838066d0af3c188e17f506a02d65bbd7a714a1bd3f0e141f464a0"
+  },
+  "cog_exact_memory.py": {
+    "bytes": 3210,
+    "sha256": "1dcea0271ad88c16c5552b0a55425590cd682e39f7ae3d44b9e964a458c5bde8"
+  },
+  "cog_semantic_noninterference.py": {
+    "bytes": 11610,
+    "sha256": "bf63e3952254073fbfb3bc2a7c66d0c408b3ad79b5d3ba2e650312120a35812a"
+  },
+  "cog_semantic_capsule_restore.py": {
+    "bytes": 3990,
+    "sha256": "921666adf09998cd852902ef27f4b3b47f08328c5485e7872f52d99cbf6f7641"
+  },
+  "capsule_codec.py": {
+    "bytes": 2557,
+    "sha256": "f5ae14022372c1c33c09430de92496bde7f2bdae0e186f04d9a1014021c0fc91"
+  },
+  "cog_norm_replay.py": {
+    "bytes": 4959,
+    "sha256": "146625550b6e6265192c2a8fc68e827aed7aeb8bba2c9027aef496c4dd3cfef8"
+  },
+  "fetch_v3_validation.py": {
+    "bytes": 1926,
+    "sha256": "d65c3e482e130494acf34c6792d761bc1ac84defabecfe528a52df1c09987007"
+  },
+  "fetch_cog_semantic.py": {
+    "bytes": 2082,
+    "sha256": "37fbf5749cc54e4a332e432a62485470c4b714318862fe74c8fb5b066d1c76e8"
+  },
+  "fetch_cog_semantic_local.py": {
+    "bytes": 2139,
+    "sha256": "7585fc384fe9164fd0c322f6ea63f10800a434b4b5f1bd6d787ec85356a6b05e"
+  },
+  "render_v3_evidence.py": {
+    "bytes": 1702,
+    "sha256": "99d556fd3482313a70b4c6713b945d18181d680361dae61b89a684cbe1912f06"
+  },
+  "summarize_v3.py": {
+    "bytes": 3052,
+    "sha256": "b89fa4555618216eee11ab280ffabeee9794d8966b450436ab2ebcdc4f0a1a44"
+  },
+  "run_v3_validation_queue.sh": {
+    "bytes": 687,
+    "sha256": "79378634c78402e5cad89be4948938786748bec13e8ba1ef8cb1dc49e7ca8a27"
+  },
+  "run_cog_semantic_queue.sh": {
+    "bytes": 1395,
+    "sha256": "f1e59c6c82539acef67f60c94a9a719882280df4af04d901af8eb9337fa093a5"
+  },
+  "cog_boundary_moment_transport_stats.json": {
+    "bytes": 10024,
+    "sha256": "7bc1c8a66f83acae59f9dba6ffe6d8856d05f915c1b6efcd74097df84b30f3a2"
+  },
+  "cog_online_boundary_norm_stats.json": {
+    "bytes": 2649,
+    "sha256": "a08067221f16b1d9228f76ef98431819f54f63f5f325ba3e4f55e48966f775b7"
+  },
+  "cog_transport_validation_stats.json": {
+    "bytes": 12615,
+    "sha256": "007e8d84baa8e2461407fc8b31f95a8d9dfb3cae9b15e13bb4af3fda1bee57ce"
+  },
+  "cog_context_capsule_stats.json": {
+    "bytes": 35581,
+    "sha256": "483777faec58bf2c0e86a506913336083c8eeaeb9590ee624e45b299b8c92256"
+  },
+  "cog_context_capsule480_stats.json": {
+    "bytes": 18160,
+    "sha256": "119caa0bc90ec06e7902fbaaeb39726a96725b1b32be2fffbe5160bdde9391fe"
+  },
+  "cog_capsule_compositor_stats.json": {
+    "bytes": 7424,
+    "sha256": "1a66ec499571808d5bdb3cb2f3ba8619f822fddbbad189f81ecb2e00fedd10ea"
+  },
+  "cog_exact_memory_stats.json": {
+    "bytes": 988,
+    "sha256": "76f46236f0fba0ca1cb1c15c5cc39d157b960d17ec0ee96d11d741f21f6742c0"
+  },
+  "cog_semantic_smoke_stats.json": {
+    "bytes": 4677,
+    "sha256": "22603a07320b1e9b3c5a63028a0ff9ccf496ee7cb1175d813fa458086d729a66"
+  },
+  "cog_semantic_bear49_stats.json": {
+    "bytes": 8618,
+    "sha256": "e5a89d408b248f3b0a1b20f19e486fdfc2e6452e092127679f341c6d32a5a076"
+  },
+  "cog_semantic_capsule_restore_stats.json": {
+    "bytes": 2641,
+    "sha256": "e767b47dd8ffae1bf66e13a1f0fdfb88567bdac0d19435228dc770258cd1cc42"
+  },
+  "cog_semantic_bear49_strong_stats.json": {
+    "bytes": 4524,
+    "sha256": "158f23a7216e36d061d28596e33a99524dfe8c9e866e333afb44a582f5509bff"
+  },
+  "v3_evidence/libby_encoded_brightness.png": {
+    "bytes": 1342506,
+    "sha256": "7931305c501ed6b6f30b1d5409450e6de9c9a7e45bac4e965d418c5d27f323b0"
+  },
+  "v3_evidence/semantic_bear_strong.gif": {
+    "bytes": 14474657,
+    "sha256": "921824b6806cdd76f198be093749f38dee7d63fc0e349903d08394410c8d9d2c"
+  },
+  "v3_evidence/cows_geometric1.png": {
+    "bytes": 1683378,
+    "sha256": "c6ed566a010e6787fd100534bd15b7a107647cebf06454f0f1ebf3af9b68aa50"
+  },
+  "v3_evidence/semantic_bear_round1.gif": {
+    "bytes": 14629175,
+    "sha256": "8d9206bed55acd64b6b91bc66ae3e668d97f61e50a190d26e1f42c6e25063a59"
+  },
+  "v3_evidence/horsejump-low_geometric1.png": {
+    "bytes": 1474247,
+    "sha256": "731155ce2ba1aa407b29511bfb3a51ff3d53a72b25a09a03e491217933c3b361"
+  },
+  "v3_evidence/libby_encoded_brightness.gif": {
+    "bytes": 2916408,
+    "sha256": "23d3a9963d0dc8e17faa2ce8583d6176f6334fd22f132d713e7d5644aa064512"
+  },
+  "v3_evidence/semantic_bear_strong.png": {
+    "bytes": 1485081,
+    "sha256": "eb31368784cbd0961770f46752e39d6da62ab87f9c30effe150d3dd77de48132"
+  },
+  "v3_evidence/cows_geometric1.gif": {
+    "bytes": 3122353,
+    "sha256": "a3d2f27c718fb63a1c67fd27fdbdfe7d183bf8e1690c25017cc8d1e164faf86b"
+  },
+  "v3_evidence/round1.vcap": {
+    "bytes": 9450,
+    "sha256": "f506c86b2f349256b3bbf5c10009ef6e94ada8298b33c3ce4e2263c0b7bd4410"
+  },
+  "v3_evidence/semantic_bear_round2.png": {
+    "bytes": 1486862,
+    "sha256": "bde07e3893b736cd99e19b449c674a854590401e91ac8778e9e8ba264cc95c61"
+  },
+  "v3_evidence/semantic_bear_round1.png": {
+    "bytes": 1461275,
+    "sha256": "bf678de4ca22524bc28b97ca6f2d64a8c0f477f109d86f0e6c82d9b3b97df869"
+  },
+  "v3_evidence/horsejump-low_geometric1.gif": {
+    "bytes": 2816167,
+    "sha256": "a64382b86cd3ffff2232e262eccbc44a5070e962fd2732b964e40ad76e9eed43"
+  }
+}

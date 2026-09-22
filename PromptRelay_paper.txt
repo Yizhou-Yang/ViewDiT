@@ -1,0 +1,909 @@
+  
+ 
+ 
+ Prompt Relay: Inference-Time Temporal Control for Multi-Event Video Generation 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+    1  Introduction   
+    2  Related Works  
+ 
+    2.1  Controllable Video Generation   
+    2.2  Attention-Based Control in Diffusion Models   
+    2.3  Multi-Event Video Generation   
+  
+    3  Prompt Relay  
+ 
+    3.1  Preliminaries   
+    3.2  Temporal Prompt Routing   
+    3.3  Boundary-Attention Decay   
+  
+    4  Experiments  
+ 
+    4.1  Experimental Setup   
+    4.2  Evaluation Metrics   
+    4.3  Results   
+  
+    5  Limitations   
+    6  Conclusion   
+   References   
+  
+ 
+ 
+ 
+   
+    License: CC BY 4.0
+   
+   
+arXiv:2604.10030v1 [cs.CV] 11 Apr 2026 
+  
+ 
+ Prompt Relay: Inference-Time Temporal Control for Multi-Event Video Generation 
+ 
+ 
+ Gordon Chen
+  
+     
+ Ziqi Huang
+  
+     
+ Ziwei Liu
+   
+  Affiliation:  S-Lab, Nanyang Technological University
+ 
+  Affiliation:   https://gordonchen19.github.io/Prompt-Relay/ 
+     
+
+  Abstract 
+    
+ Video diffusion models have achieved remarkable progress in generating high-quality videos. However, these models struggle to represent the temporal succession of multiple events in real-world videos and lack explicit mechanisms to control when semantic concepts appear, how long they persist, and the order in which multiple events occur. Such control is especially important for movie-grade video synthesis, where coherent storytelling depends on precise timing, duration, and transitions between events. When using a single paragraph-style prompt to describe a sequence of complex events, models often exhibit semantic entanglement, where concepts intended for different moments in the video bleed into one another, resulting in poor text-video alignment. To address these limitations, we propose Prompt Relay, an inference-time, plug-and-play method to enable fine-grained temporal control in multi-event video generation, requiring no architectural modifications and no additional computational overhead. Prompt Relay introduces a penalty into the cross-attention mechanism, so that each temporal segment attends only to its assigned prompt, allowing the model to represent one semantic concept at a time and thereby improving temporal prompt alignment, reducing semantic interference, and enhancing visual quality. 
+  
+ 
+  
+ 
+    
+ 
+ 
+    
+  
+ 
+    
+ 
+   Figure 1 :   Prompt Relay  is an inference-time, training-free, plug-and-play method for enabling fine-grained temporal control by routing each textual prompt to its intended time segment, allowing multiple events to occur in the correct order without semantic interference.   
+ 
+  
+ 
+  
+   Figure 2 :   Temporal Cross-Attention Routing. 
+Each textual prompt is associated with a specific temporal segment of the video. The attention penalty varies smoothly across time, allowing video tokens to attend strongly to their corresponding prompt within the assigned interval while suppressing attention to temporally irrelevant prompts. This enables multiple events (e.g., pouring cereal followed by pouring milk) to occur in the correct order without semantic interference.
+   
+ 
+ 
+  1  Introduction 
+
+ 
+ Recent advances in video diffusion models have enabled the generation of high-quality videos conditioned on textual prompts, achieving impressive visual fidelity and motion coherence  [ 30 ,  23 ,  21 ,  14 ,  20 ] . Despite this progress, existing models are optimized for single-event generation and offer no mechanism for explicit temporal control - users cannot specify when an event occurs, how long it persists for and how multiple events are ordered. As a result, modeling movie-grade videos composed of a succession of events, actions, or camera motions, each occurring within a specific segment of the video and in a specific order, remains challenging. This limitation stems from the lack of temporal awareness in the cross-attention mechanism: by conditioning every frame of the video on the entire prompt simultaneously, the model treats a multi-event prompt as global context rather than a temporally structured sequence, causing semantic concepts intended for different moments to bleed into one another, degrading text-video alignment. 
+ 
+ 
+ Recent works have begun to address temporal controllability in video generation  [ 27 ,  18 ,  5 ,  28 ,  31 ,  29 ] . One line of work  [ 29 ,  27 ]  finetunes the backbone model with temporally grounded supervision. However, these methods require large amounts of annotated data, training and shifts the pre-trained model’s distribution. Inference-time attention control methods  [ 5 ,  31 ,  28 ]  avoid training altogether, but impose structural constraints on the attention mechanism that limit their generality and can introduce visual artifacts at segment boundaries. 
+ 
+ 
+ In this paper, we propose Prompt Relay, a simple and elegant attention-level routing mechanism for fine-grained temporal control and multi-event video generation. Prompt Relay operates entirely at inference time and is plug-and-play compatible with existing video diffusion backbones. Prompt Relay requires no computational overhead and no architectural modifications. Our main contributions are as follows: 
+ 
+ 
+ 
+  •  
+ 
+ We propose Prompt Relay, a test-time, plug-and-play method for fine-grained temporal control in video generation with no computational overhead. 
+  
+  •  
+ 
+ We propose a Boundary-Attention decay mechanism, a soft Gaussian penalty on cross-attention logits that smoothly suppressess semantic interference across segment boundaries. 
+  
+  •  
+ 
+ We demonstrate that Prompt Relay substantially improves temporal prompt alignment, reduces semantic interference and enhances visual quality. 
+  
+ 
+ 
+ 
+ 
+  2  Related Works 
+
+ 
+  2.1  Controllable Video Generation 
+
+ 
+ Video generation has seen rapid progress in recent years, with applications spanning motion control  [ 25 ,  4 ,  26 ,  1 ,  24 ] , viewpoint control  [ 19 ,  11 ,  2 ] , identity control  [ 13 ,  33 ,  15 ]  and editing  [ 16 ,  3 ] . However, most models remain limited in the ability to generate coherent multi-event videos. Because the attention mechanism allows every pixel to attend to every prompt token, models struggle to associate semantic concepts with their intended temporal intervals, leading to temporal misalignment and semantic entanglement. This challenge motivates us to provide explicit temporal control at inference time. 
+ 
+ 
+ 
+  2.2  Attention-Based Control in Diffusion Models 
+
+ 
+ Attention manipulation has emerged as a key mechanism for controllable diffusion generation. Prior work has explored attention for spatial  [ 12 ,  10 ,  9 ,  7 ,  32 ] , identity  [ 34 ,  6 ]  and motion control  [ 16 ,  24 ,  17 ] . In contrast, attention-based temporal control remains largely underexplored. 
+ 
+ 
+ 
+  2.3  Multi-Event Video Generation 
+
+ 
+ A notable approach to temporal modeling for multi-event video generation is MinT  [ 27 ] , which introduces a trainable temporal cross-attention module that binds event descriptions to predefined time intervals, but requires additional training, architectural modifications, and temporally annotated data. MEVG  [ 18 ]  generates each event clip sequentially, conditioning on the last frame of the previous clip via latent inversion to maintain visual continuity. However, this autoregressive design causes error accumulation across segments and produces abrupt transitions when consecutive events are semantically dissimilar. DiTCtrl  [ 5 ]  proposes mask-guided KV-sharing within MM-DiT’s 3D full-attention, enabling prompt-specific semantic control without training. However, the binary attention masks derived from the attention map introduce hard boundaries that can cause background inconsistencies and unnatural transitions. TS-Attn  [ 31 ]  and SwitchCraft  [ 28 ]  instead modulate cross-attention by identifying motion-relevant tokens, TS-Attn via a subject semantic layout, and SwitchCraft via event-specific anchor tokens. Both methods therefore assume the presence of a dominant foreground subject in each event and struggle with scene-level changes or events where no single entity dominates the frame. 
+ 
+  
+   Figure 3 :   Ablation Study of the Temporal Penalty Function. 
+The curves show the attention fraction retained between a query token and the prompt tokens of a given segment, as a function of the query’s latent frame offset from that segment’s midpoint     m  s   m_{s}   , after applying the penalty     exp  ⁡   (   −   C  ⁡   (  i  ,  j  )     )    \exp(-C(i,j))   . (Top) Effect of the window parameter    w  w   .     w  =   L  −  2    w=L-2    preserves full attention within the segment and only suppresses attention near the segment boundaries. (Bottom) Effect of the decay threshold    ϵ  \epsilon   . Smaller values enforce stronger attenuation outside the ’free-attention’ window; however, we find that the choice among small values has negligible perceptual impact. We adopt     ϵ  =  0.1   \epsilon=0.1    as our default.   
+ 
+ 
+ 
+ 
+  3  Prompt Relay 
+
+ 
+ Given a sequence of temporally-constrained text prompts
+     {   (   p  s   ,   t  s  start   ,   t  s  end   )   }    s  =  1   N   \{(p_{s},t_{s}^{\text{start}},t_{s}^{\text{end}})\}_{s=1}^{N}   ,
+our goal is to generate a video such that each arbitrary prompt     p  s   p_{s}    is realized within its designated temporal interval     [   t  s  start   ,   t  s  end   ]   [t_{s}^{\text{start}},t_{s}^{\text{end}}]   . The generated video should preserve global coherence while ensuring that each prompt influences only its assigned temporal region. 
+ 
+ 
+  3.1  Preliminaries 
+
+ 
+ Cross-attention is a mechanism that enables a diffusion model to incorporate external conditioning information, such as text prompts, into the generation process. Given a latent representation at diffusion step    t  t   , denoted as     ϕ  ⁡   (   z  t   )    \phi(z_{t})   , and a set of conditioning embeddings     ψ  ⁡   (  P  )    \psi(P)    derived from an input prompt    P  P   , cross-attention computes interactions between the two through learned projections. 
+ 
+
+  
+  
+       Attn  ⁡   (   ϕ  ⁡   (   z  t   )    ,   ψ  ⁡   (  P  )    )    =     Softmax   ⁡   (    Q  ​   K  ⊤     d    )    ​  V    ,   \mathrm{Attn}(\phi(z_{t}),\psi(P))=\mathrm{Softmax}\!\left(\frac{QK^{\top}}{\sqrt{d}}\right)V,    
+  
+  (1)    
+ 
+ where     Q  =    ℓ  Q   ​  ϕ  ​   (   z  t   )     Q=\ell_{Q}\phi(z_{t})    are query vectors derived from latent features,     K  =    ℓ  K   ​  ψ  ​   (  P  )     K=\ell_{K}\psi(P)    and     V  =    ℓ  V   ​  ψ  ​   (  P  )     V=\ell_{V}\psi(P)    are key and value vectors projected from the conditioning embeddings, and    d  d    denotes the projection dimensionality. Each attention weight reflects how strongly a latent query attends to a particular conditioning token. Through this operation, semantic information from the conditioning input is selectively injected into the latent representation, allowing different queries to respond to different aspects of the prompt. However, because attention is computed globally over all conditioning tokens, multiple semantic concepts may compete for influence over the same latent queries. When these concepts correspond to different temporal regions, unrestricted attention can lead to interference between instructions. 
+ 
+  
+   Figure 4 :   Hard Masking vs Boundary-Attention Decay. 
+Hard masking enforces an abrupt semantic switch in cross-attention at segment boundaries while self-attention remains continuous across the segments. This creates a discontinuity at the boundary, forcing the model to reconcile conflicting signals (Woman eats the pasta instead of the man). Boundary-attention decay avoids this conflict by smoothly co-activating both neighboring prompts near the boundary, giving the model a gradual handoff region in which the transition can be planned jointly before being committed to in the visual representation.   
+ 
+ 
+ 
+  3.2  Temporal Prompt Routing 
+
+ 
+ In order to enforce the association between each prompt     p  s   p_{s}    and its assigned temporal interval     [   t  s  start   ,   t  s  end   ]   [t_{s}^{\text{start}},t_{s}^{\text{end}}]   , we introduce a penalty term     C  ⁡   (  Q  ,  K  )    C(Q,K)    into the cross-attention logits: 
+ 
+
+  
+  
+       Attn  ⁡   (   ϕ  ⁡   (   z  t   )    ,   ψ  ⁡   (  P  )    )    =    softmax  ⁡   (     Q  ​   K  ⊤     d    −   C  ⁡   (  Q  ,  K  )     )    ​  V    .   \mathrm{Attn}(\phi(z_{t}),\psi(P))=\mathrm{softmax}\left(\frac{QK^{\top}}{\sqrt{d}}-C(Q,K)\right)V.    
+  
+  (2)    
+ 
+ The role of     C  ⁡   (  Q  ,  K  )    C(Q,K)    is to suppress the attention between key and query tokens whenever they do not belong to the same interval     [   t  s  start   ,   t  s  end   ]   [t_{s}^{\text{start}},t_{s}^{\text{end}}]   . This allows each prompt to guide generation only within its intended segment, without leaking semantic concepts into other parts of the video. For any arbitrary query token indexed by    i  i    and any key token j belonging to     p  s   p_{s}   , the penalty is defined as: 
+ 
+ 
+ 
+
+  
+  
+       C  ⁡   (  i  ,  j  )    =    ReLU  ​    (    |    f  ⁡   (  i  )    −   m  s    |   −  w   )   2     2  ​   σ  2      ,   \displaystyle C(i,j)=\frac{\mathrm{ReLU}(|f(i)-m_{s}|-w)^{2}}{2\sigma^{2}},    
+    
+  
+  
+       m  s   =     t  s  start   +   t  s  end    2    .   \displaystyle m_{s}=\frac{t_{s}^{\text{start}}+t_{s}^{\text{end}}}{2}.    
+  
+  (3)    
+ 
+ 
+ 
+ Here,     f  ⁡   (  i  )    f(i)    denotes the latent frame index associated with query token i, and     m  s   m_{s}    denotes the midpoint of the corresponding temporal segment. The parameter    w  w    defines a local window around the segment midpoint within which no penalty is applied, while    σ  \sigma    controls the rate at which attention decays outside this window. Query tokens within the window incur zero penalty and can attend freely to their associated prompt tokens. Beyond this region, attention is smoothly attenuated as a function of the temporal distance between the query and the segment midpoint. We demonstrate in Fig.   3  , that     w  =   L  −  2    w=L-2    achieves the best balance between temporal isolation and intra-segment fidelity. 
+ 
+ 
+ We compare our approach to hard masking in Fig.   4  . Hard masking sets      C  ⁡   (  i  ,  j  )    =   −  ∞    C(i,j)=-\infty    for all query-key pairs where      f  ⁡   (  i  )    ∉   [    t  s  start   ,   t  s  end    ]    f(i)\notin[t_{s}^{\text{start}},t_{s}^{\text{end}}]    and    j  j    belongs to prompt     p  s   p_{s}    (i.e. a query either attends fully to a prompt or is completely blocked from it). This enforces a sudden switch between prompts at segment boundaries. While hard masking eliminates cross-segment semantic interference, it creates a discontinuity at the boundary: cross-attention switches abruptly to the new prompt while self-attention remains anchored to the previous segment’s visual structure, forcing the model to reconcile conflicting signals. Boundary-attention decay avoids this conflict by smoothly co-activating both neighboring prompts near the boundary, giving the model a gradual handoff region in which the transition can be planned jointly before being committed to in the visual representation. 
+ 
+ 
+ 
+  3.3  Boundary-Attention Decay 
+
+ 
+ To suppress semantic interference across temporal segments, attention between queries near segment boundaries and prompt tokens from neighboring segments should be negligible. We therefore choose the decay parameter    σ  \sigma    so that the attention prior sufficiently decreases near segment endpoints. Since our penalty subtracts     C  ⁡   (  i  ,  j  )    C(i,j)    from the logits, it applies a multiplicative factor      exp   ⁡   (   −   C  ⁡   (  i  ,  j  )     )    \exp\!\big(-C(i,j)\big)    to the unnormalized attention scores before softmax. This prior is    1  1    inside the “free-attention” window and decays toward the segment boundaries. Let the endpoint distance from the segment midpoint be     L  =   |    f  ⁡   (  i  )    −   m  s    |    L=|f(i)-m_{s}|   . We choose    σ  \sigma    such that the prior reaches a small value    ϵ  \epsilon    at the endpoints: 
+ 
+ 
+ 
+
+  
+  
+        exp   ⁡   (   −     (   L  −  w   )   2    2  ​   σ  2      )    =  ϵ  ⇒  σ  =    L  −  w     2  ​   ln  ⁡   (   1  /  ϵ   )        .   \exp\!\left(-\frac{(L-w)^{2}}{2\sigma^{2}}\right)=\epsilon\;\Rightarrow\;\sigma=\frac{L-w}{\sqrt{2\ln(1/\epsilon)}}.    
+  
+  (4)    
+ 
+ This formulation ensures smooth transitions between neighboring prompts while preventing destructive interference across segments. As a result, each textual instruction primarily influences its intended temporal region, allowing the model to focus on one semantic concept at a time while maintaining global temporal coherence. 
+ 
+  
+   Figure 5 :   Qualitative Comparison.  Given a multi-event prompt describing a deliberate scene transition, Prompt Relay preserves correct temporal structure, ensuring that each semantic instruction influences only its intended segment while maintaining global visual coherence.   
+ 
+ 
+ 
+ 
+  4  Experiments 
+
+ 
+  4.1  Experimental Setup 
+
+ 
+ We apply Prompt Relay on top of the state-of-the-art pretrained video generation model Wan2.2-T2V-A14B. To demonstrate the limitations of existing video generators in handling multi-event prompts, we test several other models, including Sora Storyboard  [ 20 ] , Veo 3.1 [ 21 ] , Wan 2.2 [ 22 ] , and Kling 2.6 [ 14 ] . We set     ϵ  =  0.1   \epsilon=0.1    across all experiments. Setting     w  =   L  −  2    w=L-2    reduces    σ  \sigma    to a constant. In addition to selectively routing local prompts to their assigned temporal segments, we include a global prompt that conditions the entire video and provides persistent context. 
+ 
+ 
+ 
+  4.2  Evaluation Metrics 
+
+ 
+ Existing quantitative metrics test visual fidelity or global text-video alignment, but fail to capture temporal semantics or transition quality, properties that are inherently perceptual. Hence, we conduct a human preference study to evaluate multi-event video generation along three dimensions: 
+ 
+ 
+ 
+  •  
+ 
+  Temporal Prompt Alignment:  Whether each prompt is realized in its intended temporal interval. 
+  
+  •  
+ 
+  Transition Naturalness:  The perceptual smoothness of transitions between consecutive events, including the absence of abrupt cuts, flickering, or unnatural morphing at segment boundaries. 
+  
+  •  
+ 
+  Visual Quality:  Overall perceptual fidelity of the generated video, including sharpness, temporal consistency, and absence of visual artifacts. 
+  
+ 
+ 
+ 
+ We construct 20 diverse multi-event test scenarios, covering a wide range of settings including explicit scene transitions, multi-character interactions, and complex camera trajectories, randomly generated with ChatGPT  [ 8 ] . These scenarios each contain 3-6 temporal events. Participants were shown videos alongside their corresponding prompt, with model identity withheld, and asked to rank each video on a scale of 1–5 per criterion. Final scores are computed as the average rank across all participants (30) and scenarios. 
+ 
+ 
+  
+ 
+ 
+ 
+  Metric  
+  Storyboard  
+  Kling 2.6  
+  Veo 3.1  
+  Wan 2.2  
+  Wan 2.2 + Prompt Relay   
+ 
+ 
+ 
+ Temporal Prompt Alignment (   ↓  \downarrow   ) 
+ 4.67 
+ 1.30 
+ 3.93 
+ 4.00 
+  1.10   
+ 
+ Transition Naturalness (   ↓  \downarrow   ) 
+ 4.60 
+ 4.43 
+ 1.30 
+ 3.50 
+  1.17   
+ 
+ Visual Quality (   ↓  \downarrow   ) 
+ 3.67 
+ 2.50 
+  2.0  
+ 4.00 
+ 2.83  
+ 
+ 
+  
+   Table 1 :   Human preference scores for multi-event video generation. (lower values indicate better rankings)  
+ 
+ 
+ 
+  4.3  Results 
+
+ 
+ As shown in Table.   1  , Prompt Relay consistently outperforms baseline approaches in temporal alignment and transition naturalness. Notably Wan 2.2 with Prompt Relay consistently exhibits stronger visual quality compared to the baseline Wan 2.2. This is likely because Prompt Relay’s attention routing mechanism suppresses attention between queries in a particular temporal segment and prompts belonging to other segments. By reducing unnecessary competition in the cross-attention space, the model can allocate attention more effectively to the active semantic concepts, resulting in clearer visual structure, improved temporal alignment, and more stable generation. However, Kling 2.6 and Veo 3.1 still achieve higher visual quality overall,
+indicating that visual fidelity remains partially bounded by the capacity of
+the underlying backbone model. 
+ 
+ 
+ 
+ 
+  5  Limitations 
+
+ 
+ Since each temporal segment attends primarily to its corresponding local prompt, persistent visual elements such as characters, objects, or scene style are not explicitly shared across segments.
+If these elements are described inconsistently across local prompts, their appearance
+may drift over time. We found that we can fully mitigate this by incorporating a global prompt
+that provides shared context and anchors persistent elements across multiple segments. 
+ 
+ 
+ 
+  6  Conclusion 
+
+ 
+ We present Prompt Relay, an inference-time, plug-and-play method for multi-event video generation with fine-grained temporal control. We also show that our method improves visual quality over the backbone model. We view our work as a pivotal step towards movie-grade, controllable video synthesis. 
+ 
+ 
+ 
+ Acknowledgments 
+
+ 
+ This research is supported by cash and in-kind funding from NTU S-Lab and industry partner(s). This study is also supported by the Ministry of Education, Singapore, under its MOE AcRF Tier 2 (MOE-T2EP20223-0002).
+
+
+   
+ 
+ 
+ 
+ References 
+
+ 
+  [1] 
+  R. Abdal, O. Patashnik, I. Skorokhodov, W. Menapace, A. Siarohin, S. Tulyakov, D. Cohen-Or, and K. Aberman   (2025) 
+ 
+  Dynamic concepts personalization from single videos .
+ 
+ In  Proceedings of the Special Interest Group on Computer Graphics and Interactive Techniques Conference Conference Papers ,
+ 
+ Cited by:   §2.1  .
+  
+  [2] 
+  J. Bai, M. Xia, X. Fu, X. Wang, L. Mu, J. Cao, Z. Liu, H. Hu, X. Bai, P. Wan,  et al.    (2025) 
+ 
+  Recammaster: camera-controlled generative rendering from a single video .
+ 
+  arXiv preprint arXiv:2503.11647 .
+ 
+ Cited by:   §2.1  .
+  
+  [3] 
+  Y. Bian, Z. Zhang, X. Ju, M. Cao, L. Xie, Y. Shan, and Q. Xu   (2025) 
+ 
+  Videopainter: any-length video inpainting and editing with plug-and-play context control .
+ 
+ In  Proceedings of the Special Interest Group on Computer Graphics and Interactive Techniques Conference Conference Papers ,
+ 
+ Cited by:   §2.1  .
+  
+  [4] 
+  R. Burgert, Y. Xu, W. Xian, O. Pilarski, P. Clausen, M. He, L. Ma, Y. Deng, L. Li, M. Mousavi,  et al.    (2025) 
+ 
+  Go-with-the-flow: motion-controllable video diffusion models using real-time warped noise .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+ Cited by:   §2.1  .
+  
+  [5] 
+  M. Cai, X. Cun, X. Li, W. Liu, Z. Zhang, Y. Zhang, Y. Shan, and X. Yue   (2025) 
+ 
+  Ditctrl: exploring attention control in multi-modal diffusion transformer for tuning-free multi-prompt longer video generation .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+ Cited by:   §1  ,
+  §2.3  .
+  
+  [6] 
+  S. Cai, C. Yang, L. Zhang, Y. Guo, J. Xiao, Z. Yang, Y. Xu, Z. Yang, A. Yuille, L. Guibas,  et al.    (2025) 
+ 
+  Mixture of contexts for long video generation .
+ 
+  arXiv preprint arXiv:2508.21058 .
+ 
+ Cited by:   §2.2  .
+  
+  [7] 
+  M. Cao, X. Wang, Z. Qi, Y. Shan, X. Qie, and Y. Zheng   (2023) 
+ 
+  Masactrl: tuning-free mutual self-attention control for consistent image synthesis and editing .
+ 
+ In  Proceedings of the IEEE/CVF international conference on computer vision ,
+ 
+ Cited by:   §2.2  .
+  
+  [8] 
+   (2025) 
+ 
+  ChatGPT 5.2 .
+ 
+ Note:  Accessed January 15, 2026 [Online] 
+ 
+ External Links:   Link  
+ 
+ Cited by:   §4.2  .
+  
+  [9] 
+  H. Chefer, Y. Alaluf, Y. Vinker, L. Wolf, and D. Cohen-Or   (2023) 
+ 
+  Attend-and-excite: attention-based semantic guidance for text-to-image diffusion models .
+ 
+  ACM transactions on Graphics (TOG) .
+ 
+ Cited by:   §2.2  .
+  
+  [10] 
+  G. Chen, Z. Huang, C. Tan, and Z. Liu   (2025) 
+ 
+  Stencil: subject-driven generation with context guidance .
+ 
+ In  2025 IEEE International Conference on Image Processing (ICIP) ,
+ 
+ Cited by:   §2.2  .
+  
+  [11] 
+  H. He, Y. Xu, Y. Guo, G. Wetzstein, B. Dai, H. Li, and C. Yang   (2024) 
+ 
+  Cameractrl: enabling camera control for text-to-video generation .
+ 
+  arXiv preprint arXiv:2404.02101 .
+ 
+ Cited by:   §2.1  .
+  
+  [12] 
+  A. Hertz, R. Mokady, J. Tenenbaum, K. Aberman, Y. Pritch, and D. Cohen-Or   (2022) 
+ 
+  Prompt-to-prompt image editing with cross attention control .
+ 
+  arXiv preprint arXiv:2208.01626 .
+ 
+ Cited by:   §2.2  .
+  
+  [13] 
+  T. Hu, Z. Yu, Z. Zhou, S. Liang, Y. Zhou, Q. Lin, and Q. Lu   (2025) 
+ 
+  Hunyuancustom: a multimodal-driven architecture for customized video generation .
+ 
+  arXiv preprint arXiv:2505.04512 .
+ 
+ Cited by:   §2.1  .
+  
+  [14] 
+   (2025) 
+ 
+  Kling 2.6 .
+ 
+ Note:  Accessed January 15, 2026 [Online] 
+ 
+ External Links:   Link  
+ 
+ Cited by:   §1  ,
+  §4.1  .
+  
+  [15] 
+  L. Liu, T. Ma, B. Li, Z. Chen, J. Liu, G. Li, S. Zhou, Q. He, and X. Wu   (2025) 
+ 
+  Phantom: subject-consistent video generation via cross-modal alignment .
+ 
+  arXiv preprint arXiv:2502.11079 .
+ 
+ Cited by:   §2.1  .
+  
+  [16] 
+  S. Liu, Y. Zhang, W. Li, Z. Lin, and J. Jia   (2024) 
+ 
+  Video-p2p: video editing with cross-attention control .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,
+ 
+ Cited by:   §2.1  ,
+  §2.2  .
+  
+  [17] 
+  T. H. S. Meral, H. Yesiltepe, C. Dunlop, and P. Yanardag   (2024) 
+ 
+  Motionflow: attention-driven motion transfer in video diffusion models .
+ 
+  arXiv preprint arXiv:2412.05275 .
+ 
+ Cited by:   §2.2  .
+  
+  [18] 
+  G. Oh, J. Jeong, S. Kim, W. Byeon, J. Kim, S. Kim, and S. Kim   (2024) 
+ 
+  Mevg: multi-event video generation with text-to-video models .
+ 
+ In  European Conference on Computer Vision ,
+ 
+ Cited by:   §1  ,
+  §2.3  .
+  
+  [19] 
+  X. Ren, T. Shen, J. Huang, H. Ling, Y. Lu, M. Nimier-David, T. Müller, A. Keller, S. Fidler, and J. Gao   (2025) 
+ 
+  Gen3c: 3d-informed world-consistent video generation with precise camera control .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+ Cited by:   §2.1  .
+  
+  [20] 
+   (2025) 
+ 
+  Sora .
+ 
+ Note:  Accessed January 15, 2026 [Online]  https://sora.chatgpt.com/explore  
+ 
+ External Links:   Link  
+ 
+ Cited by:   §1  ,
+  §4.1  .
+  
+  [21] 
+   (2025) 
+ 
+  Veo 3.1 .
+ 
+ Note:  Accessed January 15, 2026 [Online] 
+ 
+ External Links:   Link  
+ 
+ Cited by:   §1  ,
+  §4.1  .
+  
+  [22] 
+   (2025) 
+ 
+  Wan 2.2 .
+ 
+ Note:  Accessed January 15, 2026 [Online] 
+ 
+ External Links:   Link  
+ 
+ Cited by:   §4.1  .
+  
+  [23] 
+  T. Wan, A. Wang, B. Ai, B. Wen, C. Mao, C. Xie, D. Chen, F. Yu, H. Zhao, J. Yang,  et al.    (2025) 
+ 
+  Wan: open and advanced large-scale video generative models .
+ 
+  arXiv preprint arXiv:2503.20314 .
+ 
+ Cited by:   §1  .
+  
+  [24] 
+  L. Wang, Z. Mai, G. Shen, Y. Liang, X. Tao, P. Wan, D. Zhang, Y. Li, and Y. Chen   (2025) 
+ 
+  Motion inversion for video customization .
+ 
+ In  Proceedings of the Special Interest Group on Computer Graphics and Interactive Techniques Conference Conference Papers ,
+ 
+ Cited by:   §2.1  ,
+  §2.2  .
+  
+  [25] 
+  X. Wang, H. Yuan, S. Zhang, D. Chen, J. Wang, Y. Zhang, Y. Shen, D. Zhao, and J. Zhou   (2023) 
+ 
+  Videocomposer: compositional video synthesis with motion controllability .
+ 
+  Advances in Neural Information Processing Systems .
+ 
+ Cited by:   §2.1  .
+  
+  [26] 
+  Z. Wang, Z. Yuan, X. Wang, Y. Li, T. Chen, M. Xia, P. Luo, and Y. Shan   (2024) 
+ 
+  Motionctrl: a unified and flexible motion controller for video generation .
+ 
+ In  ACM SIGGRAPH 2024 Conference Papers ,
+ 
+ Cited by:   §2.1  .
+  
+  [27] 
+  Z. Wu, A. Siarohin, W. Menapace, I. Skorokhodov, Y. Fang, V. Chordia, I. Gilitschenski, and S. Tulyakov   (2025) 
+ 
+  Mind the time: temporally-controlled multi-event video generation .
+ 
+ In  Proceedings of the Computer Vision and Pattern Recognition Conference ,
+ 
+ Cited by:   §1  ,
+  §2.3  .
+  
+  [28] 
+  Q. Xu, C. Song, Y. Cai, and C. Zhang   (2026) 
+ 
+  SwitchCraft: training-free multi-event video generation with attention controls .
+ 
+  arXiv preprint arXiv:2602.23956 .
+ 
+ Cited by:   §1  ,
+  §2.3  .
+  
+  [29] 
+  S. Yang, W. Huang, R. Chu, Y. Xiao, Y. Zhao, X. Wang, M. Li, E. Xie, Y. Chen, Y. Lu,  et al.    (2025) 
+ 
+  Longlive: real-time interactive long video generation .
+ 
+  arXiv preprint arXiv:2509.22622 .
+ 
+ Cited by:   §1  .
+  
+  [30] 
+  Z. Yang, J. Teng, W. Zheng, M. Ding, S. Huang, J. Xu, Y. Yang, W. Hong, X. Zhang, G. Feng,  et al.    (2024) 
+ 
+  Cogvideox: text-to-video diffusion models with an expert transformer .
+ 
+  arXiv preprint arXiv:2408.06072 .
+ 
+ Cited by:   §1  .
+  
+  [31] 
+  H. Zhang, Y. Deng, Z. Pan, P. Jiang, B. Li, Q. Hou, Z. Dou, Z. Dong, and D. Zhou   (2026) 
+ 
+  TS-attn: temporal-wise separable attention for multi-event video generation .
+ 
+ In  The Fourteenth International Conference on Learning Representations ,
+ 
+ External Links:   Link  
+ 
+ Cited by:   §1  ,
+  §2.3  .
+  
+  [32] 
+  L. Zhang, A. Rao, and M. Agrawala   (2023) 
+ 
+  Adding conditional control to text-to-image diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF international conference on computer vision ,
+ 
+ Cited by:   §2.2  .
+  
+  [33] 
+  Y. Zhong, Z. Yang, J. Teng, X. Gu, and C. Li   (2025) 
+ 
+  Concat-id: towards universal identity-preserving video synthesis .
+ 
+  arXiv preprint arXiv:2503.14151 .
+ 
+ Cited by:   §2.1  .
+  
+  [34] 
+  Y. Zhou, D. Zhou, M. Cheng, J. Feng, and Q. Hou   (2024) 
+ 
+  Storydiffusion: consistent self-attention for long-range image and video generation .
+ 
+  Advances in Neural Information Processing Systems .
+ 
+ Cited by:   §2.2  .
+  
+ 
+ 
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

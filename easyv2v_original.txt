@@ -1,0 +1,2937 @@
+  
+ 
+ 
+ EasyV2V: A High-quality Instruction-based Video Editing Framework 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+    1  Introduction   
+    2  Related work   
+    3  Method   
+    4  Data pipeline  
+ 
+    4.1  V2V data   
+    4.2  I2I data   
+    4.3  Dense-captioned text-to-video data   
+  
+    5  Implementation details   
+    6  Experiments  
+ 
+    6.1  Benchmarks and metrics   
+    6.2  Baseline comparison   
+    6.3  Ablation study   
+  
+    7  Conclusion   
+    A  Performance on image editing   
+    B  Model configuration  
+ 
+    B.1  Mask conditioning   
+    B.2  LoRA Rank   
+    B.3  Time and memory profiling   
+  
+    C  Additional details on data pipelines   
+    D  Impact of classifier free guidance  
+ 
+   CFG Implementation.   
+   Experimental results.   
+  
+    E  User study   
+    F  Additional visualization  
+ 
+    F.1  Robustness to Reference Image   
+    F.2  Comparison on Human Animate and Flow Edit Datasets   
+    F.3  Exhibition Gallery and Visualization   
+  
+    G  VLM prompts for evaluation   
+   References   
+  
+ 
+ 
+ 
+   
+    License: arXiv.org perpetual non-exclusive license
+   
+   
+arXiv:2512.16920v1 [cs.CV] 18 Dec 2025 
+  
+ 
+ EasyV2V: A High-quality Instruction-based Video Editing Framework 
+ 
+ 
+ Jinjie Mai     Chaoyang Wang     Guocheng Gordon Qian     Willi Menapace  
+   
+  Affiliation:     KAUST      Snap Inc. *  Core contributors †  Project lead Project Page:  https://snap-research.github.io/easyv2v/  
+    
+     
+ Sergey Tulyakov     Bernard Ghanem     Peter Wonka     Ashkan Mirzaei  
+   
+  Affiliation:     KAUST      Snap Inc. *  Core contributors †  Project lead Project Page:  https://snap-research.github.io/easyv2v/  
+     
+
+  Abstract 
+    
+ While image editing has advanced rapidly, video editing remains less explored, facing challenges in consistency, control, and generalization.
+We study the design space of data, architecture, and control, and introduce  EasyV2V , a simple and effective framework for instruction-based video editing. On the data side, we compose existing experts with fast inverses to build diverse video pairs, lift image edit pairs into videos via single-frame supervision and pseudo pairs with shared affine motion, mine dense-captioned clips for video pairs, and add transition supervision to teach how edits unfold.
+On the model side, we observe that pretrained text-to-video models possess editing capability, motivating a simplified design. Simple sequence concatenation for conditioning with light LoRA fine-tuning suffices to train a strong model.
+For control, we unify spatiotemporal control via a single mask mechanism and support optional reference images.
+Overall, EasyV2V works with flexible inputs, e.g., video+text, video+mask+text, video+mask+reference+text, and achieves state-of-the-art video editing results, surpassing concurrent and commercial systems. 
+  
+ 
+  
+ 
+    
+ 
+  
+ 
+ 
+   Figure 1 :   
+EasyV2V unifies data processing, architecture, and control for high-quality, instruction-based video editing with flexible inputs (text, masks, edit timing). The figure illustrates its versatility across diverse input types and editing tasks.
+  
+ 
+ 
+  1  Introduction 
+
+ 
+ What makes a good instruction-based video editor?
+We argue that three components govern performance:  data ,  architecture , and  control .
+This paper analyzes the design space of these components and distills a recipe that works great in practice.
+The result is a lightweight model that reaches state-of-the-art quality while accepting flexible inputs. 
+ 
+ 
+ Training-free video editors adapt pretrained generators but are fragile and slow  [ 10 ,  26 ] .
+Training-based approaches improve stability, yet many target narrow tasks such as ControlNet-style conditioning  [ 1 ,  20 ] , video inpainting  [ 72 ] , or reenactment  [ 8 ] .
+General instruction-based video editors handle a wider range of edits  [ 9 ,  73 ,  53 ,  64 ] , yet still lag behind image-based counterparts in visual fidelity and control. We set out to narrow this gap.
+Figure   2   motivates our design philosophy: modern video models already know how to transform videos.
+To unlock this emerging capability with minimal adaptation, we conduct a comprehensive investigation into data curation, architectural design, and instruction-control. 
+ 
+ 
+  Data. 
+We see three data strategies.
+ (A) One generalist model  renders all edits and is used to self-train an editor  [ 9 ,  53 ,  64 ] . This essentially requires a single teacher model that already solves the problem in high quality.
+ (B) Design and train new experts  for specific edit types, then synthesize pairs at scale  [ 73 ] .
+This yields higher per-task fidelity and better coverage of hard skills, but training and maintaining many specialists is expensive and slows iteration and adaptation to future base models.
+We propose a new strategy:  (C) Select existing experts  and compose them.
+We focus on experts with a fast inverse (e.g., edge   ↔  \leftrightarrow   video, depth   ↔  \leftrightarrow   video) and compose more complex experts from them.
+This makes supervision easy to obtain, and experts are readily available as off-the-shelf models.
+It keeps costs low and diversity high by standing on strong off-the-shelf modules; the drawback is heterogeneous artifacts across experts, which we mitigate through filtering and by favoring experts with reliable inverses.
+Concretely, we combine off-the-shelf video/image experts for stylization, local edits, insertion/removal, and human animation; we also convert image edit pairs into supervision via two routes: single-frame training and pseudo video-to-video (V2V) pairs created by applying the same smooth camera transforms to source and edited images.
+Lifting image-to-image (I2I) data increases scale and instruction variety; its limitation is weak motion supervision, and shared camera trajectories reintroduce temporal structure without changing semantics.
+We further leverage  video continuation : we derive V2V pairs from densely captioned text-to-video (T2V) datasets by sampling input clips outside each captioned interval and target clips within it, while converting the caption into an instruction using an LLM.
+Continuation data teaches action and transition edits that are scarce in typical V2V corpora, at the cost of more careful caption-to-instruction normalization.
+We collect and create an extensive set of V2V pairs, the most comprehensive among published works, and conduct a detailed study of how editing capability emerges from each training source. 
+ 
+  
+   Figure 2 :   A pretrained text-to-video model can mimic common editing effects without finetuning. This suggests that much of the “how” of video editing already lives inside modern backbones.
+  
+ 
+ 
+  Architecture. 
+Using a pretrained video backbone, we study two strategies to inject the source video:  channel concatenation  and  sequence concatenation .
+Channel concatenation is faster in practice because it uses fewer tokens, but we show that sequence concatenation consistently yields higher edit quality.
+The trade-off is efficiency versus separation: channel concatenation keeps context short but entangles source and target signals; sequence concatenation costs more tokens but preserves clean roles for each stream, improving instruction following and local detail.
+Our final design adds small, zero-init patch-embedding routes for the source video and an edit mask used for spatiotemporal control of the edit extent, reuses the frozen video VAE for all modalities, and fine-tunes only with LoRA  [ 16 ] .
+Full finetuning can help when massive, heterogeneous data are available, but it risks catastrophic forgetting and is costly to scale.
+With       &lt;  10   &lt;10   M paired videos, LoRA transfers faster, reduces overfitting, and preserves pretrained knowledge while supporting later backbone swaps; its main downside is a slight headroom loss when unlimited data and compute are present.
+We inject the mask by token addition, and concatenate tokens from the source and optional reference image along the sequence.
+This preserves pretraining benefits, keeps token budgets tight (by not introducing new tokens for the mask), and makes the model easily portable to future backbones.
+Addition for masks is simple and fast; while it carries less capacity than a dedicated mask-token stream, we find it sufficient for precise region and schedule control without context bloat.
+We use an optional reference frame at training and test time to leverage strong image editors when available.
+References boost specificity and style adherence when present; randomly dropping the reference during training keeps the model robust when they are absent or noisy. 
+ 
+ 
+  Flexible control. 
+Prior work explores control by skeletons, segmentation, depth, and masks.
+A key signal is still missing:  when  the edit happens.
+Users often want an edit to appear gradually (e.g., “set the house on fire starting at 1.5s, then let the flames grow gradually”).
+We unify spatial and temporal control with a single mask video.
+Pixels mark  where  to edit; frames mark  when  to edit, and how the effect evolves.
+Alternatives include keyframe prompts or token schedules, which are flexible but harder to author and to align with motion.
+A single mask video is direct, differentiable, and composes well with text and optional references.
+The cost is requiring a mask sequence, which we keep lightweight and editable. 
+ 
+ 
+ Combining these design choices results in a unified editor,  EasyV2V , which supports flexible input combinations, including  video + text ,  video + mask + text , and  video + mask + reference + text  (see Fig.   1  ).
+Despite its simplicity, our recipe consistently improves edit quality, motion, and instruction following over recently published methods.
+In summary, our contributions are: 
+ 
+  •  
+ 
+ A clarified design space for instruction-based video editing and a consistent strategy across data, architecture, and control that achieves state-of-the-art results. 
+  
+  •  
+ 
+ A reusable data engine built from composable experts with trivial inverses, lifted high-quality image edits, and video continuation, with per-expert/per-source ablations. 
+  
+  •  
+ 
+ A lightweight architecture that minimally modifies a pretrained video backbone: zero-init patch-embeddings for source and mask, frozen VAE reuse, and LoRA finetuning, plus optional reference frames. 
+  
+  •  
+ 
+  Temporal control  as a first-class signal, unified with spatial control via a single mask video that schedules when edits start and how they evolve. 
+  
+ 
+ 
+ 
+ 
+  2  Related work 
+
+ 
+  Instruction-based visual editing datasets. 
+With the success of image and video generative models trained on large-scale text-to-image and text-to-video datasets, recent work has focused on developing datasets for instruction-based image and video editing. Early approaches attempted to build large-scale paired I2I datasets, though with low success rates, requiring extensive automatic  [ 4 ,  18 ]  or manual  [ 65 ]  filtering. Later efforts improved success rates by leveraging task-specific models  [ 70 ,  52 ,  63 ,  13 ,  57 ] , leading to highly capable image editing systems  [ 47 ,  29 ] . These models subsequently enabled the generation of higher-quality paired I2I datasets  [ 51 ] .
+Creating paired V2V datasets is inherently more challenging, as it requires editing multiple frames while maintaining temporal coherence and faithfully applying the intended modification. Early work  [ 9 ]  used LLMs and Prompt-to-Prompt  [ 14 ]  to synthesize video pairs, but results were limited by artifacts from the underlying editing method.
+Another dataset  [ 17 ]  provided video–object-mask pairs with corresponding captions but omitted edited videos.
+The current trend is to generate synthetic datasets using one previous general video editing model  [ 9 ,  53 ,  64 ]  or a collection of more specialized video editing models  [ 73 ] . These efforts still lag behind image editing datasets in quality and diversity. We discuss strategies to mitigate this gap and provide extensive analysis comparing the effects of different approaches. 
+ 
+ 
+  Instruction-based visual editing. 
+Building on the success of diffusion models for image  [ 39 ,  28 ,  12 ,  19 ,  47 ,  41 ]  and video  [ 5 ,  25 ,  45 ,  58 ,  48 ]  generation, early visual editing methods used pretrained diffusion models in a training-free manner for image editing  [ 14 ,  7 ,  21 ,  49 ,  33 ,  30 ,  62 ,  27 ] , typically manipulating attention maps and latent spaces, or by noise inversion. These approaches generally produce low-quality outputs, have slow inference, and exhibit low success rates. Subsequent work showed that even relatively low-quality paired datasets can outperform training-free methods  [ 4 ,  42 ] . Such models concatenate input image latents with noisy latents along the channel dimension and fine-tune a pretrained image generator on synthetic paired I2I data produced by training-free approaches.
+Another line of research performs concatenation along the sequence dimension, improving quality at the cost of efficiency  [ 23 ,  55 ,  6 ,  69 ] . Similar directions adopt LLM-style architectures for unified or token-based editing  [ 11 ,  71 ] .
+Instruction-based video editing has been explored far less. Early attempts include training-free video editing pipelines  [ 10 ,  26 ] . Some works adapt image generative models  [ 43 ,  34 ] , while others train on low-quality synthetic video pairs and are limited by training data quality  [ 14 ,  9 ,  68 ,  64 ] . Additional methods include propagating edits from the first frame to subsequent frames  [ 31 ]  or designing architectures with task-specific conditioning for multiple editing tasks  [ 61 ] .
+Another line of work explores task-specific editing, such as ControlNet-style  [ 66 ]  video generation  [ 20 ]  or pose/face conditioned human video synthesis  [ 8 ] .
+Two concurrent frameworks recently appeared on arXiv, focusing on patch-wise concatenation  [ 44 ]  and LLM-style architectures  [ 22 ] . In contrast, our method systematically studies different data sources for training V2V models, identifies those most critical for performance, and enables more controllable video generation through optional reference images and spatiotemporal edit control. 
+ 
+ 
+ 
+  3  Method 
+
+  
+   Figure 3 :   (a) Overview of our video editing architecture. The frozen video VAE encodes control signals. Mask tokens are added to the input video tokens and concatenated with the noisy latent tokens and optional reference image. The DiT is trained using LoRA.
+(b) Input formats used for different dataset types during training. When object masks are available, the spatiotemporal mask input equals the input mask. Otherwise, the mask indicates transitions from the unedited to the edited video.   
+ 
+ 
+  Overview. 
+We build on a modern video generative backbone  [ 48 ]  and introduce lightweight conditioning modules for video editing.
+A pivotal design choice is how to inject the source video condition. While one simple approach is to concatenate the source video latent and the noisy latent along the channel dimension  [ 44 ] , requiring only a modification of the initial patch embedding layer, we found this method struggles to learn edits efficiently. We therefore adopt a sequence-wise concatenation strategy, appending the source video tokens to the noisy latent token sequence. This approach provides a more robust and effective conditioning mechanism, as validated in our ablations (Tab.   3  ). 
+ 
+ 
+ Concretely, we add separate patch-embedding layers for each control signal (source video and mask) and support an optional reference image at training and inference.
+After the encoding of inputs and patch-embedding, condition signals are injected either by element-wise addition (for the edit mask) or by sequence concatenation (for source video and optional reference image).
+To preserve the generative priors of the T2V backbone and ensure stable training, we adopt a parameter-efficient finetuning strategy. We freeze the original backbone weights and optimize only the newly introduced patch-embedding layers and low-rank adaptation (LoRA) weights added to the DiT’s attention layers. We found this approach essential, as full-model finetuning easily led to training instability and source video inconsistency. 
+ 
+ 
+  Input video conditioning. 
+As shown in Fig.   3  , we adopt a simple yet effective strategy to condition on the input video.
+Given a source video and a target video, each of shape     V  ∈   ℝ   N  ​  C  ​  H  ​  W     V\in\mathbb{R}^{NCHW}   , we encode them with a video VAE into latents      Z  src   ,    Z  tgt   ∈   ℝ   n  ​  c  ​  h  ​  w      Z_{\text{src}},Z_{\text{tgt}}\in\mathbb{R}^{nchw}   .
+We use  separate  patch-embedding layers for     Z  src   Z_{\text{src}}    and     Z  tgt   Z_{\text{tgt}}   .
+After applying edit-mask conditioning (below), their tokens are concatenated along the sequence dimension.
+We place     Z  src   Z_{\text{src}}    first, followed by     Z  tgt   Z_{\text{tgt}}   , so the model can learn in-context video editing behavior that resembles video continuation, which is supported by our dense-caption video data. 
+ 
+ 
+  Edit mask conditioning. 
+The mask video     M  ∈   ℝ   N  ​  C  ​  H  ​  W     M\in\mathbb{R}^{NCHW}    is a binary indicator of where and when to edit the source video.
+It can specify (1) pixel-wise regions for inpainting or removal and/or (2) frame-wise intervals to control when an edit occurs and for how long, enabling both spatial and temporal controllability.
+We process the encoded mask latents     Z  msk   Z_{\text{msk}}    with a dedicated patch-embedding layer and inject them by addition into the source video tokens.
+This addition-based injection is a deliberate choice for computational efficiency.
+Because the mask is a low-frequency signal, its information can be effectively fused without appending it to the DiT’s input sequence.
+At inference time, if no mask video is provided, we default to blank masks, treating the task as a canonical, instruction-only video edit. 
+ 
+ 
+  Reference image conditioning. 
+We optionally provide a reference image during both training and inference.
+The reference can be sampled from the target video during training.
+During inference, it can be produced by an external image-editing model by applying it to a frame from the source video or provided by the user.
+Because references can be imperfect (e.g., spurious zooms from Qwen-Image-Edit  [ 36 ] ), we apply random crops/rotations and randomly drop the reference during training so the model is robust to its absence or noise at test time.
+When present, the reference is encoded with the video VAE and     Patch_embedding  ref   \texttt{Patch\_embedding}_{\text{ref}}   , and its tokens are concatenated at the end of the sequence.
+This preserves a fixed token distance between     Z  src   Z_{\text{src}}    and     Z  tgt   Z_{\text{tgt}}    while positioning     Z  ref   Z_{\text{ref}}    closer to     Z  tgt   Z_{\text{tgt}}    for stronger guidance, leveraging off-the-shelf image-editing priors without sacrificing inference flexibility. 
+ 
+ 
+ 
+  4  Data pipeline 
+
+  
+   Figure 4 :   Overview of our datasets. In each example, the left images are inputs and the right images are outputs.  
+ 
+ 
+   Table 1 :   Summary of datasets used for training. We collect       ∼  4.3   \sim 4.3   M open-sourced and licensed data and curate       ∼  3.4   \sim 3.4   M data, resulting in a total of       ∼  8   \sim 8   M high-quality data for training.   
+  
+ 
+ 
+  
+  Dataset  
+  Type  
+  Mask  
+  Reference  
+  # Pairs   
+ 
+  
+ 
+   
+ GPT-Edit-1.5M  [ 51 ]  
+ I2I 
+ ✗ 
+ ✗ 
+       ∼  1.5   \sim 1.5   M  
+ 
+ Ditto-1M  [ 2 ]  
+ V2V 
+ ✗ 
+ ✗ 
+       ∼  1   \sim 1   M  
+ 
+  
+ Señorita-2M  [ 73 ]  
+ V2V 
+ ✗ 
+ ✗ 
+       ∼  1.8   \sim 1.8   M  
+ 
+  
+  
+  Ours  
+    
+ Image Editing 
+ I2I 
+ ✗ 
+ ✗ 
+       ∼  2   \sim 2   M  
+ 
+ Human Animate 
+ V2V 
+ ✗ 
+ ✓ 
+       ∼  60   \sim 60   K  
+ 
+ Object Removal / Insertion 
+ V2V 
+ ✓ 
+ ✗ 
+       ∼  110   \sim 110   K  
+ 
+ Actor Transmutation 
+ V2V 
+ ✗ 
+ ✓ 
+       ∼  4   \sim 4   K  
+ 
+ Video Stylization 
+ V2V 
+ ✗ 
+ ✓ 
+       ∼  90   \sim 90   K  
+ 
+ Controllable Video Generation 
+ V2V 
+ ✗ 
+ ✗ 
+       ∼  1.1   \sim 1.1   M  
+ 
+ Human Action 
+ T2V 
+ ✗ 
+ ✓ 
+       ∼  150   \sim 150   K  
+ 
+  
+ 
+ 
+  4.1  V2V data 
+
+ 
+ We propose a data generation framework that utilizes various expert pipelines for generating paired V2V datasets. Our approach yields significantly stronger results than only using a single general editing pipeline. Figure   4   shows samples of each of our new datasets. Next, we detail the experts. 
+ 
+ 
+  Human animation. 
+Previous V2V datasets  [ 73 ]  lack expert annotations ensuring consistent human poses and facial expressions between input and edited videos. To overcome this, we use Wan Animate  [ 8 ]  to generate paired V2V data where the output video is conditioned on (1) the subject’s pose in the input video for pose consistency, (2) cropped facial regions for expression consistency, and (3) a reference image produced by an image editing model that modifies the first frame to alter the subject or scene. A large language model (LLM) generates diverse edit instructions involving actor swaps, clothing and style changes, and the addition or removal of accessories. 
+ 
+ 
+  Object removal and insertion. 
+We construct paired videos by removing selected objects from original clips. First, we apply an open-set object detection model  [ 67 ]  to the first frame of each video to detect candidate objects and generate corresponding bounding boxes and tags. Next, an LLM refines the tags by removing adjectives (e.g., color, material) and scenery-related labels (e.g., road, sky). For each video, we randomly sample a fixed number of objects, with sampling probability proportional to the bounding box area to prioritize salient objects. For each selected object, we use a video segmentation model  [ 38 ]  to obtain per-frame segmentation masks. A video inpainting model  [ 72 ]  then generates a new version of the video with the target object removed. Human annotators review the results and discard videos with noticeable inpainting artifacts. Finally, we provide the input and output videos, along with the object category and input video captions, to a vision-language model (VLM)  [ 3 ]  and prompt it to generate a detailed instructional caption describing the edit. By replacing the source and target videos and corresponding VLM-based changes to the instruction, this dataset is used for object insertion. 
+ 
+ 
+  Actor transmutation. 
+While the human animate dataset already includes high-quality examples of replacing one humanoid with another, a general editing model should also support actor transmutation for other categories such as animals. To achieve this, we leverage a zero-shot image editing model  [ 27 ]  and build a zero-shot V2V pipeline on top of a pretrained video generative model  [ 48 ] . We use this zero-shot V2V model to extend editing types beyond humanoid-to-humanoid, including (1) quadruped-to-quadruped, (2) bipedal-to-bipedal, and (3) avian-to-avian transformations. We observe that the zero-shot editing model  [ 27 ]  performs noticeably better when the input video is also generated by the same video generative model. Consequently, for each video pair, we sample two actors from the same category, along with an action and a scene, and generate a video of “ &lt;actor1&gt;  performing &lt;action&gt;  in &lt;scene&gt;  ”. We then apply our zero-shot V2V pipeline to produce the edited version described as “ &lt;actor2&gt;  performing &lt;action&gt;  in &lt;scene&gt;  ”. The lists of actors, actions, and scenes for each category are generated by an LLM. 
+ 
+ 
+  Video stylization. 
+A general-purpose V2V model should be capable of applying global style changes to input videos. To create suitable datasets for this task, we extract edge maps from input videos to preserve structure and motion while removing appearance and style information. We then use an image editing model  [ 29 ]  to apply an LLM generated style transfer instruction to the first frame of the input video. This edited reference image, along with the edge video, are used as control signals to generate the stylized output video  [ 1 ] . The style transfer instructions include art movements and styles, lighting conditions, aesthetics, photographic and cinematic styles, weather conditions, traditional arts and patterns, and color palettes and tones. 
+ 
+ 
+  Controllable video generation. 
+Video generation using control signals such as depth and edge maps has been widely studied  [ 1 ,  20 ] . The datasets for training such models consist of video pairs that are simple and inexpensive to obtain, making them suitable as supporting data for training V2V models. These datasets enhance controllable generation capabilities and potentially promote emergent skills through data diversification. We include controllable video generation pairs in our training data, using control signals such as depth, HED edge, Canny edge, optical flow, human poses, noisy videos, and grayscale videos. 
+ 
+ 
+  V2V transition data. 
+To supervise  how  an edit unfolds over time and enable temporal mask control, we synthesize transition effects on top of paired videos     V  src   V^{\text{src}}    and     V  tgt   V^{\text{tgt}}   .
+Given an edit onset     t  i   t_{i}   , we form a training target      V  ′   =   [   V    t  0   :   t  i    src   ,   V    t  i   :   t  N    tgt   ]    V^{\prime}=[\,V^{\text{src}}_{t_{0}:t_{i}},\,V^{\text{tgt}}_{t_{i}:t_{N}}\,]    and derive a frame-wise mask that activates the edit after     t  i   t_{i}   .
+We then apply transition operators like linear blending to ensure a natural transition effect centered at     t  i   t_{i}   . 
+ 
+ 
+ 
+  4.2  I2I data 
+
+ 
+ High-quality instructional V2V datasets are limited, while image editing benefits from mature models and large-scale data.
+To bridge this gap, we train our instructional V2V editor with I2I edit pairs collected from open-source datasets  [ 51 ,  70 ,  52 ,  18 ]  and additional pairs synthesized from VLM-curated image–caption corpora. From each caption, an LLM produces diverse instruction-style edit prompts; instruction-following image editors  [ 36 ,  29 ]  generate the edited images. A VLM-based filter retains only successful, high-quality edits, yielding instruction-aligned I2I supervision without manual annotation. 
+ 
+ 
+  I2I    →  \rightarrow    V2V via affine transformations. 
+Treating an I2I pair as a single-frame video is insufficient because it lacks temporal and motion cues. To address this, we convert each I2I pair into a  pseudo  video pair using a shared 2D affine camera trajectory. Specifically, we sample smooth sequences of small rotations, zooms, and translations by interpolating between a neutral and a randomly drawn target pose, with adjustments to prevent out-of-frame regions. The same trajectory is applied to both the source and target images, producing temporally consistent videos that differ only by the intended edit. This preserves the I2I supervision signal while introducing realistic temporal structure. 
+ 
+ 
+ 
+  4.3  Dense-captioned text-to-video data 
+
+ 
+ Existing V2V datasets cover object manipulation, stylization, and animation but lack edits like changing  human action . As a result, instruction-guided V2V models often fail to modify actions effectively. Dense-captioned text-to-video datasets  [ 54 ] , however, provide diverse action descriptions at scale, enabling action-centric supervision.
+To curate T2V data for video editing, given a video    V  V    and a caption    c  c    localized to a temporal window     [   t  i   ,   t  j   ]   [t_{i},t_{j}]    (e.g.,  “he sits down” ), we slice    V  V    to form a  source  clip     V       t   i  −  N    :   t  i      V_{t_{i-N}:t_{i}}    (frames preceding the caption) and a  target  clip     V       t  i   :   t   i  +  N       V_{t_{i}:t_{i+N}}    (frames containing the caption), where    N  N    is the frame count used for training. We discard windows that are too long (      t  j   −   t  i    ≫  N   t_{j}-t_{i}\gg N   ), too short, or contain scene cuts. The caption    c  c    is then converted into an imperative instruction     c  ′   c^{\prime}    using an LLM  [ 56 ]  (e.g.,  “make him sit down” ). This yields canonical triples for training V2V editors:  (source video, target video, instruction) . Our approach scales efficiently to large captioned video corpora while emphasizing action edits.
+Qualitative results (Figure   1  ) reveal that curated action edits enable EasyV2V to perform accurate and complex human action edits. 
+ 
+ 
+ 
+ 
+  5  Implementation details 
+
+ 
+ We adopt the pretrained video generation model, Wan-2.2-TI2V-5B  [ 48 ] , as our base model for LoRA adaption and Wan-2.2-VAE with a spatiotemporal compression ratio of     4  ×  16  ×  16   4\times 16\times 16   .
+We perform training and report our results based on a spatiotemporal resolution of     81  ×  832  ×  480   81\times 832\times 480    following Wan-2.1-FunControl.
+We also provide high-quality results fine-tuned on     81  ×  1280  ×  704   81\times 1280\times 704    in the supplement.
+For LoRA training, we set the rank to    256  256    and adopt a constant learning rate of     1  ​   e   −  4     1e^{-4}    with AdamW  [ 32 ]  optimizer.
+We conduct our training on 32 NVIDIA H100s for our EasyV2V.
+All newly introduced parameters are zero-initialized.
+We perform random reference image dropout and video transition augmentation each with     50  %   50\%    probability.
+A complete list of all training data used is provided in Tab.   1  . 
+ 
+ 
+ 
+  6  Experiments 
+
+ 
+  6.1  Benchmarks and metrics 
+
+ 
+ We evaluate our method on the latest EditVerseBench  [ 22 ]  which has 20 edit types.
+We evaluate on categories covered by our training data—excluding unsupported tasks such as camera-pose changes—resulting in 160 videos across 16 edit types.
+Following the benchmark’s protocol, we conduct a comprehensive quantitative evaluation using these metrics:
+ Frame and video text alignment.  We measure alignment at both frame and video levels using image-text  [ 37 ]  and video-text  [ 50 ]  encoders by computing cosine similarity between (i) each frame and the target prompt and (ii) a joint embedding of uniformly sampled frames and the prompt.
+ Preference score.  We report a preference-tuned image-text PickScore  [ 24 ]  that correlates with human aesthetic judgments, applied between frames and the target prompt.
+ VLM quality assessment.  We use OpenAI GPT-4o  [ 47 ]  to evaluate three sampled frame pairs on prompt following, edit quality, and background consistency (0-3 each), providing justifications and a total score of    9  9   .
+In our analysis, we observe that the VLM score aligns most closely with human qualitative assessment so we designate the VLM score as our primary metric for comparison. 
+ 
+ 
+ 
+  6.2  Baseline comparison 
+
+ 
+ We perform a comprehensive quantitative comparison against a diverse set of baseline methods in Table   2  .
+With our primary VLM score of     7.73  /  9   7.73/9   , without any guidance, we outperform not only the previously best published method but also concurrent work and a commercial solution.
+When a reference image is given, we can achieve better visual-text alignment performance. 
+ 
+ 
+ We provide a qualitative comparison with the baselines in Fig.   5  . Since EditVerse  [ 22 ]  has not released its code, we take their gallery videos from their webpage.
+InsViE-1M  [ 53 ]  supports only short horizontal videos and often fails to edit properly, producing severe visual artifacts.
+Señorita-2M  [ 73 ]  depends on the image editor for the first frame and, even with successfully edited first frames, shows motion mismatch and artifacts after the first frame.
+Lucy Edit Dev  [ 44 ]  supports limited categories of edit types and frequently exhibits motion mismatches.
+Compared to these methods, our model achieves higher-quality outputs and better instruction following. For example, in the first row, EditVerse fails to produce a “heavy fog” across the “whole video.” In the second, the tree branch between her fingers remains. In the third, the output lacks “visible pen lines.” In the last, EditVerse also removes the background trees. Please refer to our supplement for visualizations. 
+ 
+ 
+   Table 2 :   Benchmark comparison across methods on EditVerse Benchmark. Higher is better for all metrics (↑).
+  
+  
+ 
+ 
+  Method  
+  
+ 
+ 
+  VLM evaluation   
+ 
+ Editing Quality    ↑  \uparrow     
+   
+  
+ 
+ 
+  Video Quality   
+ 
+ Pick Score    ↑  \uparrow     
+   
+  Text Alignment     ↑  \uparrow     
+ 
+ Frame 
+ Video  
+ 
+  Attention Manipulation (Training-free)   
+ 
+ TokenFlow  [ 35 ]  
+ 5.02 
+ 19.59 
+ 25.10 
+ 22.49  
+ 
+ STDF  [ 59 ]  
+ 4.20 
+ 19.32 
+ 24.74 
+ 22.09  
+ 
+  Instruction-Guided (w/ End-to-End Training)   
+ 
+ Señorita-2M  [ 73 ]  (w/ Ref., Qwen-Image-Edit) 
+ 6.45 
+ 20.26 
+ 26.51 
+ 23.24  
+ 
+ InsViE-1M  [ 53 ]  (w/ Ref) 
+ 4.36 
+ 19.25 
+ 25.06 
+ 21.28  
+ 
+ InsV2V  [ 9 ]  
+ 4.95 
+ 19.33 
+ 24.98 
+ 22.74  
+ 
+ Ours (w/o Ref.) 
+  7.73  
+ 20.36 
+  27.59  
+  24.46   
+ 
+ Ours (w/ Ref., Qwen-Image-Edit) 
+ 7.36 
+  20.54  
+ 27.50 
+ 24.31  
+ 
+ Ours (w/ Ref., Flux-Kontext) 
+  7.53  
+  20.61  
+  28.10  
+  25.13   
+ 
+  Closed-Source Commercial Models   
+ 
+ Runway Aleph  [ 40 ]  
+  7.48  
+  20.56  
+  27.96  
+  24.68   
+ 
+  Concurrent unpublished work   
+ 
+ Lucy Edit  [ 44 ]  
+  5.96  
+  19.64  
+  26.03  
+  23.37   
+ 
+ EditVerse  [ 22 ]  (code unavailable) 
+  7.64  
+  20.33  
+  27.70  
+  25.37   
+ 
+  
+ 
+  
+   Figure 5 :   Qualitative comparison of our video editing results with the baselines.  
+ 
+ 
+ 
+  6.3  Ablation study 
+
+ 
+  Architecture. 
+We ablate the architecture choice for input video conditioning and compare full model finetuning with LoRA.
+We evaluate the VLM score for each protocol trained with    20  20   K and    40  40   K steps in Tab.   3  .
+We show that full model training tends to overfit, while LoRA tuning quickly transforms a T2V model into a V2V model.
+And  “EmbedAdd.”  refers to adopting our patch embedding addition strategy for both mask video latent and control video latent.
+Technically, this is similar to channel-wise concatenation of source video latent and noisy target latent except for the bias term.
+However, our results show that this remains suboptimal compared to sequence-wise concatenation of control latents.
+We also show that LoRA tuning via patch embedding addition performs worse than sequence concatenation. 
+ 
+ 
+   Table 3 :   Ablation on architecture choice.  “Full”  denotes full model training, and  “EmbedAdd.”  refers to summing control and target latents after patch embedding.   
+  
+ 
+ 
+  Method  
+  VLM score @ 20K     ↑  \uparrow    
+  VLM score @ 40K     ↑  \uparrow     
+ 
+ Full w/ EmbedAdd. 
+ 4.67 
+ 4.57  
+ 
+ Full w/ SeqCat. 
+ 3.66 
+ 3.94  
+ 
+ LoRA w/ EmbedAdd. (Ours) 
+ 6.11 
+ 6.29  
+ 
+ LoRA w/ SeqCat. (Ours) 
+ 7.05 
+ 7.47  
+ 
+  
+ 
+ 
+  Using I2I datasets. 
+Since generating V2V editing datasets is much more expensive than creating I2I editing datasets, and because strong I2I models and high-quality open-source datasets already exist, we argue that V2V editing models should also be trained on I2I data. A simple approach is to treat image editing samples as single-frame videos, but this lacks motion. To narrow the domain gap, we apply a consistent sequence of affine transformations to the input and edited images to simulate pseudo V2V editing pairs.
+We perform this ablation study by sampling an equal number of I2I and V2V editing pairs and train different models for different dataset compositions.
+We test performance on a benchmark containing 100 videos from edit types supported by both datasets.
+As shown in Table   4  , adding affine transformations improves downstream V2V editing performance, and jointly training on I2I datasets outperforms training solely on V2V datasets. 
+ 
+ 
+   Table 4 :   Ablation study on using I2I data.  Single Image  treats I2I pairs as single-frame videos, while  Affine Image  applies affine transformations to I2I data to create V2V pairs.   
+  
+ 
+ 
+  Training Datasets  
+  VLM Eval.  
+  Video Quality   
+ 
+  Single Image  
+  Affine Image  
+  Video Edit  
+  Edit Quality  
+  Pick Score   
+ 
+ ✓ 
+ ✗ 
+ ✗ 
+ 5.52 
+ 19.49  
+ 
+ ✓ 
+ ✓ 
+ ✗ 
+ 6.24 
+ 19.67  
+ 
+ ✗ 
+ ✗ 
+ ✓ 
+  6.69  
+  19.90   
+ 
+ ✓ 
+ ✓ 
+ ✓ 
+  6.86  
+  19.94   
+ 
+  
+ 
+ 
+  Using V2V and dense-captioned datasets. 
+To examine the effect of data curated by our pipeline, we train different models on various V2V datasets using the same number of training steps. We then evaluate performance on a mini benchmark with 10 videos for each edit type.
+As shown in Table   5  , training on each of our proposed V2V datasets significantly improves performance on certain edit types, which validates the effectiveness of our proposed data pipeline. The only exception is our  Human Animate  dataset, which is outperformed by our  Actor Transmutation  dataset according to the VLM score. Although both tasks are similar, the latter includes more diverse subjects. However, the Human Animate dataset remains useful for preserving human identities across edits and maintaining consistent facial expressions. 
+ 
+ 
+   Table 5 :    Ablation study on the effectiveness of our proposed video datasets using the VLM score as the metric.   
+  
+ 
+ 
+  
+  Training on Datasets   
+ 
+  Edit types  
+     
+ 
+ 
+  Señorita-2M  [ 73 ]    
+     
+     
+ 
+ 
+  Stylization   
+     
+     
+ 
+ 
+  Human Animate   
+     
+     
+ 
+ 
+  Controllable Video   
+     
+     
+ 
+ 
+  Flow Edit   
+     
+     
+ 
+ 
+  Inpainting   
+     
+     
+ 
+ 
+  Dense Caption   
+      
+ 
+ Stylization 
+ 4.97 
+  7.97  
+ 5.33 
+ 5.30 
+  5.77  
+ 4.63 
+ 5.20  
+ 
+ Animation 
+ 3.88 
+ 3.65 
+  7.20  
+ 3.80 
+  7.48  
+ 3.13 
+ 4.18  
+ 
+ Change object 
+ 3.33 
+ 2.40 
+  4.43  
+ 3.20 
+  5.13  
+ 3.13 
+ 4.27  
+ 
+ Control video 
+  5.47  
+ 4.42 
+ 5.20 
+  6.13  
+ 3.46 
+ 4.00 
+ 5.04  
+ 
+ Actor transmutation 
+ 4.37 
+ 2.53 
+  6.23  
+ 3.90 
+  8.30  
+ 2.83 
+ 5.00  
+ 
+ Edit w/ Mask 
+  3.40  
+ 2.73 
+ 3.17 
+ 3.03 
+ 2.43 
+  4.63  
+ 1.10  
+ 
+ Change human action 
+ 4.97 
+ 4.50 
+ 5.03 
+ 3.53 
+  6.50  
+ 2.50 
+  6.87   
+ 
+  
+ 
+ 
+  Impact of dataset size and generalization to unseen edits. 
+We split a subset of our V2V training data to include three edit types only and ablate on training data size with     10  ​  K   10K   ,     100  ​  K   100K   , and     1  ​  M   1M    samples. As training data size increases, Figure   6   shows performance improves accordingly for both seen and unseen edits. We observe that training with only 10K examples already yields fair performance. Moreover, editing capability on seen tasks consistently enhances performance on unseen edit categories, validating that the inherent edit ability of a pretrained T2V model can be unlocked with our efficient tuning. 
+ 
+   
+   Figure 6 :    Ablation study on training data size and generalization.  
+ 
+ 
+ 
+ 
+  7  Conclusion 
+
+ 
+ We introduced  EasyV2V , a lightweight, instruction-based video editor that achieves state-of-the-
+performance.
+First, we propose robust data engines that curate diverse training data, notably by “lifting” static image edits into dynamic pseudo-video pairs using shared affine motion, supplemented with video continuation supervision from text2video data.
+Second, we propose a parameter-efficient architecture which effectively conditions on the source video, enabling unified spatiotemporal control from a single mask with optional reference images.
+This combination of a novel data strategy and a minimal-tuning architecture provides a strong and effective recipe for high-quality video editing with extensive controllability. 
+ 
+ 
+  Limitations. 
+While EasyV2V is robust on a wide range of edit types, common to other concurrent diffusion-based video models, inference takes around one minute and precludes its use in real-time applications.
+This framework can be naturally extended to support more advanced control abilities. For example, adding geometric cinematographic camera pose controls is a compelling direction to further broaden our creative applications. 
+ 
+  
+ 
+ 
+ 
+ 
+  Supplementary Material 
+   
+ 
+ 
+   Table I :   Category-wise image-editing performance on ImgEdit Bench  [ 60 ] . Scores are derived from a vision–language model (VLM) based on  Prompt Compliance ,  Visual Naturalness/Seamlessness , and  Physical/Detail Coherence  (higher is better).  Impressively, EasyV2V surpasses all baselines across most categories and approaches the performance of leading commercial systems , despite not being specifically designed for image editing.  
+ 
+ 
+  Method  
+  Add  
+  Adjust  
+  Extract  
+  Replace  
+  Remove  
+  Background  
+  Style  
+  Hybrid  
+  Action  
+  Overall     ↑  \uparrow       
+ 
+  MagicBrush  
+  2.84  
+  1.58  
+  1.51  
+  1.97  
+  1.58  
+  1.75  
+  2.38  
+  1.62  
+  1.22  
+  1.83   
+ 
+  Instruct-P2P  
+  2.45  
+  1.83  
+  1.44  
+  2.01  
+  1.50  
+  1.44  
+  3.55  
+  1.20  
+  1.46  
+  1.88   
+ 
+  AnyEdit  
+  3.18  
+  2.95  
+  1.88  
+  2.47  
+  2.23  
+  2.24  
+  2.85  
+  1.56  
+  2.65  
+  2.45   
+ 
+  UltraEdit  
+  3.44  
+  2.81  
+  2.13  
+  2.96  
+  1.45  
+  2.83  
+  3.76  
+  1.91  
+  2.98  
+  2.70   
+ 
+  ICEdit  
+  3.58  
+  3.39  
+  1.73  
+  3.15  
+  2.93  
+  3.08  
+  3.84  
+  2.04  
+  3.68  
+  3.05   
+ 
+  Step1X-Edit  
+  3.88  
+  3.14  
+  1.76  
+  3.40  
+  2.41  
+  3.16  
+  4.63  
+  2.64  
+  2.52  
+  3.06   
+ 
+  UniWorld-V1  
+  3.82  
+  3.64  
+  2.27  
+  3.47  
+  3.24  
+  2.99  
+  4.21  
+  2.96  
+  2.74  
+  3.26   
+ 
+  BAGEL  
+  3.81  
+  3.59  
+  1.58  
+  3.85  
+  3.16  
+  3.39  
+  4.51  
+  2.67  
+  4.25  
+  3.42   
+ 
+  OmniGen2  
+  3.57  
+  3.06  
+  1.77  
+  3.74  
+  3.20  
+  3.57  
+  4.81  
+  2.52  
+  4.68  
+  3.44   
+ 
+  Kontext-dev  
+  3.83  
+  3.65  
+  2.27  
+  4.45  
+  3.17  
+  3.98  
+  4.55  
+  3.35  
+  4.29  
+  3.71   
+ 
+  EasyV2V (Ours)  
+  4.46  
+  4.18  
+  1.80  
+  3.86  
+  3.70  
+  4.33  
+  4.57  
+  4.04  
+  4.68  
+  3.96   
+ 
+  Closed-Source Commercial Models and Concurrent works   
+ 
+  EditVerse  
+  3.81  
+  3.62  
+  1.44  
+  3.95  
+  3.14  
+  3.58  
+  4.71  
+  2.72  
+  3.80  
+  3.42   
+ 
+  Ovis-U1  
+  3.99  
+  3.73  
+  2.66  
+  4.38  
+  4.15  
+  4.05  
+  4.86  
+  3.43  
+  4.68  
+  3.97   
+ 
+  GPT-4o-Image  
+  4.61  
+  4.33  
+  2.90  
+  4.35  
+  3.66  
+  4.57  
+  4.93  
+  3.96  
+  4.89  
+  4.20   
+ 
+ 
+ 
+ 
+  A  Performance on image editing 
+
+ 
+ During training, we occasionally sampled from image-editing datasets and treated each image–edit pair as a single-frame video, rather than exclusively applying affine transformations to synthesize pseudo-videos. 
+ 
+ 
+ As shown in Table   I  , we evaluated EasyV2V on a recent image-editing benchmark  [ 60 ] , interpreting each image as a single-frame video with a resolution of     1  ×  832  ×  480   1\times 832\times 480   .  Impressively, although EasyV2V was not specifically designed for image editing, it surpassed all baselines on nearly all subtasks and achieved performance comparable to leading closed-source and commercial systems.  
+ 
+ 
+ Notably, EasyV2V outperformed EditVerse by a margin of  0.54 . The model also demonstrated strong results on both  action  and  hybrid  editing tasks, underscoring the effectiveness of our unified data pipeline that jointly leverages image-editing datasets and video–caption datasets featuring human actions. Figure   I   presents representative qualitative results, with additional examples provided in our supplementary materials. 
+ 
+  
+   Figure I :   Qualitative image-editing results from our video-editing model, which treats images as single-frame videos and achieves state-of-the-art performance, showing that video editing aids image editing.  
+ 
+ 
+ 
+  B  Model configuration 
+
+ 
+  B.1  Mask conditioning 
+
+ 
+ 
+ 
+ 
+  
+  
+     
+    
+   (a)    Edit with spatial mask. Edit prompt:  “remove the lamb.”   
+   
+ 
+  
+  
+     
+    
+   (b)    Edit with temporal mask. Edit prompt:  “change the woman to a robot.”   
+   
+   Figure II :   Comparison of mask-guided editing performance with WanVACE using samples from EditVerseBench  [ 22 ] .  
+ 
+ 
+ We compare our mask-conditioned editing performance with WanVACE  [ 20 ] .
+Note that as WanVACE is not an instruction-based editing model, we restrict our comparison to the edit types it supports via edit masks:  inpainting ,  object removal , and  object replacement .
+We evaluate two types of edit masks: pixel-wise spatial masks (indicating the edit region per frame) and frame-wise temporal masks (indicating which frames should be modified).
+While WanVACE utilizes an additional branch with complex context activation and injection for mask conditioning, we demonstrate that encoding masks using the video VAE is simple yet effective, particularly for temporal control. 
+ 
+ 
+ We investigate different mask conditioning strategies for EasyV2V: 
+ 
+  •  
+ 
+ Video VAE,      Z  msk   +   Z  src    Z_{\text{msk}}+Z_{\text{src}}   : After encoding the mask video into mask latent     Z  msk   Z_{\text{msk}}    using the video VAE, we perform token addition to inject the mask condition into the source video latent. This is the default strategy for EasyV2V in the main paper. 
+  
+  •  
+ 
+ Video VAE,      Z  msk   +   Z  tgt    Z_{\text{msk}}+Z_{\text{tgt}}   : After encoding the mask video into mask latent     Z  msk   Z_{\text{msk}}    using the video VAE, we perform token addition to inject the mask condition into the noisy target video latent. 
+  
+  •  
+ 
+ Downsample,      Z  msk   +   Z  src    Z_{\text{msk}}+Z_{\text{src}}   : We apply spatial and temporal average pooling to downsample the mask video from input resolution to latent resolution, then perform token addition to inject the mask condition into the source video latent. 
+  
+  •  
+ 
+ Video VAE,     Seq_Cat  ​   (   Z  src   ,   Z  tgt   ,   Z  msk   )    \texttt{Seq\_Cat}(Z_{\text{src}},Z_{\text{tgt}},Z_{\text{msk}})   : After encoding the mask video into mask latent     Z  msk   Z_{\text{msk}}    using the video VAE, we perform sequence concatenation for all condition signals, including      Z  src   ,   Z  tgt   ,   Z  msk    Z_{\text{src}},Z_{\text{tgt}},Z_{\text{msk}}   , and     Z  ref   Z_{\text{ref}}   . 
+  
+ 
+ 
+ 
+ To evaluate spatial mask editing, we adopt the VLM prompt from the EditVerse evaluation protocol.
+To evaluate temporal mask editing, where the edit occurs after a certain timestamp, we modify the VLM prompt to incorporate edit timestamp awareness. Please refer to the last page for our complete VLM prompts. 
+ 
+ 
+ As shown in Table   II  , EasyV2V achieves the best performance when using token addition to inject the mask condition into the source video latent. Both sequence concatenation and our token addition strategy outperform WanVACE on mask-conditioned video editing. 
+ 
+ 
+   Table II :   Comparison of video editing mask strategies.  
+  
+ 
+ 
+  Method  
+  VLM score  (   ↑  \uparrow   ) 
+   
+ 
+  
+  Pixel-wise spatial mask  
+  Frame-wise temporal mask  
+  Average   
+ 
+ Wan VACE  [ 20 ]  
+ 4.13 
+ 6.87 
+ 5.50  
+ 
+ Video VAE,      Z  msk   +   Z  tgt    Z_{\text{msk}}+Z_{\text{tgt}}    
+ 5.50 
+ 7.40 
+ 6.45  
+ 
+ Downsample,      Z  msk   +   Z  src    Z_{\text{msk}}+Z_{\text{src}}    
+ 5.80 
+ 5.40 
+ 5.60  
+ 
+ Video VAE,     Seq_Cat  ​   (   Z  src   ,   Z  tgt   ,   Z  msk   )    \texttt{Seq\_Cat}(Z_{\text{src}},Z_{\text{tgt}},Z_{\text{msk}})    
+  6.00  
+  7.70  
+  6.85   
+ 
+ Video VAE,      Z  msk   +   Z  src    Z_{\text{msk}}+Z_{\text{src}}    (EasyV2V) 
+  7.23  
+  7.73  
+  7.48   
+ 
+  
+ 
+ 
+ From the qualitative comparison in Figure   II  , we observe that WanVACE  [ 20 ]  has limited ability to generalize to diverse edit prompts and fails to adhere to both temporal and spatial masks in many cases compared to EasyV2V. 
+ 
+ 
+ 
+  B.2  LoRA Rank 
+
+ 
+ We employ LoRA  [ 16 ]  to mitigate divergence and study the effect of LoRA rank.
+We train the model for 20K steps to ablate the impact of LoRA rank on the EditVerse benchmark.
+We observe that performance improves as we increase the rank.
+We adopt a LoRA rank of 256, as performance begins to saturate between ranks 128 and 256.
+Table   III   reports the results for ranks 64, 128, and 256.
+Although the model with rank 256 performs best on most metrics, the gap between ranks 128 and 256 is marginal, and rank 64 is only slightly inferior.
+This supports our hypothesis that pre-trained video models serve as strong priors for video editing, and that a low-rank update is sufficient for robust performance. 
+ 
+ 
+   Table III :   Ablation study on LoRA rank and the use of the reference image.   
+  
+ 
+ 
+  
+ Rank 64 
+ Rank 128 
+ Rank 256  
+ 
+ Metric 
+ w/o Ref. 
+ w/ Ref. 
+ w/o Ref. 
+ w/ Ref. 
+ w/o Ref. 
+ w/ Ref.  
+ 
+ Frame-Text Alignment 
+ 24.80 
+  27.27  
+ 24.99 
+   27.67   
+ 25.32 
+   27.67    
+ 
+ Video-Text Alignment 
+ 21.31 
+ 24.36 
+ 21.45 
+   24.73   
+ 21.90 
+  24.60   
+ 
+ PickScore Video Quality 
+ 19.42 
+ 20.20 
+ 19.52 
+  20.36  
+ 19.58 
+   20.37    
+ 
+  VLM Quality Score  
+ 6.17 
+ 7.02 
+ 6.20 
+  7.12  
+ 6.48 
+   7.22    
+ 
+  
+ 
+ 
+ 
+  B.3  Time and memory profiling 
+
+ 
+ We profile the efficiency of EasyV2V on a single NVIDIA H100 GPU for training and inference under different strategies:
+(1) full model fine-tuning with sequence concatenation of source and target latents,
+(2) full model fine-tuning with token addition of source and target latents,
+(3) LoRA fine-tuning with sequence concatenation of source and target latents, and
+(4) LoRA fine-tuning with token addition of source and target latents.
+FlashAttention is enabled during both training and inference.
+A complete comparison is provided in Table   IV  . 
+ 
+ 
+   Table IV :   Comparison of training and inference costs across different tuning strategies.  
+  
+ 
+ 
+  Metric  
+  Full Model w/ SeqCat.  
+  Full Model w/ EmbedAdd.  
+  LoRA w/ SeqCat.  
+  LoRA w/ EmbedAdd.   
+ 
+  New Params  
+  5B  
+  5B  
+  0.64B  
+  0.64B   
+ 
+  Train (s / batch)  
+  5.63  
+  4.60  
+  5.70  
+  4.54   
+ 
+  Train VRAM  
+  62 GB  
+  62 GB  
+  37 GB  
+  32 GB   
+ 
+  Inference (s / sample)  
+  67.71  
+  30.41  
+  69.42  
+  30.11   
+ 
+  
+ 
+ 
+ 
+ 
+  C  Additional details on data pipelines 
+
+ 
+  Human animation. 
+We use the 14B-parameter pretrained Wan Animate  [ 8 ]  model as the expert editor, following its preprocessing for face crops and poses. For first-frame editing, we apply Flux Kontext Dev  [ 29 ] . Edit prompts are generated by ChatGPT  [ 47 ]  using 150 prompts created from the following instruction: 
+ 
+ 
+            
+ 
+ You are a helpful assistant to help with the generation of video editing prompts, to edit videos of people. Below are samples of the prompts we’re interested it: 
+         
+ 
+ # Fantasy &amp; Mythical Creatures 
+     
+ 
+ - "Make the person look like an elf" 
+     
+ 
+ - "Make the person look like a goblin" 
+         
+ 
+ # Professions &amp; Archetypes 
+     
+ 
+ - "Make the person look like a knight" 
+     
+ 
+ - "Make the person look like a samurai" 
+         
+ 
+ # Horror &amp; Dark Styles 
+     
+ 
+ - "Make the person look like a zombie" 
+     
+ 
+ - "Make the person look like a vampire" 
+         
+ 
+ # Animals &amp; Hybrids 
+     
+ 
+ - "Make the person look like a lion" 
+     
+ 
+ - "Make the person look like a tiger" 
+         
+ 
+ # Sci-Fi &amp; Futuristic 
+     
+ 
+ - "Make the person look like a robot" 
+     
+ 
+ - "Make the person look like a cyborg" 
+         
+ 
+ # Stylized &amp; Surreal 
+     
+ 
+ - "Make the person look like a stained-glass figure" 
+     
+ 
+ - "Make the person look like a chalk drawing" 
+         
+ 
+ # Accessories 
+     
+ 
+ - "Give the person a pair of sunglasses" 
+     
+ 
+ - "Give the person a hat" 
+         
+ 
+ Now, generate several prompts per category mentioned above. 
+    
+ 
+ 
+  Actor transmutation.  
+ 
+ 
+ We adapt FlowEdit  [ 27 ] , originally designed for image editing, on Wan 2.1 14B  [ 48 ]  for video editing. As described in the main paper, our prompt assets include three object categories: bipedals (e.g., clown, pirate, ninja, samurai, humanoid robot), quadrupeds (e.g., dog, cat, lion, cheetah, sheep), and avians (e.g., pigeon, duck, parrot, eagle, owl). We provide five examples per category to ChatGPT to generate extended lists. We also compile lists of scenes (e.g., jungle, mountain, beach, street, bedroom) and actions (e.g., walking, running, jumping, dancing). 
+ 
+ 
+  Video stylization.  
+ 
+ 
+ Similar to the prompts for our human animate dataset, we use ChatGPT to generate prompts for video stylization: 
+ 
+ 
+            
+ 
+ You are a helpful assistant to help with the generation of video stylization prompts, to edit and stylize in the wild videos. Below are samples of the prompts we’re interested it: 
+         
+ 
+ # Distinct media / aesthetics 
+     
+ 
+ - "In the style of a watercolor painting" 
+     
+ 
+ - "In the style of a digital painting" 
+         
+ 
+ # Comic / cartoon &amp; animation houses 
+     
+ 
+ - "In the style of a manga" 
+     
+ 
+ - "In the style of a cartoon" 
+         
+ 
+ # Art movements 
+     
+ 
+ - "In the style of Brutalism" 
+     
+ 
+ - "In the style of Impressionism" 
+         
+ 
+ # Lighting 
+     
+ 
+ - "Captured in the golden hour" 
+     
+ 
+ - "Captured bathed in neon lights" 
+         
+ 
+ # Cinematic &amp; photographic framing styles 
+     
+ 
+ - "Shot on 35 mm film grain" 
+     
+ 
+ - "Shot in black-and-white film noir style" 
+         
+ 
+ # Global traditional arts &amp; patterns 
+     
+ 
+ - "In the style of a Roman floor mosaic" 
+     
+ 
+ - "In the style of Persian miniature painting" 
+         
+ 
+ # Color palette &amp; tonal approaches 
+     
+ 
+ - "Rendered in soft pastel hues" 
+     
+ 
+ - "Rendered in muted earth tones" 
+         
+ 
+ Now, generate several prompts per category mentioned above. 
+    
+ 
+ 
+ We end up generating 350 different stylization prompts. 
+ 
+ 
+  Controllable video generation.  
+ 
+ 
+ We curate a 15K-sample dataset from in-the-wild videos through manual filtering, then apply a range of model-free and model-based video-to-video transformations to build a paired dataset for training our video editing model. These transformations include human pose estimation (DWPose), Canny and HED edge detection, RAFT large optical flow, random black rectangle masks (inpainting), random black borders (outpainting), depth prediction with Depth Anything V2, grayscale conversion, Gaussian blur, color negation, saturation/contrast/brightness adjustments, pixelation, wave warping, posterization, Gaussian noise, and color overlays. 
+ 
+ 
+  Dense-captioned text-to-video data  
+ 
+ 
+ We apply strict filtering criteria to ensure high-quality training pairs from dense-captioned datasets.
+First, we require videos to have at least 162 frames after downsampling to 15 fps (enabling 81 frames for both source and target clips).
+Second, we filter temporal segments based on: (i) start time must allow sufficient preceding frames (     t  i   ≥   81  /   fps  downsample     t_{i}\geq 81/\text{fps}_{\text{downsample}}   ), (ii) segment duration must exceed 2 seconds to ensure meaningful actions, and (iii) no scene cuts within the segment interval.
+For instruction generation, we flatten all temporal segments from multiple videos into batches and process them simultaneously with Qwen-3-4B  [ 56 ] , discarding segments where the LLM returns empty strings (indicating unsuitable actions for video editing conversion).
+The LLM prompt instructs the model to convert action descriptions into imperative instructions starting with verbs like “make,” “let,” or “have,” while preserving all key details. 
+ 
+ 
+  Image-to-image data  
+ 
+ 
+ We employ a multi-stage pipeline to generate high-quality instructional I2I pairs from image captions at scale.
+Given an image caption, an LLM (Qwen3-4B-Instruct  [ 56 ] ) generates up to five diverse edit instructions spanning canonical edit types:  add ,  remove ,  replace ,  change_global ,  change_local ,  change_color ,  transform_global ,  transform_local ,  text , and  other .
+Each instruction is then executed using instruction-following image editors (Qwen-Image-Edit  [ 36 ]  , or Flux-Kontext  [ 29 ] ), producing candidate edit pairs.
+To ensure quality, we apply VLM-based filter with Gemma-3-27B  [ 46 ] . 
+ 
+ 
+ For I2I-to-V2V conversion, we generate smooth affine camera trajectories by sampling random target poses with bounded parameters: rotation angles in     [    −   15  ∘    ,   15  ∘    ]   \left[-15^{\circ},15^{\circ}\right]   , zoom factors in     [  0.66  ,  1.0  ]   [0.66,1.0]    (avoiding excessive zoom-out), and translation offsets within     ±   33  %    \pm 33\%    of frame dimensions.
+These parameters are linearly interpolated across frames and constrained via linear programming to ensure the transformed bounding box remains fully within the frame boundaries throughout the trajectory.
+The same trajectory is applied to both source and target images using perspective transforms, creating temporally coherent pseudo-videos with motion cues (zoom, pan, rotation) while preserving the edit signal.
+With 50% probability, trajectories are reversed to balance zoom-in and zoom-out motions, providing diverse camera movement patterns that enhance the model’s robustness to dynamic viewpoints during training. 
+ 
+ 
+ 
+  D  Impact of classifier free guidance 
+
+ 
+ We perform an ablation study on the impact of classifier-free guidance (CFG)  [ 15 ]  during inference. 
+ 
+ 
+ CFG Implementation. 
+
+ 
+ Following the standard CFG formulation, we guide the denoising process by interpolating between conditional and unconditional predictions. Given the predicted noise     ϵ  θ   \epsilon_{\theta}    from our diffusion model, the CFG-guided prediction is computed as: 
+ 
+
+  
+  
+       ϵ  ^   θ   =     ϵ  θ   ​   (  ∅  )    +   s  ⋅   (     ϵ  θ   ​   (  c  )    −    ϵ  θ   ​   (  ∅  )     )      \hat{\epsilon}_{\theta}=\epsilon_{\theta}(\emptyset)+s\cdot(\epsilon_{\theta}(c)-\epsilon_{\theta}(\emptyset))    
+  
+  (1)    
+ 
+ where    c  c    represents the conditioning signal,    ∅  \emptyset    denotes the unconditional (null) condition, and    s  s    is the guidance scale. This can be reformulated as: 
+ 
+
+  
+  
+       ϵ  ^   θ   =      (   1  −  s   )   ⋅   ϵ  θ    ​   (  ∅  )    +    s  ⋅   ϵ  θ    ​   (  c  )      \hat{\epsilon}_{\theta}=(1-s)\cdot\epsilon_{\theta}(\emptyset)+s\cdot\epsilon_{\theta}(c)    
+  
+  (2)    
+ 
+ When     s  =  1.0   s=1.0   , the model performs purely conditional generation, while larger values of    s  s    amplify the influence of the conditioning signal. 
+ 
+ 
+ In our framework, we support two CFG strategies depending on which conditions are used for guidance:  Prompt-only CFG  and  Prompt + Reference CFG . 
+ 
+ 
+  Prompt-only CFG.  By default, we apply CFG only to the text prompt while keeping all visual conditions (source video and reference image) shared between conditional and unconditional branches: 
+ 
+
+  
+  
+       ϵ  ^   θ   =     ϵ  θ   ​   (   c  vis   )    +   s  ⋅   (     ϵ  θ   ​   (   c  vis   ,   c  prompt   )    −    ϵ  θ   ​   (   c  vis   )     )      \hat{\epsilon}_{\theta}=\epsilon_{\theta}(c_{\text{vis}})+s\cdot(\epsilon_{\theta}(c_{\text{vis}},c_{\text{prompt}})-\epsilon_{\theta}(c_{\text{vis}}))    
+  
+  (3)    
+ 
+ where     c  vis   c_{\text{vis}}    denotes visual conditions (source video and optionally reference image), and     c  prompt   c_{\text{prompt}}    is the edit instruction. This approach maintains consistent visual context while allowing the text prompt to guide the editing direction. 
+ 
+ 
+  Prompt + Reference CFG.  Alternatively, we can apply CFG to both the text prompt and reference image: 
+ 
+
+  
+  
+       ϵ  ^   θ   =     ϵ  θ   ​   (   c  src   )    +   s  ⋅   (     ϵ  θ   ​   (   c  src   ,   c  ref   ,   c  prompt   )    −    ϵ  θ   ​   (   c  src   )     )      \hat{\epsilon}_{\theta}=\epsilon_{\theta}(c_{\text{src}})+s\cdot(\epsilon_{\theta}(c_{\text{src}},c_{\text{ref}},c_{\text{prompt}})-\epsilon_{\theta}(c_{\text{src}}))    
+  
+  (4)    
+ 
+ where     c  src   c_{\text{src}}    is the source video (always present),     c  ref   c_{\text{ref}}    is the reference image, and     c  prompt   c_{\text{prompt}}    is the text prompt. This strategy applies guidance to both the reference appearance and text instruction simultaneously. Our method is uniquely suitable for this type of guidance because the reference image is an optional input to our model. 
+ 
+ 
+ 
+ Experimental results. 
+
+ 
+ In Table   V  , we present results under different CFG scales when using only the edit prompt for CFG. We also provide a visualized example in Figure   III  . As shown, higher CFG scales generally improve text alignment but may reduce temporal consistency and video quality when the scale becomes too large. 
+ 
+ 
+ In Table   VI  , we show results under different CFG scales when using both the edit prompt and reference image for CFG. For fair comparison, we report inference performance only when a reference image is provided. A visualized example is shown in Figure   IV  . The dual-condition CFG provides stronger control over both appearance and semantic alignment but requires careful tuning of the guidance scale to balance faithfulness to conditions and generation quality. 
+ 
+ 
+ We observe that the best performance is achieved when CFG scales are between    3.0  3.0    and    5.0  5.0   . We adopt a moderate CFG scale of     s  =  3.0   s=3.0    by default with prompt-only guidance. We believe that further fine-grained CFG hyperparameter tuning could yield even better performance. 
+ 
+ 
+   Table V :   Effect of the CFG scale for the edit prompt.  
+  
+ 
+ 
+  
+  Inference w/o Ref.  
+  Inference w/ Ref.   
+ 
+  CFG scale  
+  1.0  
+  3.0  
+  5.0  
+  7.0  
+  1.0  
+  3.0  
+  5.0  
+  7.0   
+ 
+  Frame-Text Alignment  
+  26.65  
+  27.59  
+  27.49  
+  27.11  
+  27.26  
+  27.28  
+  27.33  
+  27.29   
+ 
+  Video-Text Alignment  
+  24.52  
+  24.46  
+  24.16  
+  23.40  
+  24.01  
+  24.07  
+  24.27  
+  24.33   
+ 
+  PickScore Video Quality  
+  20.05  
+  20.36  
+  20.23  
+  20.05  
+  20.57  
+  20.60  
+  20.58  
+  20.53   
+ 
+  VLM Quality Score  
+  6.79  
+  7.73  
+  7.48  
+  6.98  
+  7.14  
+  7.30  
+  7.28  
+  7.21   
+ 
+  
+ 
+  
+   Figure III :   
+Effect of the CFG for the edit prompt. Edit prompt:  “Transform the entire visual style of the video using a hand-drawn watercolor animation effect.” 
+  
+ 
+ 
+   Table VI :   Effect of the CFG scale for the edit prompt and reference image.  
+  
+ 
+ 
+  
+  Inference w/ Ref.   
+ 
+  CFG scale  
+  1.0  
+  3.0  
+  5.0  
+  7.0   
+ 
+  Frame-Text Alignment  
+  26.65  
+  27.77  
+  27.49  
+  27.11   
+ 
+  Video-Text Alignment  
+  24.52  
+  24.54  
+  24.16  
+  23.40   
+ 
+  PickScore Video Quality  
+  20.05  
+  20.34  
+  20.23  
+  20.05   
+ 
+  VLM Quality Score  
+  6.79  
+  7.69  
+  7.47  
+  6.98   
+ 
+  
+ 
+  
+   Figure IV :   
+Visual illustration of the effect of the CFG scale for the edit prompt and reference image.
+Edit prompt:  “Change the bird’s color to emerald green.” 
+The top row shows the reference image generated by Qwen-Image-Edit.
+  
+ 
+ 
+ 
+ 
+  E  User study 
+
+ 
+ We construct a custom benchmark comprising 160 horizontal and vertical videos spanning 18 distinct edit types, including  actor transmutation, add effect, add object, animation, change action, change background, change color, change material, change object, change weather, complex edit, control video, edit with mask, freeform, local stylization, global stylization, remove object, and sim2real .
+We conduct a user study in which participants select the superior sample between outputs generated by two different methods, evaluating them along three dimensions: Instruction Alignment (adherence to the text prompt), Preservation of Unedited Regions (temporal consistency in unchanged areas), and Video Quality (overall visual fidelity).
+As shown in Figure   V  , EasyV2V outperforms all other methods across all three dimensions. 
+ 
+   
+   Figure V :    Results of the user study. EasyV2V is the most preferred method across all evaluation criteria.
+  
+ 
+ 
+ 
+  F  Additional visualization 
+
+  
+   Figure VI :   
+Robustness of EasyV2V to the choice of reference image. Edit prompt:  “Change the apron and blouse to a classic clown costume.” 
+The top row shows reference images generated by Qwen-Image-Edit based on different frames from the source video, followed by videos generated by EasyV2V conditioned on these reference images.
+The source video is taken from Lucy Edit’s website  [ 44 ] .
+  
+ 
+ 
+  F.1  Robustness to Reference Image 
+
+ 
+ We provide visualization results of EasyV2V based on the choice of reference image.
+By default, we derive the reference image by applying the image editing model to the first frame of the source video.
+We also present results using the first, middle, or last frame of the source video as the basis for the reference.
+As shown in Figure   VI  , our model is robust to the choice of reference image, indicating that EasyV2V effectively captures the identity of the reference image for video editing.
+Moreover, EasyV2V can rectify inconsistent zoom-in effects and human pose misalignments introduced by the image editing model.
+Notably, without an external reference image from the image editing model, EasyV2V achieves even better consistency with the source video; for instance, the background remains well preserved. 
+ 
+ 
+ 
+  F.2  Comparison on Human Animate and Flow Edit Datasets 
+
+ 
+ We curate the Human Animate dataset, which contains human-centric video edits, and the Flow Edit dataset, which focuses on actor transmutation edits.
+We provide comparisons in Figure   VII   between a model trained exclusively on the Human Animate dataset and one trained on the Flow Edit dataset.
+The model trained on the Human Animate dataset often achieves superior visual details, preserves poses more effectively, and generalizes better to unseen human-specific pose-to-video tasks.
+Facial expressions are also better preserved when training on the Human Animate dataset compared to the Flow Edit (actor transmutation) dataset. 
+ 
+  
+   Figure VII :   Comparison between models trained on the Flow Edit dataset and the human animate dataset.
+  
+ 
+ 
+ 
+  F.3  Exhibition Gallery and Visualization 
+
+ 
+ We present additional video editing examples on our visualization website included in the supplementary material.
+We strongly encourage readers to view the attached HTML file for comprehensive and diverse video results. 
+ 
+ 
+  Capability for Human Action Editing. 
+Leveraging a densely captioned video dataset during training, our model demonstrates a strong capability to follow text instructions for modifying human actions.
+Compared to concurrent works, which often struggle to alter human actions effectively, EasyV2V exhibits a  unique  proficiency in such edits, highlighting the effectiveness of our curated human action data. 
+ 
+ 
+  Natural Edit Transitions. 
+Although we employ a simple blending transition strategy during training, EasyV2V exhibits an emergent ability to produce natural transitions.
+We evaluate this using frame-wise temporal masks where the edit is restricted to the second half of the video.
+We observe smooth and realistic transitions at the timestamp where the source-to-target edit initiates. 
+ 
+ 
+  High-Resolution Results. 
+We train our model at a higher resolution of     81  ×  1280  ×  704   81\times 1280\times 704    to further validate our method and data pipeline.
+The total training data is subsampled to approximately 6 million samples due to the computational cost of high-resolution training.
+Note that     81  ×  1280  ×  704   81\times 1280\times 704    is the maximum supported resolution of Wan-2.2-TI2V-5B  [ 48 ] .
+We observe rapid convergence within a few training steps, confirming that our architecture design with low-rank tuning efficiently adapts a T2V model to V2V tasks.
+To the best of our knowledge, EasyV2V is the first instruction-based video editing model capable of editing    ∼  \sim   720P videos with a duration of 81 frames. 
+ 
+ 
+ 
+ 
+  G  VLM prompts for evaluation 
+
+ 
+ VLM prompt we used for spatial mask editing evaluation: 
+ 
+ 
+            
+ 
+ ’You are a meticulous video editing quality evaluator. Your task is to provide a detailed assessment of a video edit by comparing the original image with the edited image based on a given text prompt.\n\ 
+     
+ 
+ Editing Prompt:\n{editing_prompt}\n\ 
+     
+ 
+ Instructions:\n\ 
+              
+ 
+ Analyze the provided image (the edited video frame) and evaluate how well the "Editing Prompt" has been executed. You will evaluate the edit across three distinct criteria. For each criterion, provide a score from 0 (worst) to 3 (best) and a brief justification. Finally, provide the total score.\n\ 
+     
+ 
+ Your evaluation should focus on three key aspects:\n\ 
+     
+ 
+ 1. Prompt Following (Score: 0-3) \n\ 
+     
+ 
+ Question: Does the edit accurately and completely fulfill the instructions in the "Editing Prompt"? \n\ 
+     
+ 
+ Scoring Guide:\n\ 
+     
+ 
+ - 3: The prompt is perfectly and completely followed.\n\ 
+     
+ 
+ - 2: The prompt is mostly followed but with minor inaccuracies or omissions.\n\ 
+     
+ 
+ - 1: The prompt is poorly followed or only partially executed.\n\ 
+     
+ 
+ - 0: The prompt is completely ignored or the opposite was done. \n\ 
+     
+ 
+ 2. Edit Quality (Score: 0-3) \n\ 
+              
+ 
+ Question: How is the visual quality of the edited area itself? Is it realistic, seamless, and free of artifacts (e.g., blurriness, distortion, unnatural textures)?\n\ 
+     
+ 
+ Scoring Guide:\n\ 
+     
+ 
+ - 3: The edit is of high visual quality, seamless, and artifact-free.\n\ 
+     
+ 
+ - 2: The edit is good but has minor, noticeable artifacts.\n\ 
+     
+ 
+ - 1: The edit is of low quality with significant, distracting artifacts.\n\ 
+     
+ 
+ - 0: The edited area is extremely poor, garbled, or has completely failed.\n\ 
+     
+ 
+ 3. Background Consistency (Score: 0-3) \n\ 
+              
+ 
+ Question: Have the areas that should not have been edited remained unchanged between the "Before" and "After" images? \n\ 
+     
+ 
+ Scoring Guide:\n\ 
+     
+ 
+ - 3: The areas that should not have been edited are perfectly preserved and stable. \n\ 
+              
+ 
+ - 2: There are minor, subtle, but noticeable changes or flickers in the areas that should not have been edited.\n\ 
+     
+ 
+ - 1: There are significant and distracting changes in the areas that should not have been edited. \n\ 
+     
+ 
+ - 0: The areas that should not have been edited is completely or catastrophically altered. \n\ 
+   VLM prompt we used for temporal mask editing evaluation: 
+ 
+ 
+            
+ 
+ You are a meticulous video editing quality evaluator. Your task is to provide a detailed assessment of a temporal video edit by comparing the original image with the edited image based on a given text prompt. 
+         
+ 
+ Editing Prompt: 
+     
+ 
+ {editing_prompt} 
+         
+ 
+ IMPORTANT TEMPORAL CONTEXT: 
+              
+ 
+ This frame is from the FIRST HALF of the video, where the edit SHOULD NOT have occurred yet. The frame should remain unchanged from the original. 
+         
+ 
+ .... 
+     
+ 
+ Your evaluation should focus on three key aspects: 
+         
+ 
+ 1. Temporal Consistency (Score: 0-3) 
+     
+ 
+ Question: Does the frame correctly show NO editing in the first half of the video? 
+     
+ 
+ Scoring Guide: 
+              
+ 
+ - 3: The frame is perfectly unchanged, showing no signs of the edit that should only appear in the second half. 
+     
+ 
+ - 2: The frame is mostly unchanged but shows very minor, subtle hints of the edit. 
+     
+ 
+ - 1: The frame shows partial editing when it should be unchanged. 
+     
+ 
+ - 0: The frame is fully edited when it should be completely unchanged. 
+         
+ 
+ ############# 
+     
+ 
+ IMPORTANT TEMPORAL CONTEXT: 
+              
+ 
+ This frame is from the TRANSITION PERIOD (around the middle of the video), where the edit IS HAPPENING. The frame should show the edit in progress or just completed. 
+         
+ 
+ Instructions: 
+              
+ 
+ Analyze the provided images and evaluate how well the temporal editing is progressing. You will evaluate the edit across three distinct criteria. For each criterion, provide a score from 0 (worst) to 3 (best) and a brief justification. Finally, provide the total score. 
+         
+ 
+ Your evaluation should focus on three key aspects: 
+         
+ 
+ 1. Edit Progress (Score: 0-3) 
+     
+ 
+ Question: Does the frame show appropriate edit progression during this transition period? 
+     
+ 
+ Scoring Guide: 
+     
+ 
+ - 3: The frame shows natural, smooth editing transition that aligns with the temporal position. 
+     
+ 
+ - 2: The frame shows editing but the transition is slightly abrupt or unnatural. 
+     
+ 
+ - 1: The frame shows poor editing progression or timing. 
+     
+ 
+ - 0: The frame shows no editing or completely wrong timing. 
+         
+ 
+ .... 
+     
+ 
+ IMPORTANT TEMPORAL CONTEXT: 
+              
+ 
+ This frame is from the SECOND HALF of the video, where the edit SHOULD HAVE been completed. The frame should show the fully edited result. 
+         
+ 
+ Instructions: 
+              
+ 
+ Analyze the provided images and evaluate how well the "Editing Prompt" has been executed. You will evaluate the edit across three distinct criteria. For each criterion, provide a score from 0 (worst) to 3 (best) and a brief justification. Finally, provide the total score. 
+         
+ 
+ Your evaluation should focus on three key aspects: 
+         
+ 
+ 1. Prompt Following (Score: 0-3) 
+     
+ 
+ Question: Does the edit accurately and completely fulfill the instructions in the "Editing Prompt"? 
+     
+ 
+ Scoring Guide: 
+     
+ 
+ - 3: The prompt is perfectly and completely followed. 
+     
+ 
+ - 2: The prompt is mostly followed but with minor inaccuracies or omissions. 
+     
+ 
+ - 1: The prompt is poorly followed or only partially executed. 
+     
+ 
+ - 0: The prompt is completely ignored or the opposite was done. 
+     
+ 
+ ############# 
+        
+ 
+ 
+ 
+ References 
+
+ 
+      
+   [1]  
+  
+VideoX-Fun: A more flexible framework that can generate videos at any resolution and creates videos from images.
+ 
+ 
+  https://github.com/aigc-apps/VideoX-Fun  , 2025.
+ 
+  
+      
+   [2]  
+  
+Qingyan Bai, Qiuyu Wang, Hao Ouyang, Yue Yu, Hanlin Wang, Wen Wang, Ka Leong Cheng, Shuailei Ma, Yanhong Zeng, Zichen Liu, Yinghao Xu, Yujun Shen, and Qifeng Chen.
+ 
+ 
+  Scaling instruction-based video editing with a high-quality synthetic dataset.
+ 
+ 
+  arXiv  , 2025a.
+ 
+  
+      
+   [3]  
+  
+Shuai Bai, Keqin Chen, Xuejing Liu, Jialin Wang, Wenbin Ge, Sibo Song, Kai Dang, Peng Wang, Shijie Wang, Jun Tang, Humen Zhong, Yuanzhi Zhu, Mingkun Yang, Zhaohai Li, Jianqiang Wan, Pengfei Wang, Wei Ding, Zheren Fu, Yiheng Xu, Jiabo Ye, Xi Zhang, Tianbao Xie, Zesen Cheng, Hang Zhang, Zhibo Yang, Haiyang Xu, and Junyang Lin.
+ 
+ 
+  Qwen2.5-VL technical report, 2025b.
+ 
+  
+      
+   [4]  
+  
+Tim Brooks, Aleksander Holynski, and Alexei A Efros.
+ 
+ 
+  InstructPix2Pix: Learning to follow image editing instructions.
+ 
+ 
+  CVPR  , 2023.
+ 
+  
+      
+   [5]  
+  
+Tim Brooks, Bill Peebles, Connor Holmes, Will DePue, Yufei Guo, Li Jing, David Schnurr, Joe Taylor, Troy Luhman, Eric Luhman, Clarence Ng, Ricky Wang, and Aditya Ramesh.
+ 
+ 
+  Video generation models as world simulators.
+ 
+ 
+  2024.
+ 
+  
+      
+   [6]  
+  
+Qi Cai, Jingwen Chen, Yang Chen, Yehao Li, Fuchen Long, Yingwei Pan, Zhaofan Qiu, Yiheng Zhang, Fengbin Gao, Peihan Xu, et al.
+ 
+ 
+  HiDream-I1: A high-efficient image generative foundation model with sparse diffusion transformer.
+ 
+ 
+  arXiv  , 2025.
+ 
+  
+      
+   [7]  
+  
+Mingdeng Cao, Xintao Wang, Zhongang Qi, Ying Shan, Xiaohu Qie, and Yinqiang Zheng.
+ 
+ 
+  MasaCtrl: Tuning-free mutual self-attention control for consistent image synthesis and editing.
+ 
+ 
+  In   ICCV  , 2023.
+ 
+  
+      
+   [8]  
+  
+Gang Cheng, Xin Gao, Li Hu, Siqi Hu, Mingyang Huang, Chaonan Ji, Ju Li, Dechao Meng, Jinwei Qi, Penchong Qiao, Zhen Shen, Yafei Song, Ke Sun, Linrui Tian, Feng Wang, Guangyuan Wang, Qi Wang, Zhongjian Wang, Jiayu Xiao, Sheng Xu, Bang Zhang, Peng Zhang, Xindi Zhang, Zhe Zhang, Jingren Zhou, and Lian Zhuo.
+ 
+ 
+  Wan-Animate: Unified character animation and replacement with holistic replication, 2025.
+ 
+  
+      
+   [9]  
+  
+Jiaxin Cheng, Tianjun Xiao, and Tong He.
+ 
+ 
+  Consistent video-to-video transfer using synthetic dataset.
+ 
+ 
+  ICLR  , 2024.
+ 
+  
+      
+   [10]  
+  
+Paul Couairon, Clément Rambour, Jean-Emmanuel HAUGEARD, and Nicolas THOME.
+ 
+ 
+  VidEdit: Zero-shot and spatially aware text-driven video editing.
+ 
+ 
+  TMLR  , 2024.
+ 
+  
+      
+   [11]  
+  
+Chaorui Deng, Deyao Zhu, Kunchang Li, Chenhui Gou, and Feng Li.
+ 
+ 
+  Emerging properties in unified multimodal pretraining: The BAGEL model.
+ 
+ 
+  arXiv  , 2025.
+ 
+  
+      
+   [12]  
+  
+Yu Gao, Lixue Gong, Qiushan Guo, Xiaoxia Hou, Zhichao Lai, Fanshi Li, Liang Li, Xiaochen Lian, Chao Liao, Liyang Liu, Wei Liu, Yichun Shi, Shiqi Sun, Yu Tian, Zhi Tian, Peng Wang, Rui Wang, Xuanda Wang, Xun Wang, Ye Wang, Guofeng Wu, Jie Wu, Xin Xia, Xuefeng Xiao, Zhonghua Zhai, Xinyu Zhang, Qi Zhang, Yuwei Zhang, Shijia Zhao, Jianchao Yang, and Weilin Huang.
+ 
+ 
+  Seedream 3.0 technical report, 2025.
+ 
+  
+      
+   [13]  
+  
+Yuying Ge, Sijie Zhao, Chen Li, Yixiao Ge, and Ying Shan.
+ 
+ 
+  SEED-Data-Edit technical report: A hybrid dataset for instructional image editing.
+ 
+ 
+  arXiv  , 2024.
+ 
+  
+      
+   [14]  
+  
+Amir Hertz, Ron Mokady, Jay Tenenbaum, Kfir Aberman, Yael Pritch, and Daniel Cohen-Or.
+ 
+ 
+  Prompt-to-prompt image editing with cross attention control.
+ 
+ 
+  arXiv  , 2022.
+ 
+  
+      
+   [15]  
+  
+Jonathan Ho and Tim Salimans.
+ 
+ 
+  Classifier-free diffusion guidance.
+ 
+ 
+  arXiv preprint arXiv:2207.12598  , 2022.
+ 
+  
+      
+   [16]  
+  
+Edward J Hu, Yelong Shen, Phillip Wallis, Zeyuan Allen-Zhu, Yuanzhi Li, Shean Wang, Lu Wang, and Weizhu Chen.
+ 
+ 
+  LoRA: Low-rank adaptation of large language models.
+ 
+ 
+  In   ICLR  , 2022.
+ 
+  
+      
+   [17]  
+  
+Jiahao Hu, Tianxiong Zhong, Xuebo Wang, Boyuan Jiang, Xingye Tian, Fei Yang, Pengfei Wan, and Di Zhang.
+ 
+ 
+  VIVID-10M: A dataset and baseline for versatile and interactive video local editing, 2025.
+ 
+  
+      
+   [18]  
+  
+Mude Hui, Siwei Yang, Bingchen Zhao, Yichun Shi, Heng Wang, Peng Wang, Yuyin Zhou, and Cihang Xie.
+ 
+ 
+  HQ-Edit: A high-quality dataset for instruction-based image editing.
+ 
+ 
+  arXiv  , 2024.
+ 
+  
+      
+   [19]  
+  
+Imagen-Team-Google.
+ 
+ 
+  Imagen 3, 2024.
+ 
+  
+      
+   [20]  
+  
+Zeyinzi Jiang, Zhen Han, Chaojie Mao, Jingfeng Zhang, Yulin Pan, and Yu Liu.
+ 
+ 
+  VACE: All-in-one video creation and editing.
+ 
+ 
+  In   ICCV  , 2025.
+ 
+  
+      
+   [21]  
+  
+Xuan Ju, Ailing Zeng, Yuxuan Bian, Shaoteng Liu, and Qiang Xu.
+ 
+ 
+  PnP inversion: Boosting diffusion-based editing with 3 lines of code.
+ 
+ 
+  ICLR  , 2024.
+ 
+  
+      
+   [22]  
+  
+Xuan Ju, Tianyu Wang, Yuqian Zhou, He Zhang, Qing Liu, Nanxuan Zhao, Zhifei Zhang, Yijun Li, Yuanhao Cai, Shaoteng Liu, Daniil Pakhomov, Zhe Lin, Soo Ye Kim, and Qiang Xu.
+ 
+ 
+  EditVerse: Unifying image and video editing and generation with In-Context learning, 2025a.
+ 
+  
+      
+   [23]  
+  
+Xuan Ju, Weicai Ye, Quande Liu, Qiulin Wang, Xintao Wang, Pengfei Wan, Di Zhang, Kun Gai, and Qiang Xu.
+ 
+ 
+  FullDiT: Multi-task video generative foundation model with full attention, 2025b.
+ 
+  
+      
+   [24]  
+  
+Yuval Kirstain, Adam Polyak, Uriel Singer, Shahbuland Matiana, Joe Penna, and Omer Levy.
+ 
+ 
+  Pick-a-pic: An open dataset of user preferences for text-to-image generation.
+ 
+ 
+  Advances in neural information processing systems  , 36:36652–36663, 2023.
+ 
+  
+      
+   [25]  
+  
+Weijie Kong, Qi Tian, Zijian Zhang, Rox Min, Zuozhuo Dai, Jin Zhou, Jiangfeng Xiong, Xin Li, Bo Wu, Jianwei Zhang, et al.
+ 
+ 
+  Hunyuanvideo: A systematic framework for large video generative models.
+ 
+ 
+  arXiv  , 2024.
+ 
+  
+      
+   [26]  
+  
+Max Ku, Cong Wei, Weiming Ren, Harry Yang, and Wenhu Chen.
+ 
+ 
+  AnyV2V: A tuning-free framework for any video-to-video editing tasks.
+ 
+ 
+  TMLR  , 2024.
+ 
+  
+      
+   [27]  
+  
+Vladimir Kulikov, Matan Kleiner, Inbar Huberman-Spiegelglas, and Tomer Michaeli.
+ 
+ 
+  FlowEdit: Inversion-free text-based editing using pre-trained flow models.
+ 
+ 
+  ICCV  , 2025.
+ 
+  
+      
+   [28]  
+  
+Black Forest Labs.
+ 
+ 
+  FLUX.
+ 
+ 
+  https://github.com/black-forest-labs/flux  , 2024.
+ 
+  
+      
+   [29]  
+  
+Black Forest Labs, Stephen Batifol, Andreas Blattmann, Frederic Boesel, Saksham Consul, Cyril Diagne, Tim Dockhorn, Jack English, Zion English, Patrick Esser, Sumith Kulal, Kyle Lacey, Yam Levi, Cheng Li, Dominik Lorenz, Jonas Müller, Dustin Podell, Robin Rombach, Harry Saini, Axel Sauer, and Luke Smith.
+ 
+ 
+  FLUX.1 Kontext: Flow matching for in-context image generation and editing in latent space, 2025.
+ 
+  
+      
+   [30]  
+  
+Shaoteng Liu, Yuechen Zhang, Wenbo Li, Zhe Lin, and Jiaya Jia.
+ 
+ 
+  Video-P2P: Video editing with cross-attention control.
+ 
+ 
+  CVPR  , 2024.
+ 
+  
+      
+   [31]  
+  
+Shaoteng Liu, Tianyu Wang, Jui-Hsien Wang, Qing Liu, Zhifei Zhang, Joon-Young Lee, Yijun Li, Bei Yu, Zhe Lin, Soo Ye Kim, and Jiaya Jia.
+ 
+ 
+  Generative video propagation.
+ 
+ 
+  CVPR  , 2025.
+ 
+  
+      
+   [32]  
+  
+Ilya Loshchilov and Frank Hutter.
+ 
+ 
+  Decoupled weight decay regularization.
+ 
+ 
+  arXiv preprint arXiv:1711.05101  , 2017.
+ 
+  
+      
+   [33]  
+  
+Chenyang Qi, Xiaodong Cun, Yong Zhang, Chenyang Lei, Xintao Wang, Ying Shan, and Qifeng Chen.
+ 
+ 
+  FateZero: Fusing attentions for zero-shot text-based video editing.
+ 
+ 
+  ICCV  , 2023.
+ 
+  
+      
+   [34]  
+  
+Bosheng Qin, Juncheng Li, Siliang Tang, Tat-Seng Chua, and Yueting Zhuang.
+ 
+ 
+  InstructVid2Vid: Controllable video editing with natural language instructions.
+ 
+ 
+  In   ICME  , 2024.
+ 
+  
+      
+   [35]  
+  
+Liao Qu, Huichao Zhang, Yiheng Liu, Xu Wang, Yi Jiang, Yiming Gao, Hu Ye, Daniel K. Du, Zehuan Yuan, and Xinglong Wu.
+ 
+ 
+  Tokenflow: Unified image tokenizer for multimodal understanding and generation.
+ 
+ 
+  In   CVPR  , 2025.
+ 
+  
+      
+   [36]  
+  
+Qwen Team.
+ 
+ 
+  Qwen-Image: A unified foundation model for image generation and editing.
+ 
+ 
+  arXiv  , 2025.
+ 
+  
+      
+   [37]  
+  
+Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al.
+ 
+ 
+  Learning transferable visual models from natural language supervision.
+ 
+ 
+  In   International conference on machine learning  , pages 8748–8763. PmLR, 2021.
+ 
+  
+      
+   [38]  
+  
+Nikhila Ravi, Valentin Gabeur, Yuan-Ting Hu, Ronghang Hu, Chaitanya Ryali, Tengyu Ma, Haitham Khedr, Roman Rädle, Chloe Rolland, Laura Gustafson, Eric Mintun, Junting Pan, Kalyan Vasudev Alwala, Nicolas Carion, Chao-Yuan Wu, Ross Girshick, Piotr Dollár, and Christoph Feichtenhofer.
+ 
+ 
+  SAM 2: Segment anything in images and videos.
+ 
+ 
+  arXiv  , 2024.
+ 
+  
+      
+   [39]  
+  
+Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Björn Ommer.
+ 
+ 
+  High-resolution image synthesis with latent diffusion models.
+ 
+ 
+  In   CVPR  , 2022.
+ 
+  
+      
+   [40]  
+  
+Runway.
+ 
+ 
+  Introducing runway aleph.
+ 
+ 
+  https://runwayml.com/research/introducing-runway-aleph  .
+ 
+  
+      
+   [41]  
+  
+Team Seedream, :, Yunpeng Chen, Yu Gao, Lixue Gong, Meng Guo, Qiushan Guo, Zhiyao Guo, Xiaoxia Hou, Weilin Huang, Yixuan Huang, Xiaowen Jian, Huafeng Kuang, Zhichao Lai, Fanshi Li, Liang Li, Xiaochen Lian, Chao Liao, Liyang Liu, Wei Liu, Yanzuo Lu, Zhengxiong Luo, Tongtong Ou, Guang Shi, Yichun Shi, Shiqi Sun, Yu Tian, Zhi Tian, Peng Wang, Rui Wang, Xun Wang, Ye Wang, Guofeng Wu, Jie Wu, Wenxu Wu, Yonghui Wu, Xin Xia, Xuefeng Xiao, Shuang Xu, Xin Yan, Ceyuan Yang, Jianchao Yang, Zhonghua Zhai, Chenlin Zhang, Heng Zhang, Qi Zhang, Xinyu Zhang, Yuwei Zhang, Shijia Zhao, Wenliang Zhao, and Wenjia Zhu.
+ 
+ 
+  Seedream 4.0: Toward next-generation multimodal image generation, 2025.
+ 
+  
+      
+   [42]  
+  
+Shelly Sheynin, Adam Polyak, Uriel Singer, Yuval Kirstain, Amit Zohar, Oron Ashual, Devi Parikh, and Yaniv Taigman.
+ 
+ 
+  Emu edit: Precise image editing via recognition and generation tasks.
+ 
+ 
+  In   CVPR  , 2023.
+ 
+  
+      
+   [43]  
+  
+Uriel Singer, Amit Zohar, Yuval Kirstain, Shelly Sheynin, Adam Polyak, Devi Parikh, and Yaniv Taigman.
+ 
+ 
+  EVE: Video editing via factorized diffusion distillation.
+ 
+ 
+  ECCV  , 2024.
+ 
+  
+      
+   [44]  
+  
+Decart Team.
+ 
+ 
+  Lucy edit: Open-weight text-guided video editing.
+ 
+ 
+  https://d2drjpuinn46lb.cloudfront.net/Lucy_Edit__High_Fidelity_Text_Guided_Video_Editing.pdf  , 2025.
+ 
+  
+      
+   [45]  
+  
+Genmo Team.
+ 
+ 
+  Mochi 1.
+ 
+ 
+  https://github.com/genmoai/models  , 2024a.
+ 
+  
+      
+   [46]  
+  
+Gemma Team, Aishwarya Kamath, Johan Ferret, Shreya Pathak, Nino Vieillard, Ramona Merhej, Sarah Perrin, Tatiana Matejovicova, Alexandre Ramé, Morgane Rivière, et al.
+ 
+ 
+  Gemma 3 technical report.
+ 
+ 
+  arXiv preprint arXiv:2503.19786  , 2025.
+ 
+  
+      
+   [47]  
+  
+OpenAI Team.
+ 
+ 
+  GPT-4o system card, 2024b.
+ 
+  
+      
+   [48]  
+  
+Team Wan, Ang Wang, Baole Ai, Bin Wen, Chaojie Mao, Chen-Wei Xie, Di Chen, Feiwu Yu, Haiming Zhao, Jianxiao Yang, Jianyuan Zeng, Jiayu Wang, Jingfeng Zhang, Jingren Zhou, Jinkai Wang, Jixuan Chen, Kai Zhu, Kang Zhao, Keyu Yan, Lianghua Huang, Mengyang Feng, Ningyi Zhang, Pandeng Li, Pingyu Wu, Ruihang Chu, Ruili Feng, Shiwei Zhang, Siyang Sun, Tao Fang, Tianxing Wang, Tianyi Gui, Tingyu Weng, Tong Shen, Wei Lin, Wei Wang, Wei Wang, Wenmeng Zhou, Wente Wang, Wenting Shen, Wenyuan Yu, Xianzhong Shi, Xiaoming Huang, Xin Xu, Yan Kou, Yangyu Lv, Yifei Li, Yijing Liu, Yiming Wang, Yingya Zhang, Yitong Huang, Yong Li, You Wu, Yu Liu, Yulin Pan, Yun Zheng, Yuntao Hong, Yupeng Shi, Yutong Feng, Zeyinzi Jiang, Zhen Han, Zhi-Fan Wu, and Ziyu Liu.
+ 
+ 
+  Wan: Open and advanced large-scale video generative models, 2025.
+ 
+  
+      
+   [49]  
+  
+Wen Wang, Yan Jiang, Kangyang Xie, Zide Liu, Hao Chen, Yue Cao, Xinlong Wang, and Chunhua Shen.
+ 
+ 
+  Zero-shot video editing using off-the-shelf image diffusion models.
+ 
+ 
+  arXiv  , 2023a.
+ 
+  
+      
+   [50]  
+  
+Yi Wang, Yinan He, Yizhuo Li, Kunchang Li, Jiashuo Yu, Xin Ma, Xinhao Li, Guo Chen, Xinyuan Chen, Yaohui Wang, et al.
+ 
+ 
+  Internvid: A large-scale video-text dataset for multimodal understanding and generation.
+ 
+ 
+  arXiv preprint arXiv:2307.06942  , 2023b.
+ 
+  
+      
+   [51]  
+  
+Yuhan Wang, Siwei Yang, Bingchen Zhao, Letian Zhang, Qing Liu, Yuyin Zhou, and Cihang Xie.
+ 
+ 
+  GPT-IMAGE-EDIT-1.5M: A million-scale, GPT-generated image dataset, 2025.
+ 
+  
+      
+   [52]  
+  
+Cong Wei, Zheyang Xiong, Weiming Ren, Xinrun Du, Ge Zhang, and Wenhu Chen.
+ 
+ 
+  OmniEdit: Building image editing generalist models through specialist supervision.
+ 
+ 
+  In   ICLR  , 2025.
+ 
+  
+      
+   [53]  
+  
+Yuhui Wu, Liyi Chen, Ruibin Li, Shihao Wang, Chenxi Xie, and Lei Zhang.
+ 
+ 
+  InsViE-1M: Effective instruction-based video editing with elaborate dataset construction.
+ 
+ 
+  ICCV  , 2025a.
+ 
+  
+      
+   [54]  
+  
+Ziyi Wu, Aliaksandr Siarohin, Willi Menapace, Ivan Skorokhodov, Yuwei Fang, Varnith Chordia, Igor Gilitschenski, and Sergey Tulyakov.
+ 
+ 
+  Mind the time: Temporally-controlled multi-event video generation.
+ 
+ 
+  In   Proceedings of the Computer Vision and Pattern Recognition Conference  , pages 23989–24000, 2025b.
+ 
+  
+      
+   [55]  
+  
+Shitao Xiao, Yueze Wang, Junjie Zhou, Huaying Yuan, Xingrun Xing, Ruiran Yan, Chaofan Li, Shuting Wang, Tiejun Huang, and Zheng Liu.
+ 
+ 
+  OmniGen: Unified image generation.
+ 
+ 
+  In   CVPR  , 2025.
+ 
+  
+      
+   [56]  
+  
+An Yang, Anfeng Li, Baosong Yang, Beichen Zhang, Binyuan Hui, Bo Zheng, Bowen Yu, Chang Gao, Chengen Huang, Chenxu Lv, et al.
+ 
+ 
+  Qwen3 technical report.
+ 
+ 
+  arXiv  , 2025a.
+ 
+  
+      
+   [57]  
+  
+Ling Yang, Bohan Zeng, Jiaming Liu, Hong Li, Minghao Xu, Wentao Zhang, and Shuicheng Yan.
+ 
+ 
+  EditWorld: Simulating world dynamics for instruction-following image editing.
+ 
+ 
+  arXiv  , 2024.
+ 
+  
+      
+   [58]  
+  
+Zhuoyi Yang, Jiayan Teng, Wendi Zheng, Ming Ding, Shiyu Huang, Jiazheng Xu, Yuanming Yang, Wenyi Hong, Xiaohan Zhang, Guanyu Feng, et al.
+ 
+ 
+  CogVideoX: Text-to-video diffusion models with an expert transformer.
+ 
+ 
+  ICLR  , 2025b.
+ 
+  
+      
+   [59]  
+  
+Danah Yatim, Rafail Fridman, Omer Bar-Tal, Yoni Kasten, and Tali Dekel.
+ 
+ 
+  Space-time diffusion features for zero-shot text-driven motion transfer.
+ 
+ 
+  In   CVPR  , 2024.
+ 
+  
+      
+   [60]  
+  
+Yang Ye, Xianyi He, Zongjian Li, Bin Lin, Shenghai Yuan, Zhiyuan Yan, Bohan Hou, and Li Yuan.
+ 
+ 
+  Imgedit: A unified image editing dataset and benchmark.
+ 
+ 
+  arXiv preprint arXiv:2505.20275  , 2025a.
+ 
+  
+      
+   [61]  
+  
+Zixuan Ye, Xuanhua He, Quande Liu, Qiulin Wang, Xintao Wang, Pengfei Wan, Di Zhang, Kun Gai, Qifeng Chen, and Wenhan Luo.
+ 
+ 
+  UNIC: Unified in-context video editing, 2025b.
+ 
+  
+      
+   [62]  
+  
+Jaehong Yoon, Shoubin Yu, and Mohit Bansal.
+ 
+ 
+  RACCooN: A versatile instructional video editing framework with auto-generated narratives.
+ 
+ 
+  EMNLP  , 2025.
+ 
+  
+      
+   [63]  
+  
+Qifan Yu, Wei Chow, Zhongqi Yue, Kaihang Pan, Yang Wu, Xiaoyang Wan, Juncheng Li, Siliang Tang, Hanwang Zhang, and Yueting Zhuang.
+ 
+ 
+  AnyEdit: Mastering unified high-quality image editing for any idea.
+ 
+ 
+  In   CVPR  , 2025a.
+ 
+  
+      
+   [64]  
+  
+Shoubin Yu, Difan Liu, Ziqiao Ma, Yicong Hong, Yang Zhou, Hao Tan, Joyce Chai, and Mohit Bansal.
+ 
+ 
+  VEGGIE: Instructional editing and reasoning video concepts with grounded generation.
+ 
+ 
+  ICCV  , 2025b.
+ 
+  
+      
+   [65]  
+  
+Kai Zhang, Lingbo Mo, Wenhu Chen, Huan Sun, and Yu Su.
+ 
+ 
+  MagicBrush: A manually annotated dataset for instruction-guided image editing.
+ 
+ 
+  In   NeurIPS  , 2023a.
+ 
+  
+      
+   [66]  
+  
+Lvmin Zhang, Anyi Rao, and Maneesh Agrawala.
+ 
+ 
+  Adding conditional control to text-to-image diffusion models, 2023b.
+ 
+  
+      
+   [67]  
+  
+Youcai Zhang, Xinyu Huang, Jinyu Ma, Zhaoyang Li, Zhaochuan Luo, Yanchun Xie, Yuzhuo Qin, Tong Luo, Yaqian Li, Shilong Liu, et al.
+ 
+ 
+  Recognize anything: A strong image tagging model.
+ 
+ 
+  arXiv  , 2023c.
+ 
+  
+      
+   [68]  
+  
+Zhenghao Zhang, Zuozhuo Dai, Long Qin, and Weizhi Wang.
+ 
+ 
+  EffiVED: Efficient video editing via text-instruction diffusion models, 2024.
+ 
+  
+      
+   [69]  
+  
+Zechuan Zhang, Ji Xie, Yu Lu, Zongxin Yang, and Yi Yang.
+ 
+ 
+  In-Context Edit: Enabling instructional image editing with in-context generation in large-scale diffusion transformers.
+ 
+ 
+  NeurIPS  , 2025.
+ 
+  
+      
+   [70]  
+  
+Haozhe Zhao, Xiaojian Ma, Liang Chen, Shuzheng Si, Rujie Wu, Kaikai An, Peiyu Yu, Minjia Zhang, Qing Li, and Baobao Chang.
+ 
+ 
+  UltraEdit: Instruction-based fine-grained image editing at scale.
+ 
+ 
+  In   NeurIPS  , 2024.
+ 
+  
+      
+   [71]  
+  
+Chunting Zhou, Lili Yu, Arun Babu, Kushal Tirumala, Michihiro Yasunaga, Leonid Shamis, Jacob Kahn, Xuezhe Ma, Luke Zettlemoyer, and Omer Levy.
+ 
+ 
+  Transfusion: Predict the next token and diffuse images with one multi-modal model, 2024.
+ 
+  
+      
+   [72]  
+  
+Bojia Zi, Weixuan Peng, Xianbiao Qi, Jianan Wang, Shihao Zhao, Rong Xiao, and Kam-Fai Wong.
+ 
+ 
+  MiniMax-Remover: Taming bad noise helps video object removal.
+ 
+ 
+  arXiv  , 2025a.
+ 
+  
+      
+   [73]  
+  
+Bojia Zi, Penghui Ruan, Marco Chen, Xianbiao Qi, Shaozhe Hao, Shihao Zhao, Youze Huang, Bin Liang, Rong Xiao, and Kam-Fai Wong.
+ 
+ 
+  Señorita-2M: A high-quality instruction-based dataset for general video editing by video specialists.
+ 
+ 
+  In   NeurIPS  , 2025b.
+ 
+  
+    
+ 
+ 
+  
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

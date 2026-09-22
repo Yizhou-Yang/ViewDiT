@@ -1,0 +1,66 @@
+{
+  "wrong_axis_relative_error": 1.1192704439163208,
+  "rows": [
+    {
+      "seed": 0,
+      "iteration": 25,
+      "alpha_bar": 0.00027520590811036527,
+      "eps_adj_cos": -0.006159288343042135,
+      "x0_adj_cos": 0.9809936881065369,
+      "off_frame_response_energy_fraction": 0.0014229167718440294,
+      "off_frame_response_norm": 2.406541109085083,
+      "two_amplitude_relative_disagreement": 0.04111522436141968
+    },
+    {
+      "seed": 0,
+      "iteration": 125,
+      "alpha_bar": 0.08018775284290314,
+      "eps_adj_cos": -0.008810238912701607,
+      "x0_adj_cos": 0.9147067666053772,
+      "off_frame_response_energy_fraction": 0.0075669013895094395,
+      "off_frame_response_norm": 5.636444091796875,
+      "two_amplitude_relative_disagreement": 0.058682896196842194
+    },
+    {
+      "seed": 0,
+      "iteration": 225,
+      "alpha_bar": 0.9025633335113525,
+      "eps_adj_cos": -0.034490104764699936,
+      "x0_adj_cos": 0.7998464703559875,
+      "off_frame_response_energy_fraction": 0.016016559675335884,
+      "off_frame_response_norm": 14.649209976196289,
+      "two_amplitude_relative_disagreement": 0.0635286495089531
+    },
+    {
+      "seed": 1,
+      "iteration": 25,
+      "alpha_bar": 0.00027520590811036527,
+      "eps_adj_cos": 0.0015534398844465613,
+      "x0_adj_cos": 0.9845508933067322,
+      "off_frame_response_energy_fraction": 0.0014773376751691103,
+      "off_frame_response_norm": 2.464886426925659,
+      "two_amplitude_relative_disagreement": 0.04229584336280823
+    },
+    {
+      "seed": 1,
+      "iteration": 125,
+      "alpha_bar": 0.08018775284290314,
+      "eps_adj_cos": 0.000655166688375175,
+      "x0_adj_cos": 0.8687645196914673,
+      "off_frame_response_energy_fraction": 0.0042794798500835896,
+      "off_frame_response_norm": 4.27697229385376,
+      "two_amplitude_relative_disagreement": 0.058743853121995926
+    },
+    {
+      "seed": 1,
+      "iteration": 225,
+      "alpha_bar": 0.9025633335113525,
+      "eps_adj_cos": -0.023174501955509186,
+      "x0_adj_cos": 0.7640489935874939,
+      "off_frame_response_energy_fraction": 0.016250284388661385,
+      "off_frame_response_norm": 16.58437728881836,
+      "two_amplitude_relative_disagreement": 0.06759293377399445
+    }
+  ],
+  "complete": true
+}

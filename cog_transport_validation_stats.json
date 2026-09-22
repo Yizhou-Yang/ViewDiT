@@ -1,0 +1,385 @@
+{
+  "complete": true,
+  "protocol": {
+    "clips": [
+      "car-shadow",
+      "cows",
+      "elephant",
+      "goat",
+      "hike",
+      "horsejump-low",
+      "kite-surf",
+      "libby"
+    ],
+    "frames": 33,
+    "size": [
+      128,
+      224
+    ],
+    "methods": [
+      "reference",
+      "dual"
+    ],
+    "edits": [
+      "geometric1",
+      "encoded_brightness"
+    ],
+    "boundary": 29,
+    "criterion_prefix": 1e-06,
+    "warning": "Eight new contents, fixed dual variant after4 development videos. Encoded brightness is not text semantic editing. Pixel splice has exact endpoint error0 and is included as an oracle, not excluded."
+  },
+  "rows": [
+    {
+      "clip": "car-shadow",
+      "edit": "geometric1",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 4.172325134277344e-06,
+      "identity_max": 5.781650543212891e-06,
+      "raw_prefix_max": 0.6843377351760864,
+      "edit_relative_rmse": 0.31445419788360596,
+      "edit_amplitude_ratio": 1.0327532291412354
+    },
+    {
+      "clip": "car-shadow",
+      "edit": "geometric1",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 4.172325134277344e-06,
+      "identity_max": 5.781650543212891e-06,
+      "raw_prefix_max": 0.6843377351760864,
+      "edit_relative_rmse": 0.04321233928203583,
+      "edit_amplitude_ratio": 0.9982579350471497
+    },
+    {
+      "clip": "car-shadow",
+      "edit": "encoded_brightness",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 4.172325134277344e-06,
+      "identity_max": 5.781650543212891e-06,
+      "raw_prefix_max": 0.1893119215965271,
+      "edit_relative_rmse": 0.022870557382702827,
+      "edit_amplitude_ratio": 0.9961219429969788
+    },
+    {
+      "clip": "car-shadow",
+      "edit": "encoded_brightness",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 4.172325134277344e-06,
+      "identity_max": 5.781650543212891e-06,
+      "raw_prefix_max": 0.1893119215965271,
+      "edit_relative_rmse": 0.009526794776320457,
+      "edit_amplitude_ratio": 0.9999337196350098
+    },
+    {
+      "clip": "cows",
+      "edit": "geometric1",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.726912498474121e-06,
+      "identity_max": 2.726912498474121e-06,
+      "raw_prefix_max": 0.43695884943008423,
+      "edit_relative_rmse": 0.2796042263507843,
+      "edit_amplitude_ratio": 1.0783312320709229
+    },
+    {
+      "clip": "cows",
+      "edit": "geometric1",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.726912498474121e-06,
+      "identity_max": 2.726912498474121e-06,
+      "raw_prefix_max": 0.43695884943008423,
+      "edit_relative_rmse": 0.036203447729349136,
+      "edit_amplitude_ratio": 0.9968724846839905
+    },
+    {
+      "clip": "cows",
+      "edit": "encoded_brightness",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.726912498474121e-06,
+      "identity_max": 2.726912498474121e-06,
+      "raw_prefix_max": 0.18718555569648743,
+      "edit_relative_rmse": 0.024615423753857613,
+      "edit_amplitude_ratio": 0.9980347156524658
+    },
+    {
+      "clip": "cows",
+      "edit": "encoded_brightness",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.726912498474121e-06,
+      "identity_max": 2.726912498474121e-06,
+      "raw_prefix_max": 0.18718555569648743,
+      "edit_relative_rmse": 0.010145433247089386,
+      "edit_amplitude_ratio": 0.9995765089988708
+    },
+    {
+      "clip": "elephant",
+      "edit": "geometric1",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 3.546476364135742e-06,
+      "identity_max": 3.546476364135742e-06,
+      "raw_prefix_max": 0.34743189811706543,
+      "edit_relative_rmse": 0.21719932556152344,
+      "edit_amplitude_ratio": 1.0669329166412354
+    },
+    {
+      "clip": "elephant",
+      "edit": "geometric1",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 3.546476364135742e-06,
+      "identity_max": 3.546476364135742e-06,
+      "raw_prefix_max": 0.34743189811706543,
+      "edit_relative_rmse": 0.027908919379115105,
+      "edit_amplitude_ratio": 0.9975537061691284
+    },
+    {
+      "clip": "elephant",
+      "edit": "encoded_brightness",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 3.546476364135742e-06,
+      "identity_max": 3.546476364135742e-06,
+      "raw_prefix_max": 0.12779507040977478,
+      "edit_relative_rmse": 0.017907055094838142,
+      "edit_amplitude_ratio": 0.9947788715362549
+    },
+    {
+      "clip": "elephant",
+      "edit": "encoded_brightness",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 3.546476364135742e-06,
+      "identity_max": 3.546476364135742e-06,
+      "raw_prefix_max": 0.12779507040977478,
+      "edit_relative_rmse": 0.00831518229097128,
+      "edit_amplitude_ratio": 0.9999117255210876
+    },
+    {
+      "clip": "goat",
+      "edit": "geometric1",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.9802322387695312e-06,
+      "identity_max": 2.9802322387695312e-06,
+      "raw_prefix_max": 0.5027303695678711,
+      "edit_relative_rmse": 0.21580275893211365,
+      "edit_amplitude_ratio": 1.0431586503982544
+    },
+    {
+      "clip": "goat",
+      "edit": "geometric1",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.9802322387695312e-06,
+      "identity_max": 2.9802322387695312e-06,
+      "raw_prefix_max": 0.5027303695678711,
+      "edit_relative_rmse": 0.03768816962838173,
+      "edit_amplitude_ratio": 0.9965372085571289
+    },
+    {
+      "clip": "goat",
+      "edit": "encoded_brightness",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.9802322387695312e-06,
+      "identity_max": 2.9802322387695312e-06,
+      "raw_prefix_max": 0.18709532916545868,
+      "edit_relative_rmse": 0.02922748401761055,
+      "edit_amplitude_ratio": 1.0021723508834839
+    },
+    {
+      "clip": "goat",
+      "edit": "encoded_brightness",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.9802322387695312e-06,
+      "identity_max": 2.9802322387695312e-06,
+      "raw_prefix_max": 0.18709532916545868,
+      "edit_relative_rmse": 0.01003054715692997,
+      "edit_amplitude_ratio": 0.9987567663192749
+    },
+    {
+      "clip": "hike",
+      "edit": "geometric1",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.3692846298217773e-06,
+      "identity_max": 2.3692846298217773e-06,
+      "raw_prefix_max": 0.38758090138435364,
+      "edit_relative_rmse": 0.37488439679145813,
+      "edit_amplitude_ratio": 1.1117057800292969
+    },
+    {
+      "clip": "hike",
+      "edit": "geometric1",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.3692846298217773e-06,
+      "identity_max": 2.3692846298217773e-06,
+      "raw_prefix_max": 0.38758090138435364,
+      "edit_relative_rmse": 0.02678949385881424,
+      "edit_amplitude_ratio": 0.9974262714385986
+    },
+    {
+      "clip": "hike",
+      "edit": "encoded_brightness",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.3692846298217773e-06,
+      "identity_max": 2.3692846298217773e-06,
+      "raw_prefix_max": 0.17406849563121796,
+      "edit_relative_rmse": 0.02286132238805294,
+      "edit_amplitude_ratio": 0.9942936301231384
+    },
+    {
+      "clip": "hike",
+      "edit": "encoded_brightness",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.3692846298217773e-06,
+      "identity_max": 2.3692846298217773e-06,
+      "raw_prefix_max": 0.17406849563121796,
+      "edit_relative_rmse": 0.01040861289948225,
+      "edit_amplitude_ratio": 1.0004372596740723
+    },
+    {
+      "clip": "horsejump-low",
+      "edit": "geometric1",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 6.467103958129883e-06,
+      "identity_max": 6.467103958129883e-06,
+      "raw_prefix_max": 0.8010047674179077,
+      "edit_relative_rmse": 0.31002798676490784,
+      "edit_amplitude_ratio": 1.0084679126739502
+    },
+    {
+      "clip": "horsejump-low",
+      "edit": "geometric1",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 6.467103958129883e-06,
+      "identity_max": 6.467103958129883e-06,
+      "raw_prefix_max": 0.8010047674179077,
+      "edit_relative_rmse": 0.04250957444310188,
+      "edit_amplitude_ratio": 0.9966534376144409
+    },
+    {
+      "clip": "horsejump-low",
+      "edit": "encoded_brightness",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 6.467103958129883e-06,
+      "identity_max": 6.467103958129883e-06,
+      "raw_prefix_max": 0.26610708236694336,
+      "edit_relative_rmse": 0.019345389679074287,
+      "edit_amplitude_ratio": 0.9972169995307922
+    },
+    {
+      "clip": "horsejump-low",
+      "edit": "encoded_brightness",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 6.467103958129883e-06,
+      "identity_max": 6.467103958129883e-06,
+      "raw_prefix_max": 0.26610708236694336,
+      "edit_relative_rmse": 0.00898466445505619,
+      "edit_amplitude_ratio": 0.998947262763977
+    },
+    {
+      "clip": "kite-surf",
+      "edit": "geometric1",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.7641654014587402e-06,
+      "identity_max": 3.680586814880371e-06,
+      "raw_prefix_max": 0.5829898715019226,
+      "edit_relative_rmse": 0.3187541365623474,
+      "edit_amplitude_ratio": 1.0566763877868652
+    },
+    {
+      "clip": "kite-surf",
+      "edit": "geometric1",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.7641654014587402e-06,
+      "identity_max": 3.680586814880371e-06,
+      "raw_prefix_max": 0.5829898715019226,
+      "edit_relative_rmse": 0.03926893323659897,
+      "edit_amplitude_ratio": 1.000402569770813
+    },
+    {
+      "clip": "kite-surf",
+      "edit": "encoded_brightness",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.7641654014587402e-06,
+      "identity_max": 3.680586814880371e-06,
+      "raw_prefix_max": 0.20863188803195953,
+      "edit_relative_rmse": 0.016504846513271332,
+      "edit_amplitude_ratio": 0.9951280355453491
+    },
+    {
+      "clip": "kite-surf",
+      "edit": "encoded_brightness",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 2.7641654014587402e-06,
+      "identity_max": 3.680586814880371e-06,
+      "raw_prefix_max": 0.20863188803195953,
+      "edit_relative_rmse": 0.006556177511811256,
+      "edit_amplitude_ratio": 0.9995400309562683
+    },
+    {
+      "clip": "libby",
+      "edit": "geometric1",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 3.0100345611572266e-06,
+      "identity_max": 3.0100345611572266e-06,
+      "raw_prefix_max": 0.5420998334884644,
+      "edit_relative_rmse": 0.21766716241836548,
+      "edit_amplitude_ratio": 1.0158250331878662
+    },
+    {
+      "clip": "libby",
+      "edit": "geometric1",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 3.0100345611572266e-06,
+      "identity_max": 3.0100345611572266e-06,
+      "raw_prefix_max": 0.5420998334884644,
+      "edit_relative_rmse": 0.03356830030679703,
+      "edit_amplitude_ratio": 0.9985046982765198
+    },
+    {
+      "clip": "libby",
+      "edit": "encoded_brightness",
+      "method": "reference",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 3.0100345611572266e-06,
+      "identity_max": 3.0100345611572266e-06,
+      "raw_prefix_max": 0.08088697493076324,
+      "edit_relative_rmse": 0.01438935287296772,
+      "edit_amplitude_ratio": 0.9997814297676086
+    },
+    {
+      "clip": "libby",
+      "edit": "encoded_brightness",
+      "method": "dual",
+      "prefix_max_vs_noop": 0.0,
+      "prefix_max_vs_standard": 3.0100345611572266e-06,
+      "identity_max": 3.0100345611572266e-06,
+      "raw_prefix_max": 0.08088697493076324,
+      "edit_relative_rmse": 0.005531867500394583,
+      "edit_amplitude_ratio": 0.9995260238647461
+    }
+  ]
+}

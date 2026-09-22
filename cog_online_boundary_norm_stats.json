@@ -1,0 +1,95 @@
+{
+  "complete": true,
+  "protocol": {
+    "clips": [
+      "bmx-trees",
+      "boat",
+      "bus",
+      "dog"
+    ],
+    "amplitudes": [
+      0.4,
+      1.0
+    ],
+    "frames": 17,
+    "size": [
+      128,
+      224
+    ],
+    "warning": "Development after dual method; not held-out. No extra edited stats capture is used for output. Raw capture for evaluation only."
+  },
+  "rows": [
+    {
+      "clip": "bmx-trees",
+      "amplitude": 0.4,
+      "prefix_max_vs_noop": 0.0,
+      "identity_max": 2.9802322387695312e-06,
+      "edit_relative_rmse": 0.024543963372707367,
+      "edit_amplitude_ratio": 0.9996404647827148,
+      "edited_stat_capture_required": false
+    },
+    {
+      "clip": "bmx-trees",
+      "amplitude": 1.0,
+      "prefix_max_vs_noop": 0.0,
+      "identity_max": 2.9802322387695312e-06,
+      "edit_relative_rmse": 0.052016060799360275,
+      "edit_amplitude_ratio": 0.9976370930671692,
+      "edited_stat_capture_required": false
+    },
+    {
+      "clip": "boat",
+      "amplitude": 0.4,
+      "prefix_max_vs_noop": 0.0,
+      "identity_max": 1.6093254089355469e-06,
+      "edit_relative_rmse": 0.03696148470044136,
+      "edit_amplitude_ratio": 0.9908497929573059,
+      "edited_stat_capture_required": false
+    },
+    {
+      "clip": "boat",
+      "amplitude": 1.0,
+      "prefix_max_vs_noop": 0.0,
+      "identity_max": 1.6093254089355469e-06,
+      "edit_relative_rmse": 0.05349230021238327,
+      "edit_amplitude_ratio": 0.9825106263160706,
+      "edited_stat_capture_required": false
+    },
+    {
+      "clip": "bus",
+      "amplitude": 0.4,
+      "prefix_max_vs_noop": 0.0,
+      "identity_max": 2.4139881134033203e-06,
+      "edit_relative_rmse": 0.037287596613168716,
+      "edit_amplitude_ratio": 0.991704523563385,
+      "edited_stat_capture_required": false
+    },
+    {
+      "clip": "bus",
+      "amplitude": 1.0,
+      "prefix_max_vs_noop": 0.0,
+      "identity_max": 2.4139881134033203e-06,
+      "edit_relative_rmse": 0.05687153711915016,
+      "edit_amplitude_ratio": 0.9901772141456604,
+      "edited_stat_capture_required": false
+    },
+    {
+      "clip": "dog",
+      "amplitude": 0.4,
+      "prefix_max_vs_noop": 0.0,
+      "identity_max": 2.4884939193725586e-06,
+      "edit_relative_rmse": 0.031512677669525146,
+      "edit_amplitude_ratio": 0.9954491257667542,
+      "edited_stat_capture_required": false
+    },
+    {
+      "clip": "dog",
+      "amplitude": 1.0,
+      "prefix_max_vs_noop": 0.0,
+      "identity_max": 2.4884939193725586e-06,
+      "edit_relative_rmse": 0.04547911882400513,
+      "edit_amplitude_ratio": 0.9893960356712341,
+      "edited_stat_capture_required": false
+    }
+  ]
+}

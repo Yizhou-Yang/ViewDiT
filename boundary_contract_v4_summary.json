@@ -1,0 +1,50 @@
+[
+  {
+    "cut": 3,
+    "n": 8,
+    "bytes": 0,
+    "raw_max": 0.0,
+    "restored_max": 0.0,
+    "edited_max": 0.0
+  },
+  {
+    "cut": 4,
+    "n": 8,
+    "bytes": 9472,
+    "raw_max": 0.2585003972053528,
+    "restored_max": 2.4139881134033203e-06,
+    "edited_max": 0.0
+  },
+  {
+    "cut": 5,
+    "n": 8,
+    "bytes": 0,
+    "raw_max": 0.0,
+    "restored_max": 0.0,
+    "edited_max": 0.0
+  },
+  {
+    "cut": 6,
+    "n": 8,
+    "bytes": 9472,
+    "raw_max": 0.29839709401130676,
+    "restored_max": 1.9371509552001953e-06,
+    "edited_max": 0.0
+  },
+  {
+    "cut": 7,
+    "n": 8,
+    "bytes": 0,
+    "raw_max": 0.0,
+    "restored_max": 0.0,
+    "edited_max": 0.0
+  },
+  {
+    "cut": 8,
+    "n": 8,
+    "bytes": 9472,
+    "raw_max": 0.24145565927028656,
+    "restored_max": 2.6971101760864258e-06,
+    "edited_max": 0.0
+  }
+]

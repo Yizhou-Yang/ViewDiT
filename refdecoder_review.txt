@@ -1,0 +1,2728 @@
+  
+ 
+ 
+ RefDecoder: Enhancing Visual Generation with Conditional Video Decoding 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+    1  Introduction   
+    2  Method   
+    3  Experiments  
+ 
+    3.1  Experimental Setup   
+    3.2  Reconstruction Results   
+    3.3  Generation results   
+    3.4  Human evaluation   
+    3.5  Qualitative results   
+    3.6  Efficiency   
+    3.7  Ablation study   
+  
+    4  Applications  
+ 
+    4.1  Style transfer   
+    4.2  Video editing   
+  
+    5  Discussion   
+   References   
+    A  Related Work   
+    B  Implementation Details  
+ 
+    B.1  Model Architecture   
+    B.2  Training Setup   
+    B.3  Loss Function   
+    B.4  Data and Evaluation   
+    B.5  Reconstruction Benchmarks   
+    B.6  Per-Category Reconstruction on Inter4K   
+    B.7  VBench Evaluation Protocol   
+  
+    C  Temporal Stability   
+    D  Comparison with Concurrent Reference-Conditioned VAEs   
+    E  Comparison with H3AE   
+    F  Human Evaluation   
+    G  Latent Training   
+    H  Random Reference Frame   
+    I  Effect of the Number of Transformer blocks   
+    J  Latent Token Dropout and Two-Stage Curriculum   
+    K  Alternative Reference Injection Strategy   
+    L  Code License   
+    M  More Qualitative Results   
+  
+ 
+ 
+ 
+   
+    License: CC BY-SA 4.0
+   
+   
+arXiv:2605.15196v1 [cs.CV] 14 May 2026 
+  
+ 
+      RefDecoder : Enhancing Visual Generation with Conditional Video Decoding 
+ 
+ 
+ Xiang Fan
+   
+  Affiliation:  University of Washington
+ 
+  Email:   [HTML]E8A317xiangfan@cs.washington.edu[HTML]367DD4https://refdecoder.github.io/ 
+    
+     
+ Yuheng Wang
+   
+  Affiliation:  University of Washington
+    
+     
+ Bohan Fang
+   
+  Affiliation:  University of Washington
+    
+     
+ Zhongzheng Ren
+  
+     
+ Ranjay Krishna
+   
+  Affiliation:  University of Washington
+    
+   
+  Affiliation:   University of North Carolina at Chapel Hill
+     
+
+  Abstract 
+    
+ Video generation powers a vast array of downstream applications.
+However, while the  de facto  standard,  i.e. , latent diffusion models, typically employ heavily conditioned denoising networks, their decoders often remain unconditional.
+We observe that this  architectural asymmetry  leads to significant loss of detail and inconsistency relative to the input image.
+To address this, we argue that the decoder requires equal conditioning to preserve structural integrity.
+We introduce  RefDecoder , a reference-conditioned video VAE decoder by injecting high-fidelity reference image signal directly into the decoding process via reference attention.
+Specifically, a lightweight image encoder maps the reference frame into the detail-rich high-dimensional tokens, which are co-processed with the denoised video latent tokens at each decoder up-sampling stage.
+We demonstrate consistent improvements across several distinct decoder backbones ( e.g. , Wan 2.1 and VideoVAE + ), achieving up to     +  2.1   +2.1    dB PSNR over the unconditional baselines on the Inter4K, WebVid, and Large Motion reconstruction benchmarks. Notably,  RefDecoder  can be directly swapped into existing video generation systems without additional fine-tuning, and we report across-the-board improvements in subject consistency, background consistency, and overall quality scores on the VBench I2V benchmark. Beyond I2V,  RefDecoder  generalizes well to a wide range of visual generation tasks such as style transfer and video editing refinement. 
+  
+ 
+ 
+    
+  
+ 
+    
+ 
+  Figure 1:  (a)  RefDecoder  improves video VAE decoders by conditioning on a high-fidelity reference signal that bypasses the lossy VAE latent round trip. Given the encoded latents, the decoder injects fine-grained details that are not preserved in the VAE latent space, improving reconstruction fidelity and downstream generation quality. (b)  RefDecoder  integrates with existing video generation pipelines (Wan 2.1 shown) without requiring costly re-training of the diffusion model. 
+ 
+  
+ 
+ 
+  1  Introduction 
+
+ 
+ In the dominant paradigm of video generation, a diffusion backbone denoises latent representations guided by an input conditioning, while a VAE decoder subsequently maps these latents back to pixel space   Blattmann et al. (2023a) ;  Wan et al. (2025) ;  Yang et al. (2024b)  .
+While substantial effort has been devoted to improving the conditioning and architecture of the diffusion backbone   Rombach et al. (2022) ;  Ho et al. (2020) ;  Song and Ermon (2019)  ,  the VAE decoder has received comparatively little attention and remain unconditional in mainstream video diffusion models . It is typically treated as a standalone reconstruction module that operates without access to the primary conditioning signal at inference time   Blattmann et al. (2023a) ;  Wan et al. (2025) ;  Yang et al. (2024a) ;  Kong et al. (2025)  . 
+ 
+ 
+ We observe that this  architectural asymmetry  creates a systematic bottleneck: even when the diffusion model faithfully preserves the reference information within the latent, the decoder must reconstruct fine-grained spatial details from a heavily compressed representation without a detailed anchor.
+This leads to two characteristic failure modes:
+(1)  Progressive degradation of spatial details , where textures, edges, and high-frequency content deteriorate in frames that deviate from the conditioning image (e.g.   Figure   3   baseline details); and
+(2)  Temporal inconsistency , where appearance drifts across the sequence (e.g.   Figure   4  (a) human face).
+These artifacts emerge during latent-to-pixel decoding rather than the diffusion process itself, exposing the decoder as an under-exploited component that fails to leverage the visual cues already provided by the reference. 
+ 
+ 
+ However, injecting the reference image into the decoder is non-trivial for several reasons.
+(1) Because the decoder operates through hierarchical up-sampling stages, it remains an open question at which specific stage the reference signal should be introduced.
+(2) The conditioning mechanism must maintain compatibility with pretrained decoder weights, ensuring the system remains functional in its original setting,  i.e. , no reference image.
+(3) The approach should be sufficiently generic to generalize across diverse visual generation tasks and various decoder backbones. 
+ 
+ 
+ To address aforementioned problems, our key insight is that the decoder’s hidden space is far richer than the VAE latent space; encoding the reference image into this high-fidelity space and injecting it as additional self-attention tokens lets the decoder exploit details unavailable from the latent code alone.
+Building on this, we propose  RefDecoder , a reference-conditioned video VAE decoder with two components:
+a  reference image encoder , a lightweight convolutional network mapping the reference frame into the decoder’s hidden space as spatially aligned tokens (Sec.   2  (a));
+and a  conditional token decoder  that, at each up-sampling stage, concatenates reference and video latent tokens along the temporal axis and jointly processes them via a shared transformer block with rotary positional embeddings (RoPE)   Su et al. (2024)  ; the tokens are then separated and up-sampled independently, preserving compatibility with the pretrained decoder (Sec.   2  (b)).
+To prevent the decoder from ignoring the reference, we further introduce a  latent token dropout  strategy that randomly zeroes video latent tokens at a variable rate, forcing the model to recover spatial details from reference tokens via attention (Sec.   2  (c)). 
+ 
+ 
+ Our newly introduced modules are architecture-agnostic and generalize to existing video VAE decoders, with the transformer block shared across decoder stages. Because only the decoder is modified and the encoder remains frozen,  RefDecoder  is a  drop-in replacement  for any existing video VAE decoder and can immediately benefit downstream diffusion models without retraining. 
+ 
+ 
+ We test  RefDecoder  on different video VAE backbones including Wan 2.1   Wan et al. (2025)   and VideoVAE +    Xing et al. (2025)  , demonstrating consistent improvements across all of them.
+On the Inter4K reconstruction benchmark,  RefDecoder  achieves over 1 dB PSNR improvement compared to the unconditional baseline.
+In generation tasks, on the VBench I2V benchmark   Huang et al. (2024) ;  Huang et al. (2025)  , our method improves subject consistency, background consistency, motion smoothness, aesthetic quality, and overall scores.
+We show that the same reference injection mechanism naturally extends to  decode-time style transfer . By supplying a style image as the reference,  RefDecoder  produces stylized video without any task-specific modification, validating the generality of conditional token decoding. Furthermore, in video editing tasks,  RefDecoder  enhances the fidelity of edited videos to the input reference while preserving the intended edits, demonstrating that reference conditioning as a powerful tool to mitigate the trade-off between editability and fidelity   Fan et al. (2024)  .
+These results suggest a broader message: in image conditioned generation pipelines, the decoder is not merely a passive reconstruction module but an active participant that can—and should—leverage conditioning signals. Don’t forget the decoder. 
+ 
+ 
+ 
+  2  Method 
+
+  
+  Figure 2:   Architecture overview of the  RefDecoder .  The reference image is encoded into tokens and injected into the decoder through shared attention blocks, enabling interactions between reference and latent tokens during decoding. 
+ 
+ 
+ We propose  RefDecoder , a reference-conditioned video VAE decoder that injects reference image tokens directly into the decoding process via joint attention over concatenated reference and video tokens, enhancing spatial fidelity and temporal coherence. The overall architecture is illustrated in Fig.   2  . We build upon a standard video VAE backbone and augment its decoder with conditional token interactions, which we detail below. 
+ 
+ 
+  Reference image encoding. 
+
+We start with a reference image      I  ref   ∈   ℝ   3  ×  H  ×  W     I_{\mathrm{ref}}\in\mathbb{R}^{3\times H\times W}   . Typical methods encode the reference into a low-dimensional feature space comparable to the VAE latent bottleneck ( e.g.  16 channels), and obtain hierarchical features derived therefrom. To preserve high-fidelity information, we instead project the original image patches directly into a high-dimensional feature space ( e.g.  512 dimensions), which is fed to the decoder at the very first stage, upsampled alongside the video features throughout decoding stages, and interacted with through injected attention layers at every stage (  Section   2  (b)). This setup allows multiresolution high-dimensional feature extraction within the decoding process. 
+ 
+ 
+ We keep the reference encoder minimal—applying a single convolution followed by normalization—to avoid any issue with a deeper encoder smoothing out high-frequency details. 
+ 
+ 
+ After encoding, we obtain reference tokens      𝐳  ref   ∈   ℝ   C  ×   H  p   ×   W  p      \mathbf{z}_{\text{ref}}\in\mathbb{R}^{C\times\frac{H}{p}\times\frac{W}{p}}   , where    C  C    is the first decoder stage’s channel dimension and    p  p    is the VAE’s spatial compression ratio. This aligns reference tokens with the decoder’s initial feature map, enabling direct position-aware information transfer through attention. 
+ 
+ 
+  Conditional token decoding. 
+
+Standard video VAE decoders rely on causal 3D convolutional upsampling layers with limited local receptive fields, which cannot recover fine-grained details lost to the narrow latent bottleneck. To let the decoder selectively retrieve details from the reference, we insert Transformer blocks into the upsampling stages of the pretrained decoder, enabling each video token to query reference tokens and extract relevant information. 
+ 
+ 
+ Our conditional token decoding involves three design goals: (1) combining reference and video tokens for joint processing; (2) preserving compatibility with the existing VAE upsampling path; and (3) minimizing parameter overhead. 
+ 
+ 
+  Token concatenation. 
+At decoder stage    s  s   , we concatenate video tokens      𝐳   (  s  )    ∈   ℝ    C  s   ×   T  s   ×   H  s   ×   W  s      \mathbf{z}^{(s)}\in\mathbb{R}^{C_{s}\times T_{s}\times H_{s}\times W_{s}}    and reference tokens      𝐳  ref   (  s  )    ∈   ℝ    C  s   ×  1  ×   H  s   ×   W  s      \mathbf{z}_{\mathrm{ref}}^{(s)}\in\mathbb{R}^{C_{s}\times 1\times H_{s}\times W_{s}}    along the temporal dimension, yielding a tensor of shape     ℝ    C  s   ×   (   1  +   T  s    )   ×   H  s   ×   W  s     \mathbb{R}^{C_{s}\times(1+T_{s})\times H_{s}\times W_{s}}   . This is then processed through self attention in a Transformer block. 
+ 
+ 
+  Separation and upsampling. 
+After attention, the output is split back into reference tokens
+     𝐳  ^   ref   (  s  )    \hat{\mathbf{z}}_{\mathrm{ref}}^{(s)}    and video tokens
+     𝐳  ^    (  s  )    \hat{\mathbf{z}}^{(s)}   .
+Each branch is then passed through the pre-trained upsampling modules independently.
+The reference tokens are upsampled only spatially,
+while the video tokens undergo both spatial and temporal upsampling. 
+ 
+ 
+  Weight sharing across stages. 
+To reduce the parameter overhead of Transformer blocks, Transformer weights are shared across all stages.
+Stage-specific patch embedding layers project varying channel dimensions
+    C  s   C_{s}    to a unified transformer hidden dimension, enabling weight sharing without architectural constraints. We ablate the effectiveness of weight-shared blocks in   Section   3.7  . 
+ 
+ 
+  Latent token dropout. 
+
+To encourage the decoder to actively rely on the reference rather than solely on the video latents, we apply token dropout to the latents before decoding. At each training step, every spatiotemporal position in    𝐳  \mathbf{z}    is independently zeroed with probability    r  r   , where    r  r    is sampled uniformly from     [  0  ,   r  max   )   [0,r_{\mathrm{max}})   , forcing the model to retrieve missing details from the reference tokens via attention. We use      r  max   =  0.7   r_{\mathrm{max}}=0.7    by default. 
+ 
+ 
+  Training. 
+We initialize the VAE from a pretrained video VAE and freeze the encoder entirely. The decoder is fine-tuned at a reduced learning rate, while the newly added modules (reference image encoder and Transformer blocks) are trained from scratch. The training objective is: 
+ 
+
+  
+  
+     ℒ  =     ‖   𝐱  −   𝐱  ^    ‖   1   +    ℒ  LPIPS   ​   (  𝐱  ,   𝐱  ^   )      \mathcal{L}=\|\mathbf{x}-\hat{\mathbf{x}}\|_{1}+\mathcal{L}_{\text{LPIPS}}(\mathbf{x},\hat{\mathbf{x}})    
+    
+ 
+ where    𝐱  \mathbf{x}    and     𝐱  ^   \hat{\mathbf{x}}    denote the ground-truth and reconstructed video frames respectively, and     ℒ  LPIPS   \mathcal{L}_{\text{LPIPS}}    is the LPIPS perceptual loss   Zhang et al. (2018)  . 
+ 
+ 
+  Random frame reference selection.  While the reference image typically serves as the first frame at inference, the model should ideally be robust to a wider range of reference content. We therefore randomly select a frame from the input video as the reference during training, preventing overfitting to a fixed temporal relationship. 
+ 
+ 
+  Two-stage curriculum training.  We start with training on short clips of the minimum supported number of frames and then extend to the maximum frame count to generalize to long temporal contexts. 
+ 
+ 
+ 
+  3  Experiments 
+
+ 
+ We evaluate  RefDecoder  on  video reconstruction  and  image-to-video generation . Throughout,  RefDecoder  is used as a plug-and-play  drop-in replacement  for the baseline VAE decoder: the encoder, the diffusion backbone, and the inference pipeline remain unchanged. To assess generality, we apply  RefDecoder  to two architecturally distinct backbones, Wan 2.1 and VideoVAE + . We further ablate key design choices including the number of Transformer blocks, latent token dropout, and the training curriculum. 
+ 
+ 
+  3.1  Experimental Setup 
+
+ 
+  Training data. 
+Our training set contains approximately 100K videos including videos from MiraData9K   Li et al. (2025a) ;  Zheng et al. (2024)  , DL3DV   Li et al. (2025a) ;  Zheng et al. (2024)  , and a subset of OpenVidHD-0.4M   Nan et al. (2024)  . 
+ 
+ 
+  Benchmarks. 
+For reconstruction, we use the three test sets provided by VideoVAE +    Xing et al. (2025)  —an Inter4K   Stergiou and Poppe (2022)   test split of 500 high-quality videos, a subset of WebVid   Bain et al. (2021)  , and a Large Motion subset of 100 videos (80 from WebVid, 20 from Inter4K) curated for complex camera and object motion—using identical splits to ensure direct comparability with   Xing et al. (2025)   (see   Section   B.5  ). We report PSNR, SSIM, and LPIPS for reconstruction, and the standard 12 VBench dimensions   Huang et al. (2024) ;  Huang et al. (2025) ;  Zheng et al. (2025)   for generation. 
+ 
+ 
+  Implementation details. 
+We apply  RefDecoder  to two architecturally distinct backbones, Wan 2.1   Wan et al. (2025)   and VideoVAE +    Xing et al. (2025)  , which differ substantially in their channel widths and decoder depth. We freeze the encoder and train only the decoder, and drop up to 70% latent video tokens during training. We adopt a two-stage curriculum: for Wan 2.1, 5-frame clips at     480  ×  832   480\times 832    followed by 17-frame clips; for VideoVAE + , 4-frame clips at     216  ×  216   216\times 216    (as does   Xing et al. (2025)  ) followed by 16-frame clips at the same resolution. 
+ 
+ 
+  Baselines.  We compare our method with the vanilla VAE autoencoders from frontier open source video models, including Wan 2.1   Wan et al. (2025)   and Hunyuan 1.5   Kong et al. (2025)  , as well as state-of-the-art academic VAE models including VideoVAE +    Xing et al. (2025)   and Reducio   Tian et al. (2025)  . 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+  Wan 2.1  
+   
+   
+   
+   
+    
+ 
+ 
+  
+  Wan 2.1  
+   
+   
+   
+   
+    
+ 
+ 
+  
+  Wan 2.1  
+   
+   
+   
+   
+    
+ 
+ 
+  
+  VideoVAE+  
+   
+   
+   
+   
+    
+ 
+ 
+  
+  VideoVAE+  
+   
+   
+   
+   
+    
+ 
+ 
+  
+  VideoVAE+  
+   
+   
+   
+   
+    
+ 
+  
+  Baseline  
+  Ours  
+  Baseline  
+  Ours   
+ 
+ 
+  Figure 3:   Reconstruction comparisons.  Cropped regions from two backbones (Wan 2.1 and VideoVAE + ) are shown.  RefDecoder  produces sharper reconstructions and better preserves fine details than the baseline, particularly for high-frequency content like text, human faces, and structural patterns. 
+ 
+ 
+ 
+  3.2  Reconstruction Results 
+
+ 
+ Table   1   reports reconstruction metrics on Inter4K, WebVid, and the Large Motion subset from   Xing et al. (2025)  . As we can see,  RefDecoder  consistently outperforms existing baselines, with gains of +1.2 dB PSNR on Inter4K (Wan 2.1) and +2.1 dB PSNR on WebVid (VideoVAE + ), and reduced LPIPS across the majority of the settings, demonstrating fine detail recovery and architectural generalization. A per-category breakdown shows that gains are positive across every category and are largest for content-rich scenes (Appendix   B.6  ), a setting that many existing video generation pipelines struggle with  ( Wan et al., 2025 ;  Kong et al., 2025 ;  Yang et al., 2024a ) . 
+ 
+ 
+ We additionally compare against three concurrent reference-conditioned VAEs: H3AE   Wu et al. (2025)  , Reducio-VAE   Tian et al. (2025)  , and RefTok   Fan et al. (2025)  . Quantitative numbers for Reducio-VAE on our benchmarks are included in Table   1  . Since H3AE and RefTok have not released code or model weights, we follow each of their evaluation protocols on their respective datasets—DAVIS   Perazzi et al. (2016) ;  Pont-Tuset et al. (2017)   for H3AE and BAIR   Ebert et al. (2017)   for RefTok.  RefDecoder  trained on VideoVAE +  backbone outperforms both H3AE and RefTok (Appendix   D  ). 
+ 
+ 
+  Table 1:   Video reconstruction results on WebVid, Inter4K (test), and Large Motion datasets.  Best results are shown in bold. Our method consistently outperforms the Wan 2.1 baseline and VideoVAE +  across most metrics. 
+  
+ 
+ 
+ 
+  
+  WebVid  
+  Inter4K (test)  
+  Large Motion   
+ 
+  Model  (Backbone) 
+  PSNR   ↑  \uparrow     
+  SSIM   ↑  \uparrow     
+  LPIPS   ↓  \downarrow     
+  PSNR   ↑  \uparrow     
+  SSIM   ↑  \uparrow     
+  LPIPS   ↓  \downarrow     
+  PSNR   ↑  \uparrow     
+  SSIM   ↑  \uparrow     
+  LPIPS   ↓  \downarrow      
+ 
+ Cosmos-Tokenizer   NVIDIA (2024)   
+ 31.2 
+ 89.6 
+ 0.107 
+ 31.3 
+ 88.6 
+ 0.103 
+ 30.2 
+ 86.8 
+ 0.119  
+ 
+ CogVideoX-VAE   Yang et al. (2024a)   
+ 32.5 
+ 92.3 
+ 0.053 
+ 32.9 
+ 92.1 
+ 0.050 
+ 31.1 
+ 89.8 
+ 0.069  
+ 
+ EasyAnimate-VAE   Xu et al. (2024)   
+ 31.5 
+ 90.5 
+ 0.057 
+ 32.1 
+ 90.9 
+ 0.041 
+ 30.5 
+ 88.5 
+ 0.060  
+ 
+ CV-VAE   Zhao et al. (2024)   
+ 31.6 
+ 90.6 
+ 0.064 
+ 32.3 
+ 90.8 
+ 0.055 
+ 30.7 
+ 88.7 
+ 0.073  
+ 
+ Open-Sora-Plan (WF-VAE-L)   Li et al. (2025b)   
+ 32.5 
+ 91.5 
+ 0.051 
+ 33.1 
+ 92.1 
+ 0.040 
+ 31.2 
+ 89.6 
+ 0.060  
+ 
+ IV-VAE   Wu et al. (2024)   
+ 33.2 
+ 92.7 
+ 0.041 
+ 33.2 
+ 92.3 
+ 0.038 
+ 31.9 
+ 90.9 
+ 0.049  
+ 
+ VidTok   Tang et al. (2024)   
+ 33.4 
+ 93.1 
+ 0.043 
+ 34.4 
+ 93.6 
+ 0.034 
+ 31.9 
+ 90.8 
+ 0.053  
+ 
+ HunyuanVAE   Kong et al. (2025)   
+ 33.2 
+ 92.7 
+ 0.037 
+ 33.4 
+ 92.7 
+ 0.032 
+ 32.1 
+ 91.2 
+ 0.045  
+ 
+ Reducio-VAE   Tian et al. (2025)   (T/4) 
+ 32.4 
+ 88.8 
+ 0.057 
+ 29.7 
+ 86.3 
+ 0.096 
+ 26.8 
+ 78.6 
+ 0.126  
+ 
+ Wan 2.1 VAE   Wan et al. (2025)   
+ 32.8 
+ 91.4 
+ 0.032 
+ 33.7 
+ 93.0 
+ 0.034 
+ 30.8 
+ 89.1 
+ 0.048  
+ 
+  RefDecoder  (Wan 2.1) 
+ 33.5 
+ 92.6 
+ 0.037 
+  34.9  
+  94.9  
+  0.031  
+ 31.4 
+ 90.4 
+ 0.053  
+ 
+  
+  (+0.7)  
+  (+1.2)  
+  (+.005)  
+  (+1.2)  
+  (+1.9)  
+  (-.003)  
+  (+0.6)  
+  (+1.3)  
+  (+.005)   
+ 
+ VideoVAE +    Xing et al. (2025)   
+ 32.9 
+ 93.0 
+ 0.041 
+ 33.9 
+ 93.3 
+ 0.034 
+ 31.9 
+ 90.7 
+ 0.050  
+ 
+  RefDecoder  (VideoVAE + ) 
+  35.1  
+  93.5  
+  0.031  
+ 34.7 
+ 94.7 
+ 0.033 
+  32.9  
+  92.3  
+  0.043   
+ 
+  
+  (+2.1)  
+  (+0.5)  
+  (-.010)  
+  (+0.8)  
+  (+1.6)  
+  (-.001)  
+  (+1.1)  
+  (+1.6)  
+  (-.007)   
+ 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+  
+  
+  GT  
+    
+     
+ 
+  
+  Wan  
+   
+   
+   
+    
+ 
+ 
+  
+  Wan Ours  
+   
+   
+   
+    
+ 
+  
+  
+  GT  
+    
+     
+ 
+  
+  Wan  
+   
+   
+   
+    
+ 
+ 
+  
+  Ours  
+   
+   
+   
+    
+ 
+ 
+  Figure 4:   Video generation comparisons.  For the same input reference, three frames generated at different timesteps are shown. The baseline distorts the underlying scene structure, whereas  RefDecoder  preserves the structure while producing sharper and more consistent details across frames. 
+ 
+ 
+ 
+  3.3  Generation results 
+
+ 
+ We plug  RefDecoder  into the unmodified Wan 2.1 pipeline as a drop-in decoder replacement, without any retraining of the diffusion model. To isolate the decoder’s contribution, we adopt a  fixed-seed  protocol: for each prompt we draw    5  5    random seeds once, generate diffusion latents with the unmodified Wan 2.1 pipeline, and decode the same latents with both Wan 2.1 baseline decoder and  RefDecoder , so that diffusion sampling variance do not take effect in the pairwise comparison and the improvement is attributable solely to the decoder. Evaluation details are described in Appendix   B.7  . 
+ 
+ 
+ As shown in Table   2  ,  RefDecoder  outperforms the baseline on 11 out of 12 VBench dimensions, with the largest gains in subject and background consistency, and raises the total VBench score from 87.9 to 88.2 (    +  0.3   +0.3   ). For comparison, the current top open source models on the VBench leaderboard differ by a score of 0.1. 
+ 
+ 
+  Temporal stability. 
+Beyond per-frame quality, we assess temporal stability under the same fixed-seed protocol with flow warping error (    E  warp   E_{\text{warp}}   )   Lai et al. (2018)  , temporal LPIPS (    E  tLPIPS   E_{\text{tLPIPS}}   )   Zhang et al. (2018)  , flicker (    E  flicker   E_{\text{flicker}}   )   Bonneel et al. (2015)  , and CLIP consistency (CLIP      cons   {}_{\text{cons}}   )   Esser et al. (2023)  .  RefDecoder  reduces all three degradation metrics by    8  8   –    15  %   15\%    and slightly improves CLIP consistency, producing less flickering and more temporally coherent videos than baseline (Appendix   C  ). 
+ 
+ 
+  Table 2:   VBench generation eval results (12 dimensions) on the Wan 2.1 backbone.  Subj. / BG denote subject/background consistency; I2V Subj./BG are their I2V-specific variants. 
+  
+ 
+ 
+ 
+  
+  Quality Dimensions  
+  I2V Dimensions  
+  Aggregate Scores   
+ 
+  Model  
+  Subj.  
+  BG  
+  Motion  
+  Dyna.  
+  Aesth.  
+  Imag.  
+  I2V Subj.  
+  I2V BG  
+  Camera  
+  Quality  
+  I2V  
+  Total   
+ 
+ 
+ 
+  Wan 2.1    Wan et al. (2025)   
+  96.6  
+  97.9  
+  98.1  
+  47.5  
+  65.6  
+  70.1  
+  98.0  
+  99.1  
+  19.3  
+  81.3  
+  94.5  
+  87.9   
+ 
+  RefDecoder   (Wan 2.1)  
+  96.8  
+  98.2  
+  98.3  
+  47.6  
+  66.0  
+  70.1  
+  98.3  
+  99.3  
+  19.1  
+  81.6  
+  94.8  
+  88.2   
+ 
+ 
+  
+ 
+ 
+ 
+  3.4  Human evaluation 
+
+ 
+ We conduct a blind preference study comparing  RefDecoder  with four VAE baselines: Wan 2.1, HunyuanVAE, VideoVAE + , and Reducio-VAE. Participants use a slider-overlay interface in which the two videos are shown on randomized sides and model identities are hidden. Overall,  RefDecoder  is preferred over every baseline. In reconstruction tasks,  RefDecoder  is preferred over Wan 2.1, HunyuanVAE, VideoVAE + , and Reducio-VAE, with preference rates of     92.3  %   92.3\%   ,     69.2  %   69.2\%   ,     63.4  %   63.4\%   , and     89.6  %   89.6\%   , respectively. In generation tasks,  RefDecoder  is preferred over Wan 2.1 with a preference rate of     82.4  %   82.4\%   . Appendix   F   provides further detail. 
+ 
+ 
+ 
+  3.5  Qualitative results 
+
+ 
+ Figure   3   shows reconstruction results. Our decoder recovers sharper edges and finer textures than the baseline, particularly in high-frequency regions such as text, human faces, and fine structural details. These improvements are consistent across backbones. Figure   4   compares generation results produced using the baseline decoder vs.  RefDecoder . As we can see,  RefDecoder  better preserves the structure and produces sharper, more consistent details across frames. 
+ 
+ 
+ 
+  3.6  Efficiency 
+
+ 
+  RefDecoder  adds overhead only to the lightweight VAE decoding stage, whereas the DiT denoising stage dominates the diffusion pipeline. When run on Wan 2.1, the total pipeline latency is nearly equal with minimal overhead (    72,037  ±  16   72{,}037\pm 16    ms vs.     74,584  ±  40   74{,}584\pm 40    ms). 
+ 
+ 
+ 
+  3.7  Ablation study 
+
+ 
+  Effect of the number of blocks. 
+We ablate the number of Transformer blocks on Wan 2.1 with 3, 5, 7, and 10. Reconstruction quality improves consistently with depth: the 10-blocks model achieves    34.9  34.9    dB PSNR on Inter4K, up from    34.3  34.3    for the 3-blocks variant, and is best across all benchmarks (full numbers in Appendix   I  ). 
+ 
+ 
+  Latent token dropout and two-stage curriculum. 
+We further ablate two training-time choices: latent token dropout and the two-stage curriculum. We find that higher latent-token dropout consistently improves reconstruction. Gains appear on both the reference and non-reference frames, indicating that stronger dropout encourages better use of reference information. The two-stage curriculum substantially improves over one-stage training (e.g., overall PSNR     30.5  →  34.3   30.5\rightarrow 34.3    dB), helping the model adapt from short to longer-video decoding. Full training details and results are in Appendix   J  . 
+ 
+ 
+  Alternative reference injection strategy. 
+We also compare against a ControlNet-style   Zhang and Agrawala (2023)   alternative that adds residual features from a parallel reference encoder to the decoder at each stage. This approach lacks temporal reasoning and converges to lower quality than our attention-based design. Details and qualitative results are in Appendix   K  . 
+ 
+ 
+ 
+ 
+  4  Applications 
+
+ 
+  4.1  Style transfer 
+
+ 
+ To demonstrate the generality of our reference injection design, we apply  RefDecoder  to decode-time style transfer: by supplying a style image as the reference and training on OmniStyle150K   Wang et al. (2025)  , the  RefDecoder  architecture stylizes the input video using a reference style image at inference, transferring the reference style while preserving the structural content of the input. Figure   5   shows qualitative results. 
+ 
+ 
+ 
+ 
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+  Input  
+  Reference  
+  Ours  
+  Ground Truth   
+ 
+ 
+  Figure 5:   Qualitative results on the style transfer task.  The reconstructed images follow the reference style while preserving the structural content of the input images. 
+ 
+ 
+ 
+  4.2  Video editing 
+
+ 
+ First-frame-guided video editors take a source video together with an edited version of its first frame, and produce a video in which the user-specified edit is applied consistently across all frames while everything else is expected to stay identical to the source. In practice, however, the editing model often noticeably degrades the  non-edited  regions. 
+ 
+ 
+ We experiment with video editing on LoRA-Edit   Gao et al. (2025)  , a first-frame-guided editor that fine-tunes the Wan 2.1 model with a mask-aware LoRA. We compare decoding the latents with the original Wan 2.1 decoder vs.  RefDecoder . We follow LoRA-Edit’s pipeline to track the edited object across frames, and score masked PSNR, SSIM, and LPIPS over the non-edited region, averaged over all frames. As shown in Table   3  ,  RefDecoder  improves the non-edited region on every metric (    +  1.4   +1.4    dB PSNR,     +  1.9   +1.9    SSIM (%),     −  0.018   -0.018    LPIPS). Figure   6   further shows that  RefDecoder  preserves high-quality details that the baseline decoder blurs out, despite significant movement from the reference frame. 
+ 
+ 
+  Table 3:   Evaluation of  RefDecoder  on LoRA-Edit   Gao et al. (2025)  .  We decode the same latents with the original decoder vs.  RefDecoder  and score the non-edited region against the source video using a per-frame mask. Numbers in  teal  are gains of  RefDecoder  over the baseline. 
+ 
+ 
+ 
+  Decoder  
+  PSNR   ↑  \uparrow     
+  SSIM   ↑  \uparrow     
+  LPIPS   ↓  \downarrow      
+ 
+ 
+ 
+  Wan 2.1   Wan et al. (2025)    
+  30.2  
+  90.7  
+  0.0477   
+ 
+  RefDecoder   (Wan 2.1)  
+  31.6  
+  92.6  
+  0.0297   
+ 
+  
+  (    +  1.4   +1.4   )  
+  (    +  1.9   +1.9   )  
+  (    −  0.018   -0.018   )   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   
+    
+ 
+  Reference  
+  Ground truth   
+ 
+   
+    
+ 
+  LoRA-Edit  
+  LoRA-Edit +  RefDecoder    
+ 
+ 
+  Figure 6:   Qualitative comparison on LoRA-Edit   Gao et al. (2025)  .   Reference : first frame of the source video. The baseline decoder distorts non-edited regions, while  RefDecoder  regenerates them faithfully from the reference, preserving high-quality details such as the text. 
+ 
+ 
+ 
+ 
+  5  Discussion 
+
+ 
+ We introduced  RefDecoder , a reference-conditioned video VAE decoder that addresses a fundamental asymmetry in conditional generation: while the diffusion backbone is richly conditioned, the decoder remains generally unconditional. By injecting reference image tokens via self-attention,  RefDecoder  serves as a lightweight, architecture-agnostic drop-in replacement for existing decoders. Consistent improvements across several backbones, including mainstream open-source foundation video models, on both reconstruction and generation benchmarks, together with its natural extension to style transfer and video editing, demonstrate the generality and task-agnostic nature of conditional decoding. We hope this work encourages the community to rethink the decoder’s role in conditional generation. 
+ 
+ 
+ Several limitations suggest future directions: extending from a single reference to multiple references ( e.g. , for interpolation or multi-view tasks), exploring richer reference encoders beyond a single convolution layer, automating hyperparameter selection across architectures, and investigating scaling to longer videos where the reference becomes temporally distant. Because  RefDecoder  amplifies the perceptual fidelity of existing video generation models, it also inherits the same dual-use risks as the underlying model ( e.g. , deepfake misuse). 
+ 
+  
+ 
+ 
+ References 
+
+ 
+  Bain  et al.  (2021) 
+  M. Bain, A. Nagrani, G. Varol, and A. Zisserman 
+ 
+  Frozen in time: a joint video and image encoder for end-to-end retrieval .
+ 
+ In  IEEE International Conference on Computer Vision ,
+ 
+ Cited by:   2nd item  ,
+  3rd item  ,
+  §3.1  .
+  
+  Blattmann  et al.  (2023a) 
+  A. Blattmann, T. Dockhorn, S. Kulal, D. Mendelevitch, M. Kilian, D. Lorenz, Y. Levi, Z. English, V. Voleti, A. Letts, V. Jampani, and R. Rombach 
+ 
+  Stable video diffusion: scaling latent video diffusion models to large datasets .
+ 
+ External Links:   2311.15127  
+ 
+ Cited by:   Appendix A  ,
+  §1  .
+  
+  Blattmann  et al.  (2023b) 
+  A. Blattmann, R. Rombach, H. Ling, T. Dockhorn, S. W. Kim, S. Fidler, and K. Kreis 
+ 
+  Align your latents: high-resolution video synthesis with latent diffusion models .
+ 
+ External Links:   2304.08818  
+ 
+ Cited by:   Appendix A  .
+  
+  Bonneel  et al.  (2015) 
+  N. Bonneel, J. Tompkin, K. Sunkavalli, D. Sun, S. Paris, and H. Pfister 
+ 
+  Blind video temporal consistency .
+ 
+  ACM Transactions on Graphics (TOG)   34  ( 6 ),  pp. 1–9 .
+ 
+ Cited by:   Appendix C  ,
+  §3.3  .
+  
+  Chen  et al.  (2024) 
+  H. Chen, Y. Zhang, X. Cun, M. Xia, X. Wang, C. Weng, and Y. Shan 
+ 
+  VideoCrafter2: overcoming data limitations for high-quality video diffusion models .
+ 
+ External Links:   2401.09047  
+ 
+ Cited by:   Appendix A  .
+  
+  Clark  et al.  (2019) 
+  A. Clark, J. Donahue, and K. Simonyan 
+ 
+  Adversarial video generation on complex datasets .
+ 
+ External Links:   1907.06571  
+ 
+ Cited by:   Appendix A  .
+  
+  Ebert  et al.  (2017) 
+  F. Ebert, C. Finn, A. X. Lee, and S. Levine 
+ 
+  Self-supervised visual planning with temporal skip connections .
+ 
+ External Links:   1710.05268  
+ 
+ Cited by:   Table 6  ,
+  Appendix D  ,
+  §3.2  .
+  
+  Esser  et al.  (2023) 
+  P. Esser, J. Chiu, P. Atighehchian, J. Granskog, and A. Germanidis 
+ 
+  Structure and content-guided video synthesis with diffusion models .
+ 
+ External Links:   2302.03011 ,
+ Link  
+ 
+ Cited by:   Appendix C  ,
+  §3.3  .
+  
+  Esser  et al.  (2021) 
+  P. Esser, R. Rombach, and B. Ommer 
+ 
+  Taming transformers for high-resolution image synthesis .
+ 
+ In  CVPR ,
+ 
+ Cited by:   Appendix A  .
+  
+  Fan  et al.  (2024) 
+  X. Fan, A. Bhattad, and R. Krishna 
+ 
+  Videoshop: localized semantic video editing with noise-extrapolated diffusion inversion .
+ 
+ External Links:   2403.14617  
+ 
+ Cited by:   §1  .
+  
+  Fan  et al.  (2025) 
+  X. Fan, X. Sun, K. Thakkar, Z. Liu, V. Bhat, R. Krishna, and X. Hao 
+ 
+  RefTok: reference-based tokenization for video generation .
+ 
+  arXiv preprint arXiv:2507.02862 .
+ 
+ Cited by:   Appendix A  ,
+  Table 6  ,
+  Appendix D  ,
+  §3.2  .
+  
+  Gao  et al.  (2025) 
+  C. Gao, L. Ding, X. Cai, Z. Huang, Z. Wang, and T. Xue 
+ 
+  Lora-edit: controllable first-frame-guided video editing via mask-aware lora fine-tuning .
+ 
+  arXiv preprint arXiv:2506.10082 .
+ 
+ Cited by:   Figure 6  ,
+  Figure 6  ,
+  §4.2  ,
+  Table 3  ,
+  Table 3  .
+  
+  Ho  et al.  (2020) 
+  J. Ho, A. Jain, and P. Abbeel 
+ 
+  Denoising diffusion probabilistic models .
+ 
+ In  NeurIPS ,
+ 
+ Cited by:   §1  .
+  
+  Huang  et al.  (2024) 
+  Z. Huang, Y. He, J. Yu, F. Zhang, C. Si, Y. Jiang, Y. Zhang, T. Wu, Q. Jin, N. Chanpaisit, Y. Wang, X. Chen, L. Wang, D. Lin, Y. Qiao, and Z. Liu 
+ 
+  VBench: comprehensive benchmark suite for video generative models .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,
+ 
+ Cited by:   §B.7  ,
+  §1  ,
+  §3.1  .
+  
+  Huang  et al.  (2025) 
+  Z. Huang, F. Zhang, X. Xu, Y. He, J. Yu, Z. Dong, Q. Ma, N. Chanpaisit, C. Si, Y. Jiang, Y. Wang, X. Chen, Y. Chen, L. Wang, D. Lin, Y. Qiao, and Z. Liu 
+ 
+  VBench++: comprehensive and versatile benchmark suite for video generative models .
+ 
+  IEEE Transactions on Pattern Analysis and Machine Intelligence .
+ 
+ External Links:   Document  
+ 
+ Cited by:   §B.7  ,
+  §1  ,
+  §3.1  .
+  
+  Kingma and Welling (2022) 
+  D. P. Kingma and M. Welling 
+ 
+  Auto-encoding variational bayes .
+ 
+ External Links:   1312.6114  
+ 
+ Cited by:   Appendix A  .
+  
+  Kong  et al.  (2025) 
+  W. Kong, Q. Tian, Z. Zhang, R. Min, Z. Dai, J. Zhou, J. Xiong, X. Li, B. Wu, J. Zhang, K. Wu, Q. Lin, J. Yuan, Y. Long, A. Wang, A. Wang, C. Li, D. Huang, F. Yang, H. Tan, H. Wang, J. Song, J. Bai, J. Wu, J. Xue, J. Wang, K. Wang, M. Liu, P. Li, S. Li, W. Wang, W. Yu, X. Deng, Y. Li, Y. Chen, Y. Cui, Y. Peng, Z. Yu, Z. He, Z. Xu, Z. Zhou, Z. Xu, Y. Tao, Q. Lu, S. Liu, D. Zhou, H. Wang, Y. Yang, D. Wang, Y. Liu, J. Jiang, and C. Zhong 
+ 
+  HunyuanVideo: a systematic framework for large video generative models .
+ 
+ External Links:   2412.03603 ,
+ Link  
+ 
+ Cited by:   Appendix A  ,
+  Table 7  ,
+  §1  ,
+  §3.1  ,
+  §3.2  ,
+  Table 1  .
+  
+  Lai  et al.  (2018) 
+  W. Lai, J. Huang, O. Wang, E. Shechtman, E. Yumer, and M. Yang 
+ 
+  Learning blind video temporal consistency .
+ 
+ In  ECCV ,
+ 
+ Cited by:   Appendix C  ,
+  §3.3  .
+  
+  Li  et al.  (2025a) 
+  T. Li, G. Zheng, R. Jiang, S. Zhan, T. Wu, Y. Lu, Y. Lin, and X. Li 
+ 
+  RealCam-i2v: real-world image-to-video generation with interactive complex camera control .
+ 
+  arXiv preprint arXiv:2502.10059 .
+ 
+ Cited by:   §3.1  .
+  
+  Li  et al.  (2025b) 
+  Z. Li, B. Lin, Y. Ye, L. Chen, X. Cheng, S. Yuan, and L. Yuan 
+ 
+  WF-vae: enhancing video vae by wavelet-driven energy flow for latent video diffusion model .
+ 
+ External Links:   2411.17459 ,
+ Link  
+ 
+ Cited by:   Table 1  .
+  
+  Menapace  et al.  (2024) 
+  W. Menapace, A. Siarohin, I. Skorokhodov, E. Deyneka, T. Chen, A. Kag, Y. Fang, A. Stoliar, E. Ricci, J. Ren, and S. Tulyakov 
+ 
+  Snap video: scaled spatiotemporal transformers for text-to-video synthesis .
+ 
+ External Links:   2402.14797  
+ 
+ Cited by:   Appendix A  .
+  
+  Nan  et al.  (2024) 
+  K. Nan, R. Xie, P. Zhou, T. Fan, Z. Yang, Z. Chen, X. Li, J. Yang, and Y. Tai 
+ 
+  OpenVid-1m: a large-scale high-quality dataset for text-to-video generation .
+ 
+  arXiv preprint arXiv:2407.02371 .
+ 
+ Cited by:   §3.1  .
+  
+  NVIDIA (2024) 
+  Cosmos tokenizer: a suite of image and video neural tokenizers 
+ 
+ External Links:   Link  
+ 
+ Cited by:   Table 1  .
+  
+  Perazzi  et al.  (2016) 
+  F. Perazzi, J. Pont-Tuset, B. McWilliams, L. Van Gool, M. Gross, and A. Sorkine-Hornung 
+ 
+  A benchmark dataset and evaluation methodology for video object segmentation .
+ 
+ In  Computer Vision and Pattern Recognition ,
+ 
+ Cited by:   Table 6  ,
+  Appendix D  ,
+  §3.2  .
+  
+  Pont-Tuset  et al.  (2017) 
+  J. Pont-Tuset, F. Perazzi, S. Caelles, P. Arbeláez, A. Sorkine-Hornung, and L. Van Gool 
+ 
+  The 2017 davis challenge on video object segmentation .
+ 
+  arXiv:1704.00675 .
+ 
+ Cited by:   Table 6  ,
+  Appendix D  ,
+  §3.2  .
+  
+  Radford  et al.  (2021) 
+  A. Radford, J. W. Kim, C. Hallacy, A. Ramesh, G. Goh, S. Agarwal, G. Sastry, A. Askell, P. Mishkin, J. Clark, G. Krueger, and I. Sutskever 
+ 
+  Learning transferable visual models from natural language supervision .
+ 
+ External Links:   2103.00020 ,
+ Link  
+ 
+ Cited by:   §B.6  .
+  
+  Red  et al.  (2024) 
+  F. Red, J. Gu, X. Liu, S. Ge, T. Wang, H. Wang, and M. Liu  Cosmos tokenizer: a suite of image and video neural tokenizers (Website)
+ 
+ External Links:   Link  
+ 
+ Cited by:   Appendix A  .
+  
+  Rombach  et al.  (2022) 
+  R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer 
+ 
+  High-resolution image synthesis with latent diffusion models .
+ 
+ In  CVPR ,
+ 
+ Cited by:   Appendix A  ,
+  §1  .
+  
+  Singer  et al.  (2022) 
+  U. Singer, A. Polyak, T. Hayes, X. Yin, J. An, S. Zhang, Q. Hu, H. Yang, O. Ashual, O. Gafni, D. Parikh, S. Gupta, and Y. Taigman 
+ 
+  Make-a-video: text-to-video generation without text-video data .
+ 
+ External Links:   2209.14792  
+ 
+ Cited by:   Appendix A  .
+  
+  Skorokhodov  et al.  (2022) 
+  I. Skorokhodov, S. Tulyakov, and M. Elhoseiny 
+ 
+  StyleGAN-v: a continuous video generator with the price, image quality and perks of stylegan2 .
+ 
+ External Links:   2112.14683  
+ 
+ Cited by:   Appendix A  .
+  
+  Song and Ermon (2019) 
+  Y. Song and S. Ermon 
+ 
+  Generative modeling by estimating gradients of the data distribution .
+ 
+ In  NeurIPS ,
+ 
+ Cited by:   §1  .
+  
+  Stergiou and Poppe (2022) 
+  A. Stergiou and R. Poppe 
+ 
+  AdaPool: exponential adaptive pooling for information-retaining downsampling .
+ 
+ External Links:   2111.00772 ,
+ Link  
+ 
+ Cited by:   1st item  ,
+  3rd item  ,
+  §3.1  .
+  
+  Su  et al.  (2024) 
+  J. Su, M. Ahmed, Y. Lu, S. Pan, W. Bo, and Y. Liu 
+ 
+  Roformer: enhanced transformer with rotary position embedding .
+ 
+  Neurocomputing .
+ 
+ Cited by:   §B.1  ,
+  §1  .
+  
+  Tang  et al.  (2024) 
+  A. Tang, T. He, J. Guo, X. Cheng, L. Song, and J. Bian 
+ 
+  VidTok: a versatile and open-source video tokenizer .
+ 
+ External Links:   2412.13061 ,
+ Link  
+ 
+ Cited by:   Table 1  .
+  
+  Tian  et al.  (2025) 
+  R. Tian, Q. Dai, J. Bao, K. Qiu, Y. Yang, C. Luo, Z. Wu, and Y. Jiang 
+ 
+  REDUCIO! generating 1024   ×  \times   1024 video within 16 seconds using extremely compressed motion latents .
+ 
+ In  ICCV ,
+ 
+ Cited by:   Appendix A  ,
+  Table 7  ,
+  §3.1  ,
+  §3.2  ,
+  Table 1  .
+  
+  Tulyakov  et al.  (2017) 
+  S. Tulyakov, M. Liu, X. Yang, and J. Kautz 
+ 
+  MoCoGAN: decomposing motion and content for video generation .
+ 
+ External Links:   1707.04993  
+ 
+ Cited by:   Appendix A  .
+  
+  Van Den Oord  et al.  (2017) 
+  A. Van Den Oord O. Vinyals  et al.  
+ 
+  Neural discrete representation learning .
+ 
+ In  NeurIPS ,
+ 
+ Cited by:   Appendix A  .
+  
+  von Platen  et al.  (2022) 
+  P. von Platen, S. Patil, A. Lozhkov, P. Cuenca, N. Lambert, K. Rasul, M. Davaadorj, D. Nair, S. Paul, W. Berman, Y. Xu, S. Liu, and T. Wolf 
+ 
+  Diffusers: state-of-the-art diffusion models .
+ 
+   GitHub .
+ 
+ Note:   https://github.com/huggingface/diffusers  
+ 
+ Cited by:   Appendix L  .
+  
+  Wan  et al.  (2025) 
+  T. Wan, A. Wang, B. Ai, B. Wen, C. Mao, C. Xie, D. Chen, F. Yu, H. Zhao, J. Yang, J. Zeng, J. Wang, J. Zhang, J. Zhou, J. Wang, J. Chen, K. Zhu, K. Zhao, K. Yan, L. Huang, M. Feng, N. Zhang, P. Li, P. Wu, R. Chu, R. Feng, S. Zhang, S. Sun, T. Fang, T. Wang, T. Gui, T. Weng, T. Shen, W. Lin, W. Wang, W. Wang, W. Zhou, W. Wang, W. Shen, W. Yu, X. Shi, X. Huang, X. Xu, Y. Kou, Y. Lv, Y. Li, Y. Liu, Y. Wang, Y. Zhang, Y. Huang, Y. Li, Y. Wu, Y. Liu, Y. Pan, Y. Zheng, Y. Hong, Y. Shi, Y. Feng, Z. Jiang, Z. Han, Z. Wu, and Z. Liu 
+ 
+  Wan: open and advanced large-scale video generative models .
+ 
+  arXiv preprint arXiv:2503.20314 .
+ 
+ Cited by:   Appendix A  ,
+  Appendix B  ,
+  Table 5  ,
+  Table 7  ,
+  Table 7  ,
+  Table 8  ,
+  Appendix G  ,
+  §1  ,
+  §1  ,
+  §3.1  ,
+  §3.1  ,
+  §3.2  ,
+  Table 1  ,
+  Table 2  ,
+  Table 3  .
+  
+  Wang  et al.  (2024) 
+  J. Wang, Y. Jiang, Z. Yuan, B. Peng, Z. Wu, and Y. Jiang 
+ 
+  OmniTokenizer: a joint image-video tokenizer for visual generation .
+ 
+ External Links:   2406.09399  
+ 
+ Cited by:   Appendix A  .
+  
+  Wang  et al.  (2023a) 
+  W. Wang, Q. Lv, W. Yu, W. Hong, J. Qi, Y. Wang, J. Ji, Z. Yang, L. Zhao, X. Song, J. Xu, B. Xu, J. Li, Y. Dong, M. Ding, and J. Tang 
+ 
+  CogVLM: visual expert for pretrained language models .
+ 
+ External Links:   2311.03079  
+ 
+ Cited by:   Appendix G  .
+  
+  Wang and Yang (2024) 
+  W. Wang and Y. Yang 
+ 
+  TIP-i2v: a million-scale real text and image prompt dataset for image-to-video generation .
+ 
+ Cited by:   Appendix G  .
+  
+  Wang  et al.  (2023b) 
+  X. Wang, H. Yuan, S. Zhang, D. Chen, J. Wang, Y. Zhang, Y. Shen, D. Zhao, and J. Zhou 
+ 
+  VideoComposer: compositional video synthesis with motion controllability .
+ 
+ External Links:   2306.02018  
+ 
+ Cited by:   Appendix A  .
+  
+  Wang  et al.  (2025) 
+  Y. Wang, R. Liu, J. Lin, F. Liu, Z. Yi, Y. Wang, and R. Ma 
+ 
+  Omnistyle: filtering high quality style transfer data at scale .
+ 
+ In  CVPR ,
+ 
+ Cited by:   §4.1  .
+  
+  Wu  et al.  (2024) 
+  P. Wu, K. Zhu, Y. Liu, L. Zhao, W. Zhai, Y. Cao, and Z. Zha 
+ 
+  Improved video vae for latent video diffusion model .
+ 
+ External Links:   2411.06449 ,
+ Link  
+ 
+ Cited by:   Table 1  .
+  
+  Wu  et al.  (2025) 
+  Y. Wu, Y. Li, I. Skorokhodov, A. Kag, W. Menapace, S. Girish, A. Siarohin, Y. Wang, S. Tulyakov, and J. Ren 
+ 
+  H3AE: high compression, high speed, and high quality autoencoder for video diffusion models .
+ 
+  arXiv preprint arXiv:2504.10567 .
+ 
+ Cited by:   Appendix A  ,
+  Table 6  ,
+  Appendix D  ,
+  Appendix E  ,
+  §3.2  .
+  
+  Xing  et al.  (2023) 
+  J. Xing, M. Xia, Y. Zhang, H. Chen, W. Yu, H. Liu, X. Wang, T. Wong, and Y. Shan 
+ 
+  DynamiCrafter: animating open-domain images with video diffusion priors .
+ 
+ External Links:   2310.12190  
+ 
+ Cited by:   Appendix A  .
+  
+  Xing  et al.  (2025) 
+  Y. Xing, Y. Fei, Y. He, J. Chen, J. Xie, X. Chi, and Q. Chen 
+ 
+  VideoVAE+: large motion video autoencoding with cross-modal video vae .
+ 
+ In  ICCV ,
+ 
+ Cited by:   Appendix A  ,
+  Appendix L  ,
+  §B.5  ,
+  Appendix B  ,
+  Table 7  ,
+  §1  ,
+  §3.1  ,
+  §3.1  ,
+  §3.1  ,
+  §3.2  ,
+  Table 1  .
+  
+  Xu  et al.  (2024) 
+  J. Xu, X. Zou, K. Huang, Y. Chen, B. Liu, M. Cheng, X. Shi, and J. Huang 
+ 
+  EasyAnimate: a high-performance long video generation method based on transformer architecture .
+ 
+ External Links:   2405.18991 ,
+ Link  
+ 
+ Cited by:   Table 1  .
+  
+  Yan  et al.  (2024) 
+  W. Yan, M. Zaharia, V. Mnih, P. Abbeel, A. Faust, and H. Liu 
+ 
+  ElasticTok: adaptive tokenization for image and video .
+ 
+ External Links:   2410.08368  
+ 
+ Cited by:   Appendix A  .
+  
+  Yang  et al.  (2024a) 
+  Z. Yang, J. Teng, W. Zheng, M. Ding, S. Huang, J. Xu, Y. Yang, W. Hong, X. Zhang, G. Feng, D. Yin, X. Gu, Y. Zhang, W. Wang, Y. Cheng, T. Liu, B. Xu, Y. Dong, and J. Tang 
+ 
+  CogVideoX: text-to-video diffusion models with an expert transformer .
+ 
+ External Links:   2408.06072 ,
+ Link  
+ 
+ Cited by:   §1  ,
+  §3.2  ,
+  Table 1  .
+  
+  Yang  et al.  (2024b) 
+  Z. Yang, J. Teng, W. Zheng, M. Ding, S. Huang, J. Xu, Y. Yang, W. Hong, X. Zhang, G. Feng, D. Yin, X. Gu, Y. Zhang, W. Wang, Y. Cheng, T. Liu, B. Xu, Y. Dong, and J. Tang 
+ 
+  CogVideoX: text-to-video diffusion models with an expert transformer .
+ 
+ External Links:   2408.06072  
+ 
+ Cited by:   Appendix A  ,
+  §1  .
+  
+  Ye  et al.  (2023) 
+  H. Ye, J. Zhang, S. Liu, X. Han, and W. Yang 
+ 
+  IP-adapter: text compatible image prompt adapter for text-to-image diffusion models .
+ 
+ External Links:   2308.06721  
+ 
+ Cited by:   Appendix A  .
+  
+  Yu  et al.  (2023) 
+  L. Yu, Y. Cheng, K. Sohn, J. Lezama, H. Zhang, H. Chang, A. G. Hauptmann, M. Yang, Y. Hao, I. Essa,  et al.  
+ 
+  Magvit: masked generative video transformer .
+ 
+ In  CVPR ,
+ 
+ Cited by:   Appendix A  .
+  
+  Yu  et al.  (2024) 
+  L. Yu, J. Lezama, N. B. Gundavarapu, L. Versari, K. Sohn, D. Minnen, Y. Cheng, V. Birodkar, A. Gupta, X. Gu, A. G. Hauptmann, B. Gong, M. Yang, I. Essa, D. A. Ross, and L. Jiang 
+ 
+  Language model beats diffusion – tokenizer is key to visual generation .
+ 
+ External Links:   2310.05737  
+ 
+ Cited by:   Appendix A  .
+  
+  Yu  et al.  (2022) 
+  S. Yu, J. Tack, S. Mo, H. Kim, J. Kim, J. Ha, and J. Shin 
+ 
+  Generating videos with dynamics-aware implicit generative adversarial networks .
+ 
+ External Links:   2202.10571  
+ 
+ Cited by:   Appendix A  .
+  
+  Zhang  et al.  (2023) 
+  D. J. Zhang, J. Z. Wu, J. Liu, R. Zhao, L. Ran, Y. Gu, D. Gao, and M. Z. Shou 
+ 
+  Show-1: marrying pixel and latent diffusion models for text-to-video generation .
+ 
+ External Links:   2309.15818  
+ 
+ Cited by:   Appendix A  .
+  
+  Zhang and Agrawala (2023) 
+  L. Zhang and M. Agrawala 
+ 
+  Adding conditional control to text-to-image diffusion models .
+ 
+ External Links:   2302.05543  
+ 
+ Cited by:   Appendix K  ,
+  §3.7  .
+  
+  Zhang  et al.  (2018) 
+  R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang 
+ 
+  The unreasonable effectiveness of deep features as a perceptual metric .
+ 
+ In  CVPR ,
+ 
+ Cited by:   §B.3  ,
+  §B.4  ,
+  Appendix C  ,
+  §2  ,
+  §3.3  .
+  
+  Zhao  et al.  (2024) 
+  S. Zhao, Y. Zhang, X. Cun, S. Yang, M. Niu, X. Li, W. Hu, and Y. Shan 
+ 
+  CV-vae: a compatible video vae for latent generative video models .
+ 
+  arXiv preprint arXiv:2405.20279 .
+ 
+ Cited by:   Table 1  .
+  
+  Zheng  et al.  (2025) 
+  D. Zheng, Z. Huang, H. Liu, K. Zou, Y. He, F. Zhang, Y. Zhang, J. He, W. Zheng, Y. Qiao, and Z. Liu 
+ 
+  VBench-2.0: advancing video generation benchmark suite for intrinsic faithfulness .
+ 
+  arXiv preprint arXiv:2503.21755 .
+ 
+ Cited by:   §B.7  ,
+  §3.1  .
+  
+  Zheng  et al.  (2024) 
+  G. Zheng, T. Li, R. Jiang, Y. Lu, T. Wu, and X. Li 
+ 
+  CamI2V: camera-controlled image-to-video diffusion model .
+ 
+  arXiv preprint arXiv:2410.15957 .
+ 
+ Cited by:   §3.1  .
+  
+ 
+ 
+  
+ 
+  Appendix A  Related Work 
+
+ 
+  Visual tokenization for generation. 
+Variational autoencoders (VAEs)   Kingma and Welling (2022)   learn latent-space probabilistic models for efficient representation.
+VQ-VAE   Van Den Oord et al. (2017)   introduces a vector-quantized discrete latent space, and VQGAN   Esser et al. (2021)   extends it to high-resolution images with adversarial training.
+Latent diffusion models (LDMs)   Rombach et al. (2022)   leverage these encoded latent spaces for high-quality image generation.
+For video, MAGVIT   Yu et al. (2023)   employs a 3D tokenizer for efficient video encoding, and MAGVIT v2   Yu et al. (2024)   introduces a causal 3D CNN.
+ElasticTok   Yan et al. (2024)   offers adaptive tokenization for long videos, and OmniTokenizer   Wang et al. (2024)   proposes joint image-video tokenization.
+Recent continuous video autoencoders such as Cosmos Tokenizer   Red et al. (2024)   and VideoVAE +    Xing et al. (2025)   serve as the visual backbone for state-of-the-art video generation models. 
+ 
+ 
+  Video generation. 
+Early video generation relied on GANs   Skorokhodov et al. (2022) ;  Tulyakov et al. (2017) ;  Clark et al. (2019) ;  Yu et al. (2022)  , but these are limited to short, low-resolution outputs.
+The field has since shifted to video diffusion models   Blattmann et al. (2023a) ;  Singer et al. (2022) ;  Blattmann et al. (2023b) ;  Menapace et al. (2024) ;  Chen et al. (2024) ;  Wang et al. (2023b) ;  Zhang et al. (2023)  , which produce high-quality results at the cost of many denoising steps.
+Frontier open-source systems such as Wan 2.1   Wan et al. (2025)  , HunyuanVideo   Kong et al. (2025)  , and CogVideoX   Yang et al. (2024b)   adopt the latent diffusion paradigm with powerful VAE backbones, achieving state-of-the-art quality. Image-to-video (I2V) models condition the generation process on a reference frame to produce temporally coherent video.
+Stable Video Diffusion   Blattmann et al. (2023a)   conditions a video diffusion model on a single image via concatenation in latent space.
+DynamiCrafter   Xing et al. (2023)   animates open-domain images by injecting them as visual context into the diffusion backbone.
+IP-Adapter   Ye et al. (2023)   introduces decoupled cross-attention to inject image prompt features into diffusion models, enabling image-guided generation with a lightweight adapter.
+A common thread across these approaches is that conditioning is applied exclusively to the  diffusion model ; the VAE decoder remains a purely unconditional reconstruction module and does not have access to the reference image. 
+ 
+ 
+  Reference-conditioned decoding. 
+Recent attempts to introduce reference conditioning into the VAE decoder have struggled to achieve full quality recovery using the reference signal. For example, RefTok   Fan et al. (2025)   achieves improved reconstruction only at low resolutions using a quantized codebook and struggles to yield a high-quality video generation model; H3AE   Wu et al. (2025)   instead focuses on high compression ratios, with imperfect reference information forming blurred reconstructions; Reducio-VAE   Tian et al. (2025)   employs low-dimensional latent features without capturing high-fidelity reference signal. 
+ 
+ 
+ Prior methods exploring this space pervasively train their own VAE architectures from scratch and are tightly coupled to their respective systems. This further limits their quality and applicability, as their corresponding diffusion models are tied to the specific VAE models. For example, compared to the 1.5 billion training videos of Wan 2.1, H3AE and Reducio are only trained on million-scale data sources.
+In contrast,  RefDecoder  is designed as a  plug-and-play  decoder module that can be integrated with existing, pretrained frontier video model VAE decoders
+without modifying the encoder or retraining the diffusion backbone, making it immediately deployable in production pipelines. 
+ 
+ 
+ 
+  Appendix B  Implementation Details 
+
+ 
+ We apply  RefDecoder  to two pretrained video VAE backbones: Wan 2.1   Wan et al. (2025)   and VideoVAE +    Xing et al. (2025)  . Below we describe the architecture and training details using Wan 2.1 and VideoVAE +  as backbones. 
+ 
+ 
+  B.1  Model Architecture 
+
+ 
+ The Wan 2.1 decoder operates in three stages at progressively higher spatial resolutions, with channel dimensions of 384, 192, and 192.
+At each stage, spatio-temporal feature tokens are extracted using 3D patch embeddings with temporal stride 1 and spatial strides of     2  ×  2   2{\times}2   ,     4  ×  4   4{\times}4   , and     8  ×  8   8{\times}8   , respectively. 
+ 
+ 
+ For comparison, VideoVAE +  also adopts a three-stage decoder but with channel dimensions of 512, 256, and 128. Spatio-temporal tokens are extracted via 3D patch embeddings with temporal stride 1 and spatial strides of     8  ×  8   8{\times}8   ,     16  ×  16   16{\times}16   , and     16  ×  16   16{\times}16   , respectively. 
+ 
+ 
+ For both backbones, Transformer blocks are shared across all three stages. Each uses     H  =  12   H{=}12    heads with head dimension      d  h   =  128   d_{h}{=}128   , resulting in a total hidden dimension of     d  =  1536   d{=}1536   . We adopt Rotary Position Embeddings (RoPE)   Su et al. (2024)   for positional encoding and GELU activations in the feed-forward layers. 
+ 
+ 
+ The reference image encoder is implemented as a lightweight tokenizer consisting of a single strided 3D convolution layer (patch size 8, Xavier-uniform initialization) that maps the reference frame into tokens matching the channel dimension of the first decoder stage (384 for Wan 2.1 and 512 for VideoVAE + ). This is followed by normalization (RMSNorm for Wan 2.1 and GroupNorm for VideoVAE + ). During training, the reference frame is sampled uniformly at random from the input video sequence. 
+ 
+ 
+ 
+  B.2  Training Setup 
+
+ 
+ We train on 8 NVIDIA H200 GPUs with a per-GPU batch size of 2 (effective batch size 16) for 5 days. Model parameters are divided into two groups: (1) the attention block and reference image encoder, optimized at a base learning rate of     2  ×   10   −  4     2\times 10^{-4}    (effective learning rate     1.6  ×   10   −  3     1.6\times 10^{-3}    after linear scaling); and (2) the pretrained VAE decoder, fine-tuned at    0.1  0.1    of the effective rate. Both groups use AdamW with      β  1   =  0.9   \beta_{1}=0.9    and      β  2   =  0.999   \beta_{2}=0.999   . 
+ 
+ 
+ The learning rate schedule consists of a linear warmup from     1  %   1\%    to     100  %   100\%    of the base rate over the first 1,000 steps, followed by cosine annealing over 100,000 total steps. The encoder, quantization convolutions, and post-quantization convolutions remain frozen throughout; only the decoder and attention block are updated. 
+ 
+ 
+ 
+  B.3  Loss Function 
+
+ 
+ The training objective combines pixel-wise and perceptual losses: 
+ 
+
+  
+  
+     ℒ  =     ‖   𝐱  −   𝐱  ^    ‖   1   +    ℒ  LPIPS   ​   (  𝐱  ,   𝐱  ^   )      \mathcal{L}=\|\mathbf{x}-\hat{\mathbf{x}}\|_{1}+\mathcal{L}_{\text{LPIPS}}(\mathbf{x},\hat{\mathbf{x}})    
+    
+ 
+ where    𝐱  \mathbf{x}    and     𝐱  ^   \hat{\mathbf{x}}    denote the ground-truth and reconstructed video frames, and     ℒ  LPIPS   \mathcal{L}_{\text{LPIPS}}    is the LPIPS perceptual loss   Zhang et al. (2018)  . Since the encoder is frozen, KL divergence regularization is disabled. 
+ 
+ 
+ 
+  B.4  Data and Evaluation 
+
+ 
+ For Wan 2.1, training videos are resized to     480  ×  832   480{\times}832    pixels, with 5 frames per sample in the first training stage and 17 frames in the second stage. For VideoVAE + , training videos are resized to     216  ×  216   216{\times}216    pixels, with 4 frames per sample in the first stage and 16 frames in the second stage. We evaluate reconstruction quality using PSNR, SSIM, and LPIPS   Zhang et al. (2018)  . 
+ 
+ 
+ 
+  B.5  Reconstruction Benchmarks 
+
+ 
+ We use three reconstruction benchmarks. Across all of them we use the exact video lists provided by VideoVAE +    Xing et al. (2025)   so that our numbers are directly comparable with those reported in   Xing et al. (2025)  . 
+ 
+  •  
+ 
+  Inter4K (test).  The test split of Inter4K   Stergiou and Poppe (2022)  ,    500  500    high-quality videos. 
+  
+  •  
+ 
+  WebVid.  An in-the-wild subset of WebVid   Bain et al. (2021)  . 
+  
+  •  
+ 
+  Large Motion.     100  100    videos (   80  80    from WebVid   Bain et al. (2021)  ,    20  20    from Inter4K   Stergiou and Poppe (2022)  ) manually curated to exhibit complex motion dynamics—significant camera motion, fast-moving subjects, and large inter-frame displacements. 
+  
+ 
+ For all three benchmarks, videos are decoded at the same resolution and frame count as the corresponding training configuration of each backbone, and PSNR / SSIM / LPIPS are averaged over all frames. 
+ 
+ 
+ 
+  B.6  Per-Category Reconstruction on Inter4K 
+
+ 
+ Table   4   reports per-category PSNR on Inter4K (Wan 2.1 backbone). Gains are positive across every category. They are largest on  content-rich  scenes with strong high-frequency structure (urban streets, neon night, driving POVs, aerial skylines, indoor venues, sports, underwater wildlife, and nature landscapes), and smallest on  content-sparse  scenes that are already smooth or close-up (animation graphics, performance events, close-up macros, and people portraits), where the latent bottleneck loses comparatively less detail and the baseline already reconstructs faithfully. This pattern supports the intuition that the reference signal contributes most where the latent code is least sufficient. 
+ 
+ 
+  Categorization protocol. 
+To group the Inter4K test clips into 12 semantic categories without manual labeling, we use zero-shot CLIP   Radford et al. (2021)  . 
+ 
+ 
+  Visual features.  For each clip we sample three frames at evenly-spaced positions. Each frame embedding is     L  2   L_{2}   -normalized, and we mean-pool the three to obtain a single 768-d clip embedding     v  i   v_{i}   . 
+ 
+ 
+  Category prompts.  We define 12 categories and write 3–4 short natural-language prompts per category (42 prompts in total), encode each with CLIP’s text tower, and     L  2   L_{2}   -normalize. Example prompts include “a busy city street with cars and buildings” (urban street), “neon signs and billboards at night in a city” (neon night), “first-person view of driving down a road” (driving pov), and “an aerial drone view of a city” (skyline aerial); the remaining categories are indoor venue, sports action, nature landscape, close up macro, people portrait, underwater wildlife, performance event, and animation graphics. The full prompt list is included in the released code. 
+ 
+ 
+  Category score and assignment.  For clip    i  i    and category    c  c    with prompt embeddings     {   t   c  ,  k    }   \{t_{c,k}\}   , the score is the mean cosine similarity over prompts in that category,      s   i  ,  c    =    1   |  c  |    ​    ∑  k     v  i  ⊤   ​   t   c  ,  k        s_{i,c}=\tfrac{1}{|c|}\sum_{k}v_{i}^{\top}t_{c,k}   , and each clip is assigned to a single category by     arg  ⁡    max  c   ⁡   s   i  ,  c      \arg\max_{c}\,s_{i,c}   . Per-category counts are reported in Table   4  . 
+ 
+ 
+  Table 4:  Per-category reconstruction PSNR on Inter4K (Wan 2.1 backbone).    n  n    denotes the number of videos per category;    Δ  \Delta    is the PSNR gain of  RefDecoder  over the Wan 2.1 baseline. Categories are grouped into content-rich (top) and content-sparse (bottom) scenes. 
+ 
+ 
+ 
+  Category  
+    n  n    
+  Wan 2.1  
+  RefDecoder  
+    Δ  \Delta     PSNR   
+ 
+  Content-rich scenes   
+ 
+  Urban street  
+  43  
+  29.0  
+  31.4  
+  +2.4   
+ 
+  Neon night  
+  34  
+  31.6  
+  33.6  
+  +2.1   
+ 
+  Driving POV  
+  36  
+  31.3  
+  33.4  
+  +2.1   
+ 
+  Skyline aerial  
+  48  
+  31.3  
+  33.3  
+  +1.9   
+ 
+  Indoor venue (arena/mall)  
+  6  
+  30.8  
+  32.6  
+  +1.8   
+ 
+  Sports action  
+  29  
+  32.7  
+  34.2  
+  +1.6   
+ 
+  Underwater wildlife  
+  37  
+  32.8  
+  34.3  
+  +1.4   
+ 
+  Nature landscape  
+  14  
+  32.3  
+  33.7  
+  +1.4   
+ 
+  Content-sparse scenes   
+ 
+  Animation graphics (CGI / fluid sim)  
+  164  
+  33.8  
+  35.0  
+  +1.2   
+ 
+  Performance event (concert/dance)  
+  45  
+  34.2  
+  35.2  
+  +1.0   
+ 
+  Close-up macro  
+  23  
+  37.4  
+  38.2  
+  +0.8   
+ 
+  People portrait  
+  18  
+  38.5  
+  39.2  
+  +0.7   
+ 
+ 
+ 
+ 
+ 
+  B.7  VBench Evaluation Protocol 
+
+ 
+ Since  RefDecoder  is a drop-in decoder, our VBench   Huang et al. (2024) ;  Huang et al. (2025) ;  Zheng et al. (2025)   evaluation follows a  fixed-seed  protocol that controls for diffusion-side stochasticity. We describe the protocol here so that any per-prompt difference reflects the choice of decoder rather than differences in noise or sampling. 
+ 
+ 
+  Fixed latent generation. 
+For each prompt in the VBench info list we generate     K  =  5   K=5    samples, matching the default VBench-evaluation. For each (prompt, sample-index) pair we draw a 32-bit seed once via random.randint(0,      2  32   −  1   2^{32}-1   ), persist it to a per-GPU JSON log, and use it to instantiate a generator. The Wan 2.1 pipeline is then run with that generator at 50 inference steps, classifier-free guidance scale    5.0  5.0   ,    17  17    frames, and the same 16:9 480p reference image used by the official VBench benchmark. The pipeline is invoked with output_type="latent", so the noised input, denoising trajectory, and final latents are fully determined by the seed. The latents and the seed used to produce them are saved together to disk. 
+ 
+ 
+  Decoder swap. 
+The same set of saved latents is then decoded twice—once with the original Wan 2.1 VAE decoder and once with our  RefDecoder  –and both decoded videos are scored with the official VBench-I2V evaluation pipeline. Because both decoders consume exactly the same latents produced from exactly the same seeds, the per-prompt comparison is paired: differences in VBench dimensions can only arise from the decoder, not from a different noise sample, prompt order, or guidance schedule. This is why we report the comparison without an explicit per-seed standard deviation; sample-level variance from the diffusion sampler is shared across the two methods. 
+ 
+ 
+  Reproducibility. 
+The seed log files are kept alongside the saved latents, so any third party with access to the Wan 2.1 checkpoint can reproduce both the latents and the decoded videos bit-for-bit. The decoding scripts and the latent-generation script will be released together with the code. 
+ 
+ 
+ 
+ 
+  Appendix C  Temporal Stability 
+
+ 
+ Table   5   reports the temporal-stability metrics summarized in the main paper: flow warping error (    E  warp   E_{\text{warp}}   )   Lai et al. (2018)  , temporal LPIPS (    E  tLPIPS   E_{\text{tLPIPS}}   )   Zhang et al. (2018)  , flicker (    E  flicker   E_{\text{flicker}}   )   Bonneel et al. (2015)  , and CLIP consistency (CLIP      cons   {}_{\text{cons}}   )   Esser et al. (2023)  . The first three measure temporal degradation (lower is better) and the last consistency (higher is better). All metrics are computed on the VBench generations under the fixed-seed protocol of Sec.   B.7  , so any per-prompt difference reflects the choice of decoder rather than diffusion-side variance. 
+ 
+ 
+  Table 5:  Temporal-stability metrics on VBench (Wan 2.1 backbone, fixed-seed protocol).     E  warp   E_{\text{warp}}   ,     E  tLPIPS   E_{\text{tLPIPS}}   , and     E  flicker   E_{\text{flicker}}    measure temporal degradation (lower is better); CLIP      cons   {}_{\text{cons}}    measures temporal consistency (higher is better).  RefDecoder  reduces flickering and warping error across all degradation metrics.    Δ  \Delta    is the relative change vs. Wan 2.1. 
+ 
+ 
+ 
+  Model  
+      E  warp   ↓     E_{\text{warp}}\downarrow    
+      E  tLPIPS   ↓     E_{\text{tLPIPS}}\downarrow    
+      E  flicker   ↓     E_{\text{flicker}}\downarrow    
+  CLIP       cons   ↑   {}_{\text{cons}}\uparrow      
+ 
+ 
+ 
+  Wan 2.1   Wan et al. (2025)    
+  0.03274  
+  0.09136  
+  0.02727  
+  0.99526   
+ 
+  RefDecoder  (Wan 2.1)   
+  0.02941  
+  0.08367  
+  0.02303  
+  0.99588   
+ 
+  
+  (    −   10.2  %    -10.2\%   )  
+  (    −   8.4  %    -8.4\%   )  
+  (    −   15.5  %    -15.5\%   )  
+  (    +   0.06  %    +0.06\%   )   
+ 
+ 
+ 
+ 
+ 
+  Appendix D  Comparison with Concurrent Reference-Conditioned VAEs 
+
+ 
+ Table   6   reports the head-to-head reconstruction comparison against H3AE   Wu et al. (2025)   and RefTok   Fan et al. (2025)   referenced in the main paper. Since neither method has released code or model weights, we follow each of their reported evaluation protocols and run  RefDecoder  on the same datasets: DAVIS   Perazzi et al. (2016) ;  Pont-Tuset et al. (2017)   for H3AE and BAIR   Ebert et al. (2017)   for RefTok, both using the VideoVAE +  backbone.  RefDecoder  outperforms both baselines under their own evaluation settings. 
+ 
+ 
+  Table 6:  Reconstruction comparison with concurrent reference-conditioned VAEs, evaluated on each method’s reported benchmark: H3AE on DAVIS   Perazzi et al. (2016) ;  Pont-Tuset et al. (2017)   and RefTok on BAIR   Ebert et al. (2017)  . Best results are in bold. 
+  
+ 
+ 
+ 
+  DAVIS  
+  BAIR   
+ 
+  Model  
+  PSNR   ↑  \uparrow     
+  SSIM (%)   ↑  \uparrow     
+  Model  
+  PSNR   ↑  \uparrow     
+  SSIM (%)   ↑  \uparrow     
+  LPIPS   ↓  \downarrow      
+ 
+ 
+ 
+  H3AE    Wu et al. (2025)   
+  33.0  
+  89.87  
+  RefTok    Fan et al. (2025)   
+  28.8  
+  95.0  
+  0.013   
+ 
+  RefDecoder   (VideoVAE  +  )  
+  33.1  
+  91.35  
+  RefDecoder   (VideoVAE  +  )  
+  36.2  
+  99.1  
+  0.0047   
+ 
+ 
+  
+ 
+ 
+ 
+  Appendix E  Comparison with H3AE 
+
+ 
+ We provide a qualitative head-to-head comparison with H3AE   Wu et al. (2025)  , a concurrent reference-conditioned VAE. Since H3AE has not released training or evaluation code, training data, or model weights, we cannot run it on our benchmark splits; instead, we take the examples directly from the figures in the H3AE paper and run  RefDecoder  on the same input frames so that both methods are evaluated under identical inputs. As shown in Figure   7  ,  RefDecoder  preserves fine structures and textures ( e.g. , the lizard’s dots and the spectator faces) noticeably better than H3AE. 
+ 
+ 
+  
+ 
+ 
+ 
+ 
+  
+  Example 1  
+   
+   
+   
+    
+ 
+ 
+  
+  Example 2  
+   
+   
+   
+    
+ 
+  
+  Ground truth  
+  H3AE  
+  Ours   
+ 
+ 
+  
+  Figure 7:   Qualitative comparison with H3AE.  The ground-truth and H3AE crops are taken directly from the figures in the H3AE paper, since H3AE’s training data, code, and weights are not publicly released.  RefDecoder  reconstructions are produced by us on the  same  input frames so that both methods are evaluated under identical inputs.  RefDecoder  recovers fine textures and structural details (lizard dots, background people) more faithfully than H3AE. 
+ 
+ 
+ 
+  Appendix F  Human Evaluation 
+
+  
+  Figure 8:   Human-evaluation interface.  Each pair of videos is rendered as a slider-overlay: the two videos are stacked and synchronously played, and the evaluator drags a vertical divider to reveal one decoder’s output on the left half and the other on the right half. Left/right assignment is randomized per pair and cached across reloads, and model identities are hidden until after voting. The evaluator registers a preference using the “Left wins” / “Right wins” buttons. 
+ 
+ 
+  Interface. 
+Evaluations are collected through a custom web tool. Each pair is rendered as a single slider-overlay: the two videos are stacked and synchronously played, and the evaluator drags a vertical divider to reveal one model on the left half and the other on the right half. Left/right assignment is randomized per pair (and cached so reloads do not reshuffle), and model identities are hidden until after voting. The evaluator clicks one of two buttons, “Left wins” or “Right wins”, to register a preference. 
+ 
+ 
+  Evaluation protocol and votes. 
+Evaluators are instructed to view and rate a random subset of the pairs assigned to a given baseline, yielding    252  252    votes in total:    102  102    for Wan 2.1 (   89  89    generation,    13  13    reconstruction) and    50  50    each for VideoVAE + , HunyuanVAE, and Reducio-VAE (all reconstruction). Evaluators are instructed to choose the side with better overall visual quality. 
+ 
+ 
+  Results. 
+Table   7   summarizes the outcomes;  RefDecoder  is consistently preferred over every baseline:     92.3  %   92.3\%    vs.     7.7  %   7.7\%    on Wan 2.1 reconstruction,     82.4  %   82.4\%    vs.     18.7  %   18.7\%    on Wan 2.1 generation,     89.6  %   89.6\%    vs.     10.4  %   10.4\%    vs. Reducio-VAE,     69.2  %   69.2\%    vs.     30.8  %   30.8\%    vs. HunyuanVAE, and     63.4  %   63.4\%    vs.     36.6  %   36.6\%    vs. VideoVAE + . These human preferences are consistent with the quantitative reconstruction (Table   1  ) and VBench (Table   2  ) results, as well as the temporal-stability results in Table   5  . 
+ 
+ 
+  Table 7:  Human evaluation. Evaluators compare the visual quality of  RefDecoder  against four baselines on video pairs sampled from Inter4K reconstructions and VBench generations, presented via a slider-overlay interface with randomized left/right order and hidden model identities. The  blue  segment is preference for  RefDecoder  and the gray tail is preference for the baseline; the two numbers next to each bar show  RefDecoder ’s win percentage versus the baseline. 
+ 
+ 
+ 
+  RefDecoder  (Ours) vs. …   
+  Preference (Ours % vs. Baseline %)   
+ 
+ 
+ 
+  Wan 2.1 Generation    Wan et al. (2025)     
+                           82.4% vs. 18.7%   
+ 
+  Wan 2.1 Reconstruction    Wan et al. (2025)     
+                           92.3% vs.   0  7.7%   
+ 
+  VideoVAE+    Xing et al. (2025)     
+                           63.4% vs. 36.6%   
+ 
+  HunyuanVAE    Kong et al. (2025)     
+                           69.2% vs. 30.8%   
+ 
+  Reducio-VAE    Tian et al. (2025)     
+                           89.6% vs. 10.4%   
+ 
+ 
+ 
+ 
+ 
+  Appendix G  Latent Training 
+
+ 
+ To further improve the performance of  RefDecoder  on the generation task, we additionally fine-tune the model using latent data. Specifically, we collect 30k images from TIP-I2V   Wang and Yang (2024)   and re-caption all images using CogVLM   Wang et al. (2023a)  . We then use the Wan 2.1 model   Wan et al. (2025)   to generate corresponding latent video frames. 
+ 
+ 
+ During training, we use 30k videos from the original video dataset together with 30k latent videos generated by diffusion models. The latent videos correspond to the output of the diffusion model rather than the output of the VAE encoder. As in the main training stage, the encoder remains frozen and only the decoder is optimized. Training alternates between real videos and latent videos in successive batches. 
+ 
+ 
+ For real video data, the reconstruction loss is computed between the input video and the reconstructed video. For latent video data, the reconstruction loss is applied only to the first frame by comparing the reconstructed first frame with the input reference frame. Reconstruction loss is not applied to the remaining frames. 
+ 
+ 
+ In addition, we aim to train the model with latent sequences where the reference frame is not always the first frame, encouraging the model to learn longer temporal dependencies. Empirically, we find that when training only with forward sequences, early frames tend to preserve the reference appearance, while later frames may gradually deviate from it. To alleviate this issue, we construct reversed training sequences so that later frames are encouraged to attend to the reference frame. 
+ 
+ 
+ Since a single latent video frame encodes multiple video frames, we cannot directly reverse the latent sequence. Instead, we first decode the latent sequence using the original Wan 2.1 decoder to obtain the video frames, reverse their temporal order, and then pass the reversed video through the original Wan 2.1 encoder to obtain the corresponding latent representation used for training. 
+ 
+ 
+ This training also consists of two stages. In Forward Training, latent sequences are used in the original temporal order. In Bidirectional Training, each batch randomly uses either the forward or reversed sequence with equal probability. 
+ 
+ 
+  Table 8:  VBench evaluation results across 12 evaluation metrics. We compare the Wan 2.1 baseline with  RefDecoder  under different training settings, including latent fine-tuning and bidirectional training. Our chosen strategies improve performance across most dimensions and lead to higher aggregate scores. 
+  
+ 
+ 
+ 
+  
+  Quality Dimensions  
+  I2V Dimensions  
+  Aggregate Scores   
+ 
+  Model  
+  Subj.  
+  BG  
+  Motion  
+  Dynamic  
+  Aesth.  
+  Imaging  
+  I2V Subj.  
+  I2V BG  
+  Camera  
+  Quality  
+  I2V  
+  Total   
+ 
+ 
+ 
+ Wan 2.1   Wan et al. (2025)   
+ 0.9656 
+ 0.9788 
+ 0.9814 
+ 0.4748 
+ 0.6557 
+ 0.7011 
+ 0.9796 
+ 0.9912 
+ 0.1934 
+ 0.8127 
+ 0.9446 
+ 0.8786  
+ 
+  RefDecoder  (w/o FT) 
+ 0.9675 
+ 0.9820 
+ 0.9828 
+  0.4764  
+  0.6598  
+ 0.7006 
+ 0.9830 
+ 0.9930 
+ 0.1908 
+ 0.8156 
+ 0.9475 
+ 0.8815  
+ 
+  RefDecoder  (Forward) 
+ 0.9691 
+ 0.9858 
+ 0.9829 
+ 0.4732 
+ 0.6582 
+  0.7027  
+ 0.9846 
+ 0.9949 
+ 0.1927 
+  0.8167  
+ 0.9497 
+ 0.8832  
+ 
+  RefDecoder  (Bidirectional) 
+  0.9693  
+  0.9859  
+  0.9833  
+ 0.4724 
+ 0.6586 
+ 0.7010 
+  0.9847  
+  0.9950  
+  0.1937  
+ 0.8167 
+  0.9499  
+  0.8833   
+ 
+ 
+  
+ 
+ 
+ Table   8   presents VBench evaluation results on the Wan 2.1 backbone. Introducing  RefDecoder  already improves most evaluation dimensions compared to the original Wan 2.1 model. Applying latent fine-tuning further improves the performance, indicating that training on diffusion-generated latent videos helps the decoder better adapt to latent-space generation. Finally, the proposed bidirectional training strategy achieves the best overall performance, suggesting that exposing the model to reversed temporal sequences improves reference consistency across frames. 
+ 
+ 
+ 
+  Appendix H  Random Reference Frame 
+
+ 
+ We further study how the choice of reference frame during training affects model performance.
+Specifically, we train two models on Wan 2.1 backbone with different reference-frame strategies: one uses the first frame as the reference during training, while the other randomly samples a reference frame from the video.
+Both models use Wan 2.1 as the backbone with 5 Transformer blocks and a dropout rate of 0.7, and are evaluated on the 17 frames     480  ×  832   480\times 832    Inter4K test set. 
+ 
+ 
+ During evaluation, we test both models under two settings: using the first frame or a randomly sampled frame as the reference.
+This allows us to analyze how each training strategy generalizes to different reference-frame conditions. 
+ 
+ 
+ Table   9   reports the quantitative results.
+When the model is trained using the first frame as the reference, it achieves the best reconstruction quality when evaluated with the same setting (first-frame reference).
+However, its performance drops significantly when evaluated with a randomly selected reference frame, indicating that the model overfits to the training reference strategy and generalizes poorly to other reference conditions.
+In particular, we observe that the model degenerates when the reference frame is fixed to frame 0, becoming overly dependent on the reference appearance. 
+ 
+ 
+ In contrast, training with randomly sampled reference frames leads to more robust performance across evaluation settings. The model trained with random references achieves the best overall performance when evaluated with random references and remains competitive when evaluated with the first frame as the reference. Notably, even under the first-frame evaluation setting, random-reference training still outperforms training that always uses the first frame as the reference. These results suggest that random reference training improves the model’s ability to adapt to varying reference-frame conditions during inference. 
+ 
+ 
+  Table 9:  Effect of reference-frame selection during training and evaluation. Models are trained using either the first frame or randomly sampled frames as the reference. Each model is evaluated using both first-frame and random-frame references. Training with random references leads to more robust performance across evaluation settings.
+ 
+  
+ 
+ 
+ 
+ Training Ref. 
+ Eval Ref. 
+ Overall 
+ First Frame  
+ 
+  
+  
+ PSNR    ↑  \uparrow    
+ SSIM (%)    ↑  \uparrow    
+ LPIPS    ↓  \downarrow    
+ PSNR    ↑  \uparrow    
+ SSIM (%)    ↑  \uparrow    
+ LPIPS    ↓  \downarrow     
+ 
+ 
+ 
+ First frame 
+ First frame 
+ 34.1 
+ 94.06 
+ 0.0371 
+  40.8  
+  98.57  
+  0.0046   
+ 
+ First frame 
+ Random frame 
+ 31.9 
+ 91.06 
+ 0.0556 
+ 22.9 
+ 66.44 
+ 0.2194  
+ 
+ Random frame 
+ First frame 
+ 34.2 
+ 94.14 
+ 0.0371 
+ 40.0 
+ 98.24 
+ 0.0073  
+ 
+ Random frame 
+ Random frame 
+  34.6  
+  94.64  
+  0.0337  
+ 37.2 
+ 96.82 
+ 0.0215  
+ 
+ 
+  
+ 
+ 
+ 
+  Appendix I  Effect of the Number of Transformer blocks 
+
+ 
+ Table   10   reports the block-count ablation summarized in the main paper. We train the Wan 2.1 backbone with     {   3  ,  5  ,  7  ,  10   }   \{3,5,7,10\}    Transformer blocks under the same two-stage curriculum and evaluate on all three reconstruction benchmarks. Reconstruction quality improves consistently with depth across PSNR, SSIM, and LPIPS, and the 10-blocks model attains the best results on every benchmark. 
+ 
+ 
+  Table 10:  Effect of the number of Transformer blocks on reconstruction (Wan 2.1). Increasing the number of blocks consistently improves reconstruction quality, with the 10-blocks model achieving the best results. 
+  
+ 
+ 
+ 
+  
+  Inter4K (test)  
+  WebVid  
+  Large Motion   
+ 
+  # Blocks  
+  PSNR   ↑  \uparrow     
+  SSIM (%)   ↑  \uparrow     
+  LPIPS   ↓  \downarrow     
+  PSNR   ↑  \uparrow     
+  SSIM (%)   ↑  \uparrow     
+  LPIPS   ↓  \downarrow     
+  PSNR   ↑  \uparrow     
+  SSIM (%)   ↑  \uparrow     
+  LPIPS   ↓  \downarrow      
+ 
+ 
+ 
+  3  
+  34.3  
+  94.4  
+  0.035  
+  33.2  
+  92.3  
+  0.038  
+  31.1  
+  89.9  
+  0.055   
+ 
+  5  
+  34.6  
+  94.6  
+  0.034  
+  33.4  
+  92.6  
+  0.038  
+  31.3  
+  90.2  
+  0.055   
+ 
+  7  
+  34.5  
+  94.7  
+  0.032  
+  33.3  
+  92.3  
+  0.037  
+  31.2  
+  90.1  
+  0.054   
+ 
+  10  
+  34.9  
+  94.9  
+  0.031  
+  33.5  
+  92.6  
+  0.037  
+  31.4  
+  90.4  
+  0.053   
+ 
+ 
+  
+ 
+ 
+ 
+  Appendix J  Latent Token Dropout and Two-Stage Curriculum 
+
+ 
+  Setup. 
+Table   11   reports the two training-time ablations summarized in the main paper. Both use the Wan 2.1 backbone with 3 Transformer blocks and are evaluated on Inter4K. The top block sweeps the maximum latent-token dropout probability (   0.0  0.0   ,    0.3  0.3   ,    0.7  0.7   ), with each variant trained for    10,000  10{,}000    steps under the two-stage curriculum. The bottom block compares one-stage training (the first curriculum stage only) against the full two-stage curriculum at fixed dropout    0.7  0.7   . We additionally report metrics over both the entire reconstructed video ( Overall ) and the reference frame alone ( Reference Frame ) to show whether gains come primarily from regenerating the reference or from propagating reference information to the rest of the video. 
+ 
+ 
+  Latent token dropout. 
+Increasing the maximum dropout from    0.0  0.0    to    0.7  0.7    improves overall PSNR by     +  2.71   +2.71    dB and the reference-frame PSNR by     +  3.85   +3.85    dB. The reference-frame gain is larger than the overall gain, indicating that with dropout the decoder learns to lean on the reference token when the corresponding latent is missing rather than producing degraded content. Qualitative reconstructions in Figure   9   show the same trend: at dropout    0.7  0.7   , reconstructions exhibit sharper edges and more faithful textures, while dropout    0.0  0.0    produces blurrier results. 
+ 
+ 
+  Two-stage curriculum. 
+At fixed dropout    0.7  0.7   , the two-stage curriculum improves overall PSNR by     +  3.80   +3.80    dB and reference-frame PSNR by     +  4.64   +4.64    dB compared to one-stage training. The much larger gap on reference-frame PSNR (    +  4.64   +4.64    dB vs.     +  3.80   +3.80    dB overall) suggests that the second stage primarily refines reference-token decoding to longer temporal contexts, supporting the choice to first train on short 5-frame clips and then fine-tune on 17-frame sequences. 
+ 
+ 
+  Table 11:  Ablations on the Wan 2.1 backbone with 3 Transformer blocks, evaluated on Inter4K.  Top : effect of maximum latent token dropout probability (with two-stage curriculum).  Bottom : effect of two-stage curriculum training (with dropout 0.7). 
+ 
+ 
+ 
+  
+  
+  Overall  
+  Reference Frame   
+ 
+  
+  Setting  
+  PSNR    ↑  \uparrow     
+  SSIM (%)    ↑  \uparrow     
+  LPIPS    ↓  \downarrow     
+  PSNR    ↑  \uparrow     
+  SSIM (%)    ↑  \uparrow     
+  LPIPS    ↓  \downarrow      
+ 
+  Dropout  
+  0.0  
+  27.4  
+  88.3  
+  0.083  
+  27.3  
+  88.6  
+  0.082   
+ 
+  0.3  
+  27.5  
+  86.7  
+  0.077  
+  27.6  
+  87.1  
+  0.075   
+ 
+  0.7  
+  30.1  
+  90.1  
+  0.060  
+  31.1  
+  92.1  
+  0.054   
+ 
+  Curriculum  
+  One-stage  
+  30.5  
+  89.7  
+  0.058  
+  34.9  
+  95.7  
+  0.018   
+ 
+  Two-stage  
+  34.3  
+  94.4  
+  0.035  
+  39.6  
+  98.2  
+  0.008   
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   
+   
+   
+    
+ 
+  GT  
+  Dropout 0.0  
+  Dropout 0.3  
+  Dropout 0.7   
+ 
+ 
+  Figure 9:   Qualitative comparison of different dropout rates  on Wan 2.1. Higher dropout encourages the decoder to rely more on reference features, leading to sharper and more detailed reconstructions. 
+ 
+ 
+ 
+  Appendix K  Alternative Reference Injection Strategy 
+
+ 
+ We compare our attention-based reference injection with a ControlNet-style   Zhang and Agrawala (2023)   alternative that injects the reference image through a parallel encoder branch, adding residual features to the decoder at each stage. We identify two fundamental limitations of this approach: 
+ 
+ 
+ 
+  1.  
+ 
+  No temporal reasoning.  ControlNet operates via spatial addition of residual features, applying the reference signal identically to every frame at the same spatial position. Unlike joint attention, it lacks a mechanism to modulate the reference contribution based on temporal context. The decoder cannot distinguish whether a frame is temporally close to or far from the reference, nor can it selectively attend to different reference regions for different frames. 
+  
+  2.  
+ 
+  Suboptimal convergence.  The ControlNet variant converges quickly to a suboptimal reconstruction quality and plateaus. We hypothesize that the spatially rigid injection forces the model into a local minimum where it learns to uniformly blend the reference signal rather than adaptively retrieving fine-grained details. 
+  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  
+  Input  
+   
+   
+   
+    
+ 
+ 
+  
+  ControlNet  
+   
+   
+   
+    
+ 
+ 
+  
+  Ours  
+   
+   
+   
+    
+ 
+  
+  First frame  
+  Middle frame  
+  Last frame   
+ 
+ 
+  Figure 10:   Qualitative comparison of alternative reference injection methods.  Our attention-based reference injection produces sharper and more temporally consistent reconstructions, while the ControlNet-style approach introduces ghosting artifacts and temporal inconsistency. 
+ 
+ 
+ 
+  Appendix L  Code License 
+
+ 
+ Our work is built upon the HuggingFace Diffusers   von Platen et al. (2022)   library, which is licensed under the Apache License 2.0 ( https://github.com/huggingface/diffusers/blob/main/LICENSE ). VideoVAE + -related code is licensed under Attribution-NonCommercial-NoDerivatives 4.0 International, per the VideoVAE +    Xing et al. (2025)   license ( https://github.com/VideoVerses/VideoVAEPlus/blob/main/LICENSE ). 
+ 
+ 
+ 
+  Appendix M  More Qualitative Results 
+
+ 
+ We present more qualitative comparisons for both video reconstruction and image-to-video (I2V) generation. 
+ 
+ 
+ Figure   11   shows reconstruction comparisons on the Wan 2.1 backbone. Each pair displays a cropped region from the same video frame, with the baseline decoder on the left and  RefDecoder  on the right. Figure   12   provides an analogous comparison on the VideoVAE +  backbone with cropped region pairs. In both cases,  RefDecoder  recovers finer textures, sharper edges, and more faithful structural details such as text and facial features. 
+ 
+ 
+ Figure   13   shows video generation comparisons on the Wan 2.1 backbone. For each example, the ground-truth reference image is shown alongside three generated frames (first, middle, and last) from both the baseline model and  RefDecoder . Our method better preserves scene structure and fine-grained appearance from the reference image while maintaining temporal consistency across frames. 
+ 
+ 
+ 
+ 
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+  Baseline  
+  Ours  
+  Baseline  
+  Ours   
+ 
+ 
+  Figure 11:   Additional Wan 2.1 reconstruction comparisons.  Highlighted regions are shown for baseline vs.  RefDecoder . Our method consistently recovers sharper textures and finer details across diverse scenes. 
+ 
+ 
+ 
+ 
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+   
+   
+   
+    
+ 
+  Baseline  
+  Ours  
+  Baseline  
+  Ours   
+ 
+ 
+  Figure 12:   Additional VideoVAE+ reconstruction comparisons.  Highlighted regions are shown for baseline vs.  RefDecoder . Our method preserves fine-grained details such as text, facial features, and structural patterns more faithfully. 
+ 
+ 
+ 
+ 
+ 
+  
+  
+  GT  
+    
+     
+ 
+  
+  Wan  
+   
+   
+   
+    
+ 
+ 
+  
+  Wan Ours  
+   
+   
+   
+    
+ 
+  
+  
+  GT  
+    
+     
+ 
+  
+  Wan  
+   
+   
+   
+    
+ 
+ 
+  
+  Wan Ours  
+   
+   
+   
+    
+ 
+  
+  
+  GT  
+    
+     
+ 
+  
+  Wan  
+   
+   
+   
+    
+ 
+ 
+  
+  Wan Ours  
+   
+   
+   
+    
+ 
+  
+  
+  GT  
+    
+     
+ 
+  
+  Wan  
+   
+   
+   
+    
+ 
+ 
+  
+  Wan Ours  
+   
+   
+   
+    
+ 
+ 
+  Figure 13:   Additional video generation comparisons.  For each example, the GT reference image and three generated frames at different timesteps are shown.  RefDecoder  preserves scene structure and produces sharper, more consistent details across frames compared to the baseline. 
+ 
+  
+ 
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

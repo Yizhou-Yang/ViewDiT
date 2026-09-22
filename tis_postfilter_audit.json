@@ -1,0 +1,139 @@
+{
+  "caveat": "Per-sample oracle diagnostic; three proxies are not sufficient to prove perceptual superiority. Not a held-out baseline comparison.",
+  "rows": [
+    {
+      "seed": 0,
+      "target": "dct_weak",
+      "target_metrics": {
+        "psnr_vs_full": 33.01317394246191,
+        "pixel_l1_vs_full": 0.027453621849417686,
+        "frame_diff_proxy": 0.20824985206127167,
+        "temporal_second_diff": 0.05990681052207947,
+        "spatial_gradient": 0.013360186479985714,
+        "temporal_std": 0.10478612035512924
+      },
+      "dominated_on_three_proxies": true,
+      "best_postfilter": [
+        "pixel_dct_cut8_retain0.3",
+        {
+          "psnr_vs_full": 34.27403757005203,
+          "pixel_l1_vs_full": 0.022968292236328125,
+          "frame_diff_proxy": 0.2046251744031906,
+          "temporal_second_diff": 0.05094753950834274,
+          "spatial_gradient": 0.013787935487926006,
+          "temporal_std": 0.10637366771697998
+        }
+      ]
+    },
+    {
+      "seed": 0,
+      "target": "dct_zero",
+      "target_metrics": {
+        "psnr_vs_full": 29.156329778196152,
+        "pixel_l1_vs_full": 0.042172420769929886,
+        "frame_diff_proxy": 0.16181841492652893,
+        "temporal_second_diff": 0.0382690355181694,
+        "spatial_gradient": 0.012379467487335205,
+        "temporal_std": 0.0950910672545433
+      },
+      "dominated_on_three_proxies": false,
+      "best_postfilter": null
+    },
+    {
+      "seed": 0,
+      "target": "smooth",
+      "target_metrics": {
+        "psnr_vs_full": 30.639626693589378,
+        "pixel_l1_vs_full": 0.03679708018898964,
+        "frame_diff_proxy": 0.16562995314598083,
+        "temporal_second_diff": 0.044131841510534286,
+        "spatial_gradient": 0.01214626058936119,
+        "temporal_std": 0.09455206245183945
+      },
+      "dominated_on_three_proxies": true,
+      "best_postfilter": [
+        "pixel_smooth_pass2_lam0.75",
+        {
+          "psnr_vs_full": 32.30212427061977,
+          "pixel_l1_vs_full": 0.02611355483531952,
+          "frame_diff_proxy": 0.16153691709041595,
+          "temporal_second_diff": 0.03332594782114029,
+          "spatial_gradient": 0.012350779958069324,
+          "temporal_std": 0.09642932564020157
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "target": "dct_weak",
+      "target_metrics": {
+        "psnr_vs_full": 30.71802374908987,
+        "pixel_l1_vs_full": 0.034470319747924805,
+        "frame_diff_proxy": 0.2935729920864105,
+        "temporal_second_diff": 0.08267669379711151,
+        "spatial_gradient": 0.016836844384670258,
+        "temporal_std": 0.11690697818994522
+      },
+      "dominated_on_three_proxies": true,
+      "best_postfilter": [
+        "pixel_smooth_pass1_lam0.75",
+        {
+          "psnr_vs_full": 32.4105855351752,
+          "pixel_l1_vs_full": 0.026271050795912743,
+          "frame_diff_proxy": 0.2905261218547821,
+          "temporal_second_diff": 0.07865238189697266,
+          "spatial_gradient": 0.01721750572323799,
+          "temporal_std": 0.11607769876718521
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "target": "dct_zero",
+      "target_metrics": {
+        "psnr_vs_full": 26.434660378960587,
+        "pixel_l1_vs_full": 0.0556706003844738,
+        "frame_diff_proxy": 0.22467643022537231,
+        "temporal_second_diff": 0.04948566481471062,
+        "spatial_gradient": 0.015906501561403275,
+        "temporal_std": 0.10584380477666855
+      },
+      "dominated_on_three_proxies": true,
+      "best_postfilter": [
+        "pixel_smooth_pass8_lam0.25",
+        {
+          "psnr_vs_full": 28.844251187356747,
+          "pixel_l1_vs_full": 0.040387969464063644,
+          "frame_diff_proxy": 0.21432434022426605,
+          "temporal_second_diff": 0.0459720641374588,
+          "spatial_gradient": 0.01593245379626751,
+          "temporal_std": 0.10277827829122543
+        }
+      ]
+    },
+    {
+      "seed": 1,
+      "target": "smooth",
+      "target_metrics": {
+        "psnr_vs_full": 28.657708861129606,
+        "pixel_l1_vs_full": 0.04328455030918121,
+        "frame_diff_proxy": 0.23261910676956177,
+        "temporal_second_diff": 0.05992785096168518,
+        "spatial_gradient": 0.015535648912191391,
+        "temporal_std": 0.10198966413736343
+      },
+      "dominated_on_three_proxies": true,
+      "best_postfilter": [
+        "pixel_smooth_pass2_lam0.75",
+        {
+          "psnr_vs_full": 29.178658124695424,
+          "pixel_l1_vs_full": 0.03852473571896553,
+          "frame_diff_proxy": 0.2268127053976059,
+          "temporal_second_diff": 0.049086254090070724,
+          "spatial_gradient": 0.016197435557842255,
+          "temporal_std": 0.10584721714258194
+        }
+      ]
+    }
+  ]
+}

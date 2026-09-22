@@ -1,0 +1,75 @@
+{
+  "complete": true,
+  "edit_distance_ab": 1.492526650428772,
+  "cfg": 7.0,
+  "protocol": {
+    "model": "Latte-XL/2",
+    "ckpt": "ucf101.pt",
+    "steps": 12,
+    "frames": 16,
+    "prefix": 8,
+    "ranks": [
+      2,
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "class_a": 14,
+    "class_b": 95,
+    "seed": 999,
+    "note": "second DiT (Latte-XL/2, UCF101, extras=2) with CFG; regenerate future under a very different action class = strong semantic-edit proxy; test whether a compact rank-k boundary state preserves the committed prefix.",
+    "decoder": "deferred pixel decode."
+  },
+  "rows": [
+    {
+      "method": "none",
+      "prefix_latent_rms": 1.4957976341247559,
+      "future_latent_rms": 0.0,
+      "payload_bytes": null
+    },
+    {
+      "method": "full_oracle",
+      "prefix_latent_rms": 0.0,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 131072
+    },
+    {
+      "method": "boundary_rank2",
+      "prefix_latent_rms": 0.6155490875244141,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 8194
+    },
+    {
+      "method": "boundary_rank4",
+      "prefix_latent_rms": 0.5053007006645203,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 16388
+    },
+    {
+      "method": "boundary_rank8",
+      "prefix_latent_rms": 0.36552679538726807,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 32776
+    },
+    {
+      "method": "boundary_rank16",
+      "prefix_latent_rms": 0.2132185697555542,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 65552
+    },
+    {
+      "method": "boundary_rank32",
+      "prefix_latent_rms": 8.167836313077714e-06,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 131104
+    },
+    {
+      "method": "boundary_rank64",
+      "prefix_latent_rms": 8.167836313077714e-06,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 262208
+    }
+  ]
+}

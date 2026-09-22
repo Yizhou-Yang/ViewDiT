@@ -1,0 +1,333 @@
+{
+  "complete": true,
+  "protocol": {
+    "iterations": 24,
+    "lr": 0.03,
+    "baseline": "full-latent Adam, equal iterations but not equal runtime; normalized core and suffix losses",
+    "second_operation": "same small fresh geometric perturbation to last latent, test exact prefix retention; not a DiT semantic re-edit",
+    "warm_start": "suffix optimizer starts from hybrid reencoded splice",
+    "caveat": "The targets are still compositing targets; this evaluates latent representation fidelity, not superiority to rendered compositing."
+  },
+  "rows": [
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "method": "full_latent_Adam",
+      "suffix_mse": 0.0013594471383839846,
+      "prefix_core_mse": 0.0036164303310215473,
+      "prefix_core_max": 1.2235357761383057,
+      "seconds": 24.558895349502563,
+      "peak_allocated_bytes": 10303927296
+    },
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "method": "warm_start_suffix",
+      "suffix_mse": 0.0026736892759799957,
+      "prefix_core_max": 0.0,
+      "seconds": 11.226258039474487
+    },
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "method": "reuse_compensated",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.00290850386954844,
+      "last_chunk_change_rms": 0.010436521843075752
+    },
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "method": "reuse_hybrid_reencode",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.005888677202165127,
+      "last_chunk_change_rms": 0.01070353388786316
+    },
+    {
+      "sample": "bear_latent_geometric_impulse",
+      "method": "reuse_full_reencode",
+      "prefix_core_vs_edit_max": 0.8021436333656311,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.005604703910648823,
+      "last_chunk_change_rms": 0.010689790360629559
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "method": "full_latent_Adam",
+      "suffix_mse": 0.0005464186542667449,
+      "prefix_core_mse": 0.0012384452857077122,
+      "prefix_core_max": 0.3849436044692993,
+      "seconds": 24.432933568954468,
+      "peak_allocated_bytes": 10314773504
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "method": "warm_start_suffix",
+      "suffix_mse": 0.0006560732144862413,
+      "prefix_core_max": 0.0,
+      "seconds": 11.224502086639404
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "method": "reuse_compensated",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0007624339195899665,
+      "last_chunk_change_rms": 0.01054864190518856
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "method": "reuse_hybrid_reencode",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0023912410251796246,
+      "last_chunk_change_rms": 0.010336566716432571
+    },
+    {
+      "sample": "bear_pixel_color_patch_encoded",
+      "method": "reuse_full_reencode",
+      "prefix_core_vs_edit_max": 0.6532007455825806,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0025530806742608547,
+      "last_chunk_change_rms": 0.01031571440398693
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "method": "full_latent_Adam",
+      "suffix_mse": 0.0007368981605395675,
+      "prefix_core_mse": 0.0028839041478931904,
+      "prefix_core_max": 0.8572724461555481,
+      "seconds": 24.43841242790222,
+      "peak_allocated_bytes": 10309258240
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "method": "warm_start_suffix",
+      "suffix_mse": 0.0014852812746539712,
+      "prefix_core_max": 0.0,
+      "seconds": 11.242271900177002
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "method": "reuse_compensated",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.001634604181163013,
+      "last_chunk_change_rms": 0.009005218744277954
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "method": "reuse_hybrid_reencode",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0036261826753616333,
+      "last_chunk_change_rms": 0.008741451427340508
+    },
+    {
+      "sample": "blackswan_latent_geometric_impulse",
+      "method": "reuse_full_reencode",
+      "prefix_core_vs_edit_max": 0.7904261350631714,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0035157620441168547,
+      "last_chunk_change_rms": 0.008698188699781895
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "method": "full_latent_Adam",
+      "suffix_mse": 0.00029536616057157516,
+      "prefix_core_mse": 0.0007581918616779149,
+      "prefix_core_max": 0.36736297607421875,
+      "seconds": 24.415602207183838,
+      "peak_allocated_bytes": 10307057152
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "method": "warm_start_suffix",
+      "suffix_mse": 0.00043746031587943435,
+      "prefix_core_max": 0.0,
+      "seconds": 11.218589544296265
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "method": "reuse_compensated",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0004985773121006787,
+      "last_chunk_change_rms": 0.009116134606301785
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "method": "reuse_hybrid_reencode",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.00199008546769619,
+      "last_chunk_change_rms": 0.008606267161667347
+    },
+    {
+      "sample": "blackswan_pixel_color_patch_encoded",
+      "method": "reuse_full_reencode",
+      "prefix_core_vs_edit_max": 0.7447425127029419,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0019477482419461012,
+      "last_chunk_change_rms": 0.00856082234531641
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "method": "full_latent_Adam",
+      "suffix_mse": 0.0012213996378704906,
+      "prefix_core_mse": 0.0045455810613930225,
+      "prefix_core_max": 0.9259846210479736,
+      "seconds": 24.42419171333313,
+      "peak_allocated_bytes": 10315796992
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "method": "warm_start_suffix",
+      "suffix_mse": 0.0021323601249605417,
+      "prefix_core_max": 0.0,
+      "seconds": 11.213166952133179
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "method": "reuse_compensated",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0024871360510587692,
+      "last_chunk_change_rms": 0.01267638336867094
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "method": "reuse_hybrid_reencode",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0053350855596363544,
+      "last_chunk_change_rms": 0.012876763008534908
+    },
+    {
+      "sample": "camel_latent_geometric_impulse",
+      "method": "reuse_full_reencode",
+      "prefix_core_vs_edit_max": 0.9360847473144531,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.005077453795820475,
+      "last_chunk_change_rms": 0.012945599853992462
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "method": "full_latent_Adam",
+      "suffix_mse": 0.00032220425782725215,
+      "prefix_core_mse": 0.0007069461280480027,
+      "prefix_core_max": 0.3917609453201294,
+      "seconds": 24.427820682525635,
+      "peak_allocated_bytes": 10310670848
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "method": "warm_start_suffix",
+      "suffix_mse": 0.00045749740093015134,
+      "prefix_core_max": 0.0,
+      "seconds": 11.2167329788208
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "method": "reuse_compensated",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0005584495957009494,
+      "last_chunk_change_rms": 0.013027261942625046
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "method": "reuse_hybrid_reencode",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0021615661680698395,
+      "last_chunk_change_rms": 0.012656811624765396
+    },
+    {
+      "sample": "camel_pixel_color_patch_encoded",
+      "method": "reuse_full_reencode",
+      "prefix_core_vs_edit_max": 0.5811018347740173,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.002221744740381837,
+      "last_chunk_change_rms": 0.012637748382985592
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "method": "full_latent_Adam",
+      "suffix_mse": 0.0009566658991388977,
+      "prefix_core_mse": 0.004321923013776541,
+      "prefix_core_max": 1.013774037361145,
+      "seconds": 24.453380346298218,
+      "peak_allocated_bytes": 10310352896
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "method": "warm_start_suffix",
+      "suffix_mse": 0.0019088725093752146,
+      "prefix_core_max": 0.0,
+      "seconds": 11.21826457977295
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "method": "reuse_compensated",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.002074230695143342,
+      "last_chunk_change_rms": 0.013394135050475597
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "method": "reuse_hybrid_reencode",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.006318375002592802,
+      "last_chunk_change_rms": 0.013087566941976547
+    },
+    {
+      "sample": "car-roundabout_latent_geometric_impulse",
+      "method": "reuse_full_reencode",
+      "prefix_core_vs_edit_max": 1.0329257249832153,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.005926515441387892,
+      "last_chunk_change_rms": 0.01300071645528078
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "method": "full_latent_Adam",
+      "suffix_mse": 0.0004430893750395626,
+      "prefix_core_mse": 0.0010659642284736037,
+      "prefix_core_max": 0.4178571105003357,
+      "seconds": 24.439517498016357,
+      "peak_allocated_bytes": 10309098496
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "method": "warm_start_suffix",
+      "suffix_mse": 0.0005888925516046584,
+      "prefix_core_max": 0.0,
+      "seconds": 11.214762926101685
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "method": "reuse_compensated",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0006954068085178733,
+      "last_chunk_change_rms": 0.013561496511101723
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "method": "reuse_hybrid_reencode",
+      "prefix_core_vs_edit_max": 0.0,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0036236783489584923,
+      "last_chunk_change_rms": 0.012922285124659538
+    },
+    {
+      "sample": "car-roundabout_pixel_color_patch_encoded",
+      "method": "reuse_full_reencode",
+      "prefix_core_vs_edit_max": 0.8173726201057434,
+      "preceding_frames_vs_prior_max": 0.0,
+      "suffix_mse_vs_original": 0.0036825421266257763,
+      "last_chunk_change_rms": 0.012866729870438576
+    }
+  ]
+}

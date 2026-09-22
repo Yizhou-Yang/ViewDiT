@@ -1,0 +1,234 @@
+{
+  "complete": true,
+  "protocol": {
+    "clips": [
+      "bear",
+      "blackswan"
+    ],
+    "size": [
+      480,
+      720
+    ],
+    "frames": 17,
+    "amplitude": 0.4,
+    "warning": "Exploratory480P only2 contents. A reference representation for pixel composition, not a new semantic editor. Raw baseline/source setup excluded from restore timing. Float tolerance1e-5, not bit-exact. Reference old latent recovery baselines quantized and low-rank retained."
+  },
+  "rows": [
+    {
+      "clip": "bear",
+      "method": "capsule_fp32",
+      "payload_bytes": 9472,
+      "zlib_payload_bytes": 8781,
+      "max_error_vs_oracle": 2.682209014892578e-06,
+      "prefix_rmse": 1.328735095285083e-07,
+      "edited_max_error": 0.0,
+      "passes_1e5": true,
+      "reference_restore_seconds": 9.910971708013676,
+      "peak_allocated_bytes": 32735003136
+    },
+    {
+      "clip": "bear",
+      "method": "original_latent_fp32",
+      "payload_bytes": 345600,
+      "zlib_payload_bytes": 308162,
+      "max_error_vs_oracle": 0.0,
+      "prefix_rmse": 0.0,
+      "edited_max_error": 0.0,
+      "passes_1e5": true,
+      "reference_restore_seconds": 9.725782847002847,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "bear",
+      "method": "original_latent_fp16",
+      "payload_bytes": 172800,
+      "zlib_payload_bytes": 149428,
+      "max_error_vs_oracle": 8.13603401184082e-06,
+      "prefix_rmse": 2.097945923651423e-07,
+      "edited_max_error": 0.0,
+      "passes_1e5": true,
+      "reference_restore_seconds": 9.8939433680207,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "bear",
+      "method": "original_latent_int8",
+      "payload_bytes": 86464,
+      "zlib_payload_bytes": 77360,
+      "max_error_vs_oracle": 0.0003306567668914795,
+      "prefix_rmse": 7.215802725113463e-06,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.782992252003169,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "bear",
+      "method": "original_latent_rank1",
+      "payload_bytes": 2100,
+      "zlib_payload_bytes": 1869,
+      "max_error_vs_oracle": 0.3101074993610382,
+      "prefix_rmse": 0.010737848468124866,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.757437788997777,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "bear",
+      "method": "original_latent_rank2",
+      "payload_bytes": 4200,
+      "zlib_payload_bytes": 3991,
+      "max_error_vs_oracle": 0.3148847818374634,
+      "prefix_rmse": 0.010522658936679363,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.913896998012206,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "bear",
+      "method": "original_latent_rank4",
+      "payload_bytes": 8400,
+      "zlib_payload_bytes": 7978,
+      "max_error_vs_oracle": 0.30101126432418823,
+      "prefix_rmse": 0.009928034618496895,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.835742947994731,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "bear",
+      "method": "original_latent_rank8",
+      "payload_bytes": 16800,
+      "zlib_payload_bytes": 15844,
+      "max_error_vs_oracle": 0.27522867918014526,
+      "prefix_rmse": 0.008961724117398262,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.877953408984467,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "bear",
+      "method": "original_latent_rank16",
+      "payload_bytes": 33600,
+      "zlib_payload_bytes": 31463,
+      "max_error_vs_oracle": 0.19756671786308289,
+      "prefix_rmse": 0.00692262826487422,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.763336284988327,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "capsule_fp32",
+      "payload_bytes": 9472,
+      "zlib_payload_bytes": 8789,
+      "max_error_vs_oracle": 3.159046173095703e-06,
+      "prefix_rmse": 1.5260033592312539e-07,
+      "edited_max_error": 0.0,
+      "passes_1e5": true,
+      "reference_restore_seconds": 9.928288709983462,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "original_latent_fp32",
+      "payload_bytes": 345600,
+      "zlib_payload_bytes": 308454,
+      "max_error_vs_oracle": 0.0,
+      "prefix_rmse": 0.0,
+      "edited_max_error": 0.0,
+      "passes_1e5": true,
+      "reference_restore_seconds": 9.762084148998838,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "original_latent_fp16",
+      "payload_bytes": 172800,
+      "zlib_payload_bytes": 149634,
+      "max_error_vs_oracle": 1.099705696105957e-05,
+      "prefix_rmse": 2.672458947472478e-07,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.840786076994846,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "original_latent_int8",
+      "payload_bytes": 86464,
+      "zlib_payload_bytes": 78123,
+      "max_error_vs_oracle": 0.0003432333469390869,
+      "prefix_rmse": 7.856037882447708e-06,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.750183897995157,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "original_latent_rank1",
+      "payload_bytes": 2100,
+      "zlib_payload_bytes": 1859,
+      "max_error_vs_oracle": 0.3767874836921692,
+      "prefix_rmse": 0.009856550954282284,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.758299987995997,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "original_latent_rank2",
+      "payload_bytes": 4200,
+      "zlib_payload_bytes": 3955,
+      "max_error_vs_oracle": 0.35977399349212646,
+      "prefix_rmse": 0.009416526183485985,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.738116605003597,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "original_latent_rank4",
+      "payload_bytes": 8400,
+      "zlib_payload_bytes": 7960,
+      "max_error_vs_oracle": 0.3304981589317322,
+      "prefix_rmse": 0.008633434772491455,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.750236677005887,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "original_latent_rank8",
+      "payload_bytes": 16800,
+      "zlib_payload_bytes": 15808,
+      "max_error_vs_oracle": 0.2749844789505005,
+      "prefix_rmse": 0.007404518313705921,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.785604326985776,
+      "peak_allocated_bytes": 32877735936
+    },
+    {
+      "clip": "blackswan",
+      "method": "original_latent_rank16",
+      "payload_bytes": 33600,
+      "zlib_payload_bytes": 31448,
+      "max_error_vs_oracle": 0.19600477814674377,
+      "prefix_rmse": 0.005616157315671444,
+      "edited_max_error": 0.0,
+      "passes_1e5": false,
+      "reference_restore_seconds": 9.772772594995331,
+      "peak_allocated_bytes": 32877735936
+    }
+  ]
+}

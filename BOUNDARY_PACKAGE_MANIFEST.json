@@ -1,0 +1,190 @@
+{
+  "TOPCONF_DIRECTION_DECISION_V2.md": {
+    "bytes": 16634,
+    "sha256": "cb0c77bc8c4696a273257a1c39c24dd25aa9c87c290dabc9b4de6dc8b13def6a"
+  },
+  "BOUNDARY_REPRODUCE.md": {
+    "bytes": 5041,
+    "sha256": "c3c6e63320aa824e579d2caaad1b33e18ffc803b129eddb59065e5a348503728"
+  },
+  "BOUNDARY_PREREGISTRATION.md": {
+    "bytes": 2765,
+    "sha256": "4c26e879ec27723e92dcf478ec6b56a6d4fab431cb613b2fe5e2b449d7c3b8c3"
+  },
+  "LOCAL_CONTROL_THEORY.md": {
+    "bytes": 3674,
+    "sha256": "7b279350d81d177a49e3ad76fe552a2260703d797953494369828bcf5038fba0"
+  },
+  "boundary_round_summary.json": {
+    "bytes": 19332,
+    "sha256": "c372272ca1c5d085fc1c7ccf339ebd99a4f3e73b1cead52f4bf310f62db2991f"
+  },
+  "summarize_boundary_round.py": {
+    "bytes": 3771,
+    "sha256": "bcd6dfcd394c0ad0e8d4a18391ea346fcca0e7b756664701a29d1e8c2669e720"
+  },
+  "wan_boundary_frontier.py": {
+    "bytes": 8101,
+    "sha256": "2ce95fc0bf5b0793335f467546473340d9d0dfea5f2aad3bc57fd6e32c67676b"
+  },
+  "wan_feasible_control.py": {
+    "bytes": 4113,
+    "sha256": "ca9a66a695a3d5732f5c0c5e5593684826ca1ca17652aa28cef5746f46da8f50"
+  },
+  "wan_local_rank.py": {
+    "bytes": 3760,
+    "sha256": "0e5ea3a551ce88e1ba840e5b7c474d95fbf5dbe2eaaf5de140a79cda2619e9f9"
+  },
+  "cog_locality_probe.py": {
+    "bytes": 2909,
+    "sha256": "4c9aeb60f6d7211375e0254666276c54b870cf2606df3f4068fd6c1519fe45c6"
+  },
+  "wan_transition_budget.py": {
+    "bytes": 3676,
+    "sha256": "dd60cf589c37871c19759a674c48e64c293595cfd4e5a5460639f6999fb49946"
+  },
+  "cog_norm_replay.py": {
+    "bytes": 4959,
+    "sha256": "146625550b6e6265192c2a8fc68e827aed7aeb8bba2c9027aef496c4dd3cfef8"
+  },
+  "wan_bridge_convergence.py": {
+    "bytes": 5174,
+    "sha256": "6710dd0f65c4b6b045ddb5c81b3d790707d7df4df11698558866c29aeca73f0e"
+  },
+  "cog_norm_holdout.py": {
+    "bytes": 5814,
+    "sha256": "fed9fe76f30ba79c3cdd2cd49b447313404d90afc5099b6503dd4ba5085d34c2"
+  },
+  "cog_affine_replay.py": {
+    "bytes": 6490,
+    "sha256": "7c86598bea27d35398b5f6cda10c94c395455203ad48786e0416b039e8a3b4fd"
+  },
+  "cog_native_moment_projection.py": {
+    "bytes": 5878,
+    "sha256": "8b0e83b3e94111a88cd377ea6d45e959bf0fc1abf39d8c72367bcf8fc3e1a731"
+  },
+  "fetch_boundary_holdout.py": {
+    "bytes": 1604,
+    "sha256": "4491d15bbbcc7a408e1d5d167b6fd88e517be0a72a61933a16a57a064e03f756"
+  },
+  "render_boundary_evidence.py": {
+    "bytes": 2945,
+    "sha256": "b0681f50057bdaffe8a9a85760e0e6738b5b98bf18cd9e65f8b956b86c2a95ff"
+  },
+  "wan_vae_official.py": {
+    "bytes": 23163,
+    "sha256": "4912ffd7a9fbb17ceef9a17d4a9c4b8aee36ec37c32594f54e57693b29909498"
+  },
+  "wan_state_probe.py": {
+    "bytes": 5883,
+    "sha256": "3dce1725ae6f779e360f22b19f6f57fd18bbcc36ce2212f7d06dce8cd0beb108"
+  },
+  "wan_tail_compensate.py": {
+    "bytes": 4472,
+    "sha256": "780fc1b6bc8383447d5ec8a252219c85ee7f206e2f5508b36aa1f2a43580e3b7"
+  },
+  "wan_real_pilot.py": {
+    "bytes": 6259,
+    "sha256": "12681e84283561a5b1309fa2ba906163580a1dc3aeed83283cae375d40153b2e"
+  },
+  "wan_baseline_audit.py": {
+    "bytes": 4415,
+    "sha256": "6e76ce8e69fbcec9e03f17c6fad2fbde140c2687dbcf785d51929c3ca19c4c47"
+  },
+  "fetch_davis_pilot.py": {
+    "bytes": 1700,
+    "sha256": "be9111c81ea8e33e69e651400db94a9b50de2e10e20fc8edf00b403fb4cd9d64"
+  },
+  "cogvae_config.json": {
+    "bytes": 879,
+    "sha256": "fb212585242726f5d963271357731c78481da25cc29bdd5c2b9cb058c43f8688"
+  },
+  "cogvae_weight_index.json": {
+    "bytes": 528,
+    "sha256": "098fc170fe5c38f27537611a5bfcbbf31d68803fa069456d71eea0f48ffc6272"
+  },
+  "LOCALITY_REPRODUCE.md": {
+    "bytes": 4643,
+    "sha256": "005c8cac527842330226ec15498322322558777e703148327203f00d60dbb764"
+  },
+  "wan_boundary_frontier_pilot_stats.json": {
+    "bytes": 9415,
+    "sha256": "b5f25a42a38933893e39f94742ae13c0b63a16604a5994a77e93de6224914ea7"
+  },
+  "wan_feasible_control_stats.json": {
+    "bytes": 141453,
+    "sha256": "2374d6d9c88eb16063aed1b487b96e006a30b3e6e51ab148170e49a053500f3a"
+  },
+  "wan_local_rank_stats.json": {
+    "bytes": 6207,
+    "sha256": "bf31dbe7ef884e17c4faa777f55a01ec629d61e35d6dffc40f7e5759f70cde41"
+  },
+  "cog_locality_probe_stats.json": {
+    "bytes": 38700,
+    "sha256": "90fc15533cd72fa63ef553eb3d0278209359eb9d1b61ebe0fa0791b6461d3bd6"
+  },
+  "wan_transition_budget_stats.json": {
+    "bytes": 19629,
+    "sha256": "7499b3a614d1ba229755e03e7423e9a88457d4f46fa530b303bdad7ec40db60c"
+  },
+  "cog_norm_replay_stats.json": {
+    "bytes": 5086,
+    "sha256": "14f811587b6cc89c47c52ca789cea0cfcebaa248516ae06cd4b69cfc1fa1113a"
+  },
+  "wan_bridge_convergence_pilot_stats.json": {
+    "bytes": 19145,
+    "sha256": "43a0e2fb9bb8477b863c5a939f28abdbd6f8bb4c27f6a284db7713a27cabccff"
+  },
+  "cog_norm_holdout_stats.json": {
+    "bytes": 13303,
+    "sha256": "339611cee1a372995453d17fc71e8024f2a59ffed091598fbfba31196c08dd58"
+  },
+  "cog_affine_replay_stats.json": {
+    "bytes": 5979,
+    "sha256": "2e3808d5f86bfe73c678bcd8ba0e35720e5b209efc1eb30d1e74f7ed8e648fe4"
+  },
+  "cog_native_moment_projection_stats.json": {
+    "bytes": 3802,
+    "sha256": "0253c8690f69216768a60a6bb346c4b432a092c9d6d54c74ddf7b9688d04a2c4"
+  },
+  "boundary_evidence/cog_bus_geometric.gif": {
+    "bytes": 1570359,
+    "sha256": "32e370cfbefad1fe0e26ca076e699137efa2fa755070735b3eb50e80d2651e2e"
+  },
+  "boundary_evidence/wan_camel_bridge.png": {
+    "bytes": 1997447,
+    "sha256": "89c44a33fd477d6bd6950f0622a4d2238ea01a3e99ffe02b38fdcf58f4fc1760"
+  },
+  "boundary_evidence/wan_bear_bridge.png": {
+    "bytes": 2176377,
+    "sha256": "47d9af907ca82a4a60c138f2674c64694072e1e55dd8ae569f9190f1f61a51d6"
+  },
+  "boundary_evidence/cog_boat_color.png": {
+    "bytes": 2117826,
+    "sha256": "3bebf16b49ac8d151c2f8630337e0a1d85051d04304858ca33b529c23b9ba776"
+  },
+  "boundary_evidence/cog_bus_geometric.png": {
+    "bytes": 2082560,
+    "sha256": "53faa6298e916c02f4295e0787b908ebc48d35a30a573c9afcef39ab2857e748"
+  },
+  "boundary_evidence/wan_camel_bridge.gif": {
+    "bytes": 1880280,
+    "sha256": "dbc769e19d925a703d08b6f3b6f14f98d21f19085e0cae474246f1f74807f157"
+  },
+  "boundary_evidence/wan_bear_bridge.gif": {
+    "bytes": 2044979,
+    "sha256": "e3ac22fcfdb0f05b68502ffe22f30809088899ba954c51227b10c56a12feca63"
+  },
+  "boundary_evidence/cog_boat_color.gif": {
+    "bytes": 1158531,
+    "sha256": "4e6c7dd3262f28665ac51d08d60ca675716bfc4981e36595ac1859d18ee265f5"
+  },
+  "boundary_holdout/manifest.json": {
+    "bytes": 11352,
+    "sha256": "7b258652c4894f777bfb32d4ffbc255a25f69b530e23bf186a5affb0f5d55ab0"
+  },
+  "davis_locality_pilot/index.json": {
+    "bytes": 22100,
+    "sha256": "0dbdc3838a6d3affe245af8854783ab4af49f38912944685a8909ab24d1efc75"
+  }
+}

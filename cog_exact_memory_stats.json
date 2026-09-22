@@ -1,0 +1,28 @@
+{
+  "complete": true,
+  "rows": [
+    {
+      "height": 128,
+      "width": 224,
+      "frames": 17,
+      "patched_modules": 74,
+      "latent_max_error": 0.0,
+      "pixel_max_error": 0.0,
+      "original_peak_allocated_bytes": 3493680640,
+      "patched_peak_allocated_bytes": 2940368384,
+      "note": "patched peak includes retained base,z tensors; conservative compared to original."
+    },
+    {
+      "height": 480,
+      "width": 720,
+      "frames": 17,
+      "patched_modules": 74,
+      "latent_max_error": 0.0,
+      "pixel_max_error": 0.0,
+      "original_peak_allocated_bytes": 32579430912,
+      "patched_peak_allocated_bytes": 25910042112,
+      "note": "patched peak includes retained base,z tensors; conservative compared to original."
+    }
+  ],
+  "protocol": "Installeddiffusers0.31.0 causalConv timekernel1 ignores conv_cache but clones full input. Remove only these unused clones, leave all arithmetic unchanged. This is engineering, not a research contribution."
+}

@@ -1,0 +1,19 @@
+{
+  "complete": true,
+  "rows": [
+    {
+      "round": 1,
+      "original_torch_file_bytes": 32538,
+      "vcap_file_bytes": 9450,
+      "tensor_payload_bytes": 9472,
+      "roundtrip_exact": true
+    },
+    {
+      "round": 2,
+      "original_torch_file_bytes": 32538,
+      "vcap_file_bytes": 9450,
+      "tensor_payload_bytes": 9472,
+      "roundtrip_exact": true
+    }
+  ]
+}

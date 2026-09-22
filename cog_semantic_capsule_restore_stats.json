@@ -1,0 +1,86 @@
+{
+  "complete": true,
+  "protocol": {
+    "source": "true CogVideoX49-frame generated latents, two rounds",
+    "protected_frames": 13,
+    "restore_input_latents": 5,
+    "dtype": "FP32",
+    "storage": "Actual torch serialized payload plus exact tensor payload reported separately",
+    "baseline": "Keep old latent4, not entire old49-frame suffix. Same prefix-only decode for both.",
+    "warning": "One content, same future rewritten twice; not independent statistical validation. Timing excludes shared original raw decode, encode, first capture and model loading."
+  },
+  "rows": [
+    {
+      "round": 1,
+      "method": "capsule_fp32",
+      "tensor_payload_bytes": 9472,
+      "serialized_bytes": 32538,
+      "prefix_max": 2.682209014892578e-06,
+      "edited_max": 0.0,
+      "restore_seconds": 9.920722946990281,
+      "rendered_frames": 49,
+      "decoded_restore_frames": 17,
+      "decoded_restore_latents": 5
+    },
+    {
+      "round": 1,
+      "method": "old_latent_fp32",
+      "tensor_payload_bytes": 345600,
+      "serialized_bytes": 346780,
+      "prefix_max": 0.0,
+      "edited_max": 0.0,
+      "restore_seconds": 9.65106485702563,
+      "rendered_frames": 49,
+      "decoded_restore_frames": 17,
+      "decoded_restore_latents": 5
+    },
+    {
+      "round": 1,
+      "method": "old_latent_fp16",
+      "tensor_payload_bytes": 172800,
+      "serialized_bytes": 173980,
+      "prefix_max": 8.13603401184082e-06,
+      "edited_max": 0.0,
+      "restore_seconds": 9.640179446985712,
+      "rendered_frames": 49,
+      "decoded_restore_frames": 17,
+      "decoded_restore_latents": 5
+    },
+    {
+      "round": 2,
+      "method": "capsule_fp32",
+      "tensor_payload_bytes": 9472,
+      "serialized_bytes": 32538,
+      "prefix_max": 2.682209014892578e-06,
+      "edited_max": 0.0,
+      "restore_seconds": 9.951230534003116,
+      "rendered_frames": 49,
+      "decoded_restore_frames": 17,
+      "decoded_restore_latents": 5
+    },
+    {
+      "round": 2,
+      "method": "old_latent_fp32",
+      "tensor_payload_bytes": 345600,
+      "serialized_bytes": 346780,
+      "prefix_max": 0.0,
+      "edited_max": 0.0,
+      "restore_seconds": 9.670615618990269,
+      "rendered_frames": 49,
+      "decoded_restore_frames": 17,
+      "decoded_restore_latents": 5
+    },
+    {
+      "round": 2,
+      "method": "old_latent_fp16",
+      "tensor_payload_bytes": 172800,
+      "serialized_bytes": 173980,
+      "prefix_max": 8.13603401184082e-06,
+      "edited_max": 0.0,
+      "restore_seconds": 9.644751899002586,
+      "rendered_frames": 49,
+      "decoded_restore_frames": 17,
+      "decoded_restore_latents": 5
+    }
+  ]
+}

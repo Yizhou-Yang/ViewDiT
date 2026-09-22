@@ -1,0 +1,39 @@
+# large binary assets (videos / gifs / renders) — keep out of repo
+*.gif
+*.mp4
+*.png
+*.jpg
+*.jpeg
+*.tar
+*.zip
+
+# model weights / checkpoints (downloaded, not authored)
+models/
+*.pt
+*.pth
+*.safetensors
+*.bin
+
+# evidence / render output trees
+boundary_evidence/
+boundary_holdout/
+davis_locality_pilot/
+novelty_v4_doc_build/
+novelty_v4_sources/
+v3_evidence/
+v3_validation_data/
+validation_videos/
+v3_evidence.tar
+v3_validation_data.tar
+
+# build / deps
+node_modules/
+package-lock.json
+
+# misc scratch / os
+.DS_Store
+__pycache__/
+
+# keep method-audit trace (json + logs) even though *.log is ignored above
+!latte_method_audit_trace/
+!latte_method_audit_trace/**

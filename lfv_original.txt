@@ -1,0 +1,1677 @@
+  
+ 
+ 
+ Latent-Frequency Validity: Fast Spectral Editing with Screened Video-VAE Transfer Operators 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+   Introduction  
+ 
+   Contributions.   
+  
+   Related Work  
+ 
+   Video VAEs and latent generation.   
+   Spectral structure of autoencoder latents.   
+   Frequency-domain operators and interventions.   
+   Decode consistency and evaluation.   
+  
+   Latent-Frequency Validity   
+   Screened C1–Channel Mixing   
+   Experimental Design  
+ 
+   Models, data, and nested splits.   
+   Primary and breadth frequency settings.   
+   Mechanism and generalization studies.   
+   Frozen generated-domain transfer.   
+   Decoded and temporal diagnostics.   
+   Hyperparameters and runtime.   
+  
+   Results  
+ 
+   LFV Reveals Three VAE-Specific Regimes  
+ 
+   Validation-to-test transfer.   
+  
+   Channel Mixing Works Best as a Controlled Capacity Dial  
+ 
+   Residual-control diagnostics.   
+  
+   Cross-Channel Response Generalizes Across Spectral Operators  
+ 
+   A unified 544-cell view.   
+  
+   The Map Reveals Video-VAE Spectral Geometry   
+   Frozen Operators Transfer to Generated Inputs   
+   LFV Discovers a Sharp Open-Sora High-Band Frontier   
+   OffRel Predicts Repeated Drift and Matches Decoded Quality   
+   Additional Validation   
+   Latent-Level Online Cost   
+  
+   Conclusion   
+   References   
+  
+ 
+ 
+ 
+   
+    License: arXiv.org perpetual non-exclusive license
+   
+   
+arXiv:2608.07569v1 [cs.CV] 04 Aug 2026 
+  
+ 
+ Latent-Frequency Validity: Fast Spectral Editing with Screened Video-VAE Transfer Operators 
+ 
+ 
+ Bowen Xue
+  
+     
+ Jiafeng Xiong
+  
+     
+ Xin Quan
+   
+
+  Abstract 
+    
+ Direct spectral editing in video-VAE latents can control noise, flicker, smoothness, and frequency content without a decode–filter–reencode pass. However, video VAEs may redistribute pixel-space frequency bands across latent channels, and latent edits can disrupt VAE round-trip dynamics. We introduce  latent-frequency validity  (LFV), which learns a compact VAE-specific spectral response and deploys it only when it improves decoded-target fidelity without worsening round-trip drift. LFV follows a validation-selected path from a diagonal per-frequency calibrator (C1) to full channel mixing (CM), making cross-channel capacity a controllable per-edit resource. Across 544 VAE–edit cells spanning six spectral families, LFV emits 423 cheap operators: 277 are handled by C1, while 146 (34.5% of emitted operators) require channel mixing. On the primary 120-cell radial sweep, 99/100 emitted operators pass source-video-grouped held-out evaluation. Across five additional filter families, all 323 emitted operators pass held-out evaluation. Fully frozen OpenVid-fitted operators, including the validation-selected path coefficient, pass all 20 tested CogVideoX and HunyuanVideo generated-domain cells without adaptation. The selected response matches direct latent-filter latency and is about     3  ×   3\times    faster than pixel filter–reencode. The resulting maps reveal distinct VAE regimes, including strongly channel-coupled CogVideoX responses and a sharp Open-Sora high-band stability frontier. 
+  
+ 
+ 
+    
+ 
+  1 University of Manchester, United Kingdom 
+  2 NVIDIA, United States 
+  3 Idiap Research Institute, Switzerland 
+ 
+  
+ 
+ 
+ Introduction 
+
+ 
+ Spectral operations are useful primitives for video generation and reconstruction. They can attenuate coarse noise, suppress flicker, smooth a decoded sequence, or isolate selected temporal and spatial bands. With a fixed pretrained video VAE, the reference implementation is straightforward: decode the latent video, apply the desired pixel-space filter, and re-encode the result. Applying a Fourier mask directly to the latent tensor is far cheaper and fits naturally inside a latent generation pipeline. 
+ 
+ 
+ Yet the two implementations need not agree. A video VAE learns its own spatiotemporal analysis and synthesis transform, so a pixel-space frequency band can shift across latent frequencies, become attenuated, or mix across channels. This creates a model-specific transfer problem: which spectral edits admit an efficient latent realization, what response is required, and where should the system use the reference path instead? We capture this structure with a  VAE-specific operating map . 
+ 
+ 
+ We formulate the operating map through  latent-frequency validity  (LFV). For each VAE and pixel-space filter, decode–filter–reencode defines the target operation. LFV evaluates a learned latent response using two paired quantities: decoded-target fidelity and decode–encode round-trip drift. The two criteria are complementary. A more expressive operator may approximate the target better while moving the latent into a less stable region, so target fidelity alone is insufficient for deployment. 
+ 
+ 
+ To model the VAE response, C1 fits an independent gain for each latent channel and frequency, testing whether the transfer is channel-separable. Full channel mixing captures cross-channel response that C1 cannot represent. We connect these endpoints with a C1–CM path and let validation select the amount of channel-mixing capacity supported by each VAE–edit cell. The path is compact and interpretable:     α  =  0   \alpha=0    gives the diagonal response,     α  =  1   \alpha=1    gives full mixing, and intermediate values damp cross-channel residuals when the unrestricted estimator is unnecessarily aggressive. 
+ 
+ 
+ The resulting map has three outcomes.  C1-sufficient  cells require only per-channel calibration.  Path-rescued  cells require cross-channel response and become deployable through the C1–CM path.  Fallback  cells are routed to the reference branch because the tested cheap family does not satisfy both LFV criteria. Across 544 cells, 277 are C1-sufficient, 146 are path-rescued, and 121 fall back; therefore, 34.5% of emitted operators rely on channel mixing. The distribution is highly structured: CogVideoX is predominantly channel-coupled, WAN is largely diagonal with several damping-sensitive cases, HunyuanVideo combines both regimes, and Open-Sora forms a sharp high-frequency round-trip frontier. 
+ 
+ 
+ Contributions. 
+
+ 
+ We make three contributions. First, LFV provides a paired, statistically tested criterion for learning and deploying fast spectral operators in fixed video-VAE latents, together with a source-coordinate stride-aware reference. Second, we introduce a C1–channel-mixing path that turns cross-channel capacity into a per-edit control variable and recovers operators that a diagonal response cannot express. Third, we present a 544-cell study across four video VAEs and six spectral families, including source-video-grouped evaluation, fully frozen transfer to generated inputs, repeated-cycle and perceptual analysis, and four-VAE runtime profiling. The resulting operating maps characterize both the capabilities and the latent spectral geometry of modern video VAEs. 
+ 
+ 
+ 
+ 
+ Related Work 
+
+ 
+ Video VAEs and latent generation. 
+
+ 
+ VAEs and latent diffusion separate perceptual compression from generative modeling  ( Kingma and Welling 2022 ;  Rombach et al. 2022 ) , and video systems extend this idea with spatiotemporal autoencoders  ( Blattmann et al. 2023 ;  Zhao et al. 2024 ) . CogVideoX, Open-Sora, HunyuanVideo, and Wan use distinct video VAEs  ( Yang et al. 2025 ;  Zheng et al. 2024 ;  Kong et al. 2025 ;  Wan et al. 2025 ) . We freeze these pretrained VAEs and ask whether post-hoc latent spectral operators can replace pixel filtering and re-encoding. 
+ 
+ 
+ 
+ Spectral structure of autoencoder latents. 
+
+ 
+ Frequency-aware autoencoders improve reconstruction or diffusability through explicit frequency paths, equivariance, and spectrum shaping  ( Lin et al. 2023 ;  Kouzelis et al. 2025 ;  Skorokhodov et al. 2025 ) . Other analyses identify asymmetric high-frequency encoding and decoding or regularize spatiotemporal latent spectra  ( Lai et al. 2026 ;  Li et al. 2025 ;  Liu et al. 2026 ;  Ning et al. 2026 ) . These methods modify training or representation learning. LFV instead keeps the VAE fixed and measures whether a post-hoc latent operator realizes a specified decoded pixel operation. 
+ 
+ 
+ 
+ Frequency-domain operators and interventions. 
+
+ 
+ Fourier operators range from elementwise filtering to per-frequency channel mixing  ( Li et al. 2021 ;  Rao et al. 2021 ;  Guibas et al. 2022 ) . Frequency cues have also been used for video initialization, inversion, denoising, and editing trajectories  ( Wu et al. 2025 ;  Koo et al. 2025 ;  Ren et al. 2025 ;  Huang et al. 2025 ;  Zhu et al. 2025 ) . Our C1 and full-CM endpoints instead estimate the VAE-specific latent response induced by a fixed pixel-space filter, and validation selects the response used at deployment. 
+ 
+ 
+ 
+ Decode consistency and evaluation. 
+
+ 
+ Nonlinear VAE decoders can make latent operations inconsistent with pixel-space counterparts  ( Bradbury and Zhong 2026 ) , while repeated pixel–latent transitions may accumulate reconstruction or frequency drift  ( Almog et al. 2025 ;  Liao et al. 2026 ;  Wang et al. 2026 ) . LPIPS, FVD, and VBench assess perceptual, distributional, or multidimensional video quality  ( Zhang et al. 2018 ;  Unterthiner et al. 2019 ;  Huang et al. 2024 ) . Because our task is paired approximation of a fixed operator on the same clips, decoded-target PSNR and relative round-trip drift define the deployment gates; perceptual and repeated-cycle measures serve as corroborating diagnostics. 
+ 
+ 
+ 
+ 
+ Latent-Frequency Validity 
+
+ 
+ Let the encoder and decoder of a fixed video VAE be 
+ 
+ 
+ 
+  
+    E  \displaystyle E    
+        :    ℝ   T  ×  H  ×  W  ×  3    →   ℝ   C  ×   T  ′   ×   H  ′   ×   W  ′       ,   \displaystyle:\mathbb{R}^{T\times H\times W\times 3}\rightarrow\mathbb{R}^{C\times T^{\prime}\times H^{\prime}\times W^{\prime}},    
+  
+  (1)   
+ 
+  
+    D  \displaystyle D    
+        :    ℝ   C  ×   T  ′   ×   H  ′   ×   W  ′     →   ℝ   T  ×  H  ×  W  ×  3      .   \displaystyle:\mathbb{R}^{C\times T^{\prime}\times H^{\prime}\times W^{\prime}}\rightarrow\mathbb{R}^{T\times H\times W\times 3}.    
+    
+ 
+ For a pixel-space spectral filter     Φ  θ   \Phi_{\theta}   , the target latent for clip    x  x    is 
+ 
+
+  
+  
+        z  θ  ⋆   ​   (  x  )    =    E   ⁡   (    Φ  θ   ​   (   D  ⁡   (   E  ⁡   (  x  )    )    )    )     .   z_{\theta}^{\star}(x)=E\!\left(\Phi_{\theta}(D(E(x)))\right).    
+  
+  (2)    
+ 
+ This decode–filter–reencode path defines the spectral operation in the VAE’s own latent space. A source-filter-reencode target     E  ​   (    Φ  θ   ​   (  x  )    )    E(\Phi_{\theta}(x))    provides an independent target-sensitivity check. Let    ℱ  \mathscr{F}    be the 3D FFT over temporal and spatial latent axes. Our primary cheap reference is the same-coordinate latent filter 
+ 
+
+  
+  
+        ℒ  θ  LF   ​   (  z  )    =    ℱ   −  1    ​   (    M  θ   ⊙   ℱ  ⁡   (  z  )     )     ,   \mathcal{L}^{\mathrm{LF}}_{\theta}(z)=\mathscr{F}^{-1}\!\left(M_{\theta}\odot\mathscr{F}(z)\right),    
+  
+  (3)    
+ 
+ which applies the same numerical mask parameterization directly in latent FFT coordinates. This is the natural drop-in shortcut used by a latent pipeline. To separate direct coordinate reuse from source-video frequency alignment, we also construct a stride-aware reference. If the VAE compression strides are     (   s  t   ,   s  h   ,   s  w   )   (s_{t},s_{h},s_{w})    and a latent FFT bin has coordinates     (   f  t   ,   f  h   ,   f  w   )   (f_{t},f_{h},f_{w})    in cycles per latent sample, its source-video coordinates are 
+ 
+
+  
+  
+        𝐟  x   =   (    f  t   /   s  t    ,    f  h   /   s  h    ,    f  w   /   s  w    )    ,    r  x   =    ‖   𝐟  x   ‖   2     .   \mathbf{f}^{x}=\left(f_{t}/s_{t},\,f_{h}/s_{h},\,f_{w}/s_{w}\right),\qquad r_{x}=\|\mathbf{f}^{x}\|_{2}.    
+  
+  (4)    
+ 
+ The  stride-aware latent filter  applies the pixel-space mask as      M  θ   ​   (   r  x   )    M_{\theta}(r_{x})    on latent FFT bins. Thus a reported latent-grid center is not interpreted as a universal cycles-per-pixel value: its source-video support is VAE-specific and follows Eq. (  4  ). The primary map measures improvement over the direct shortcut in Eq. (  3  ), while the stride-aware comparison isolates gains that remain after correcting this sampling geometry. For an edited latent     z  ^   \hat{z}   , round-trip drift is 
+ 
+
+  
+  
+       OffRel  ⁡   (   z  ^   )    =     ‖    z  ^   −   E  ⁡   (   D  ⁡   (   z  ^   )    )     ‖   2    max  ⁡   (    ‖   z  ^   ‖   2   ,  ε  )      .   \mathrm{OffRel}(\hat{z})=\frac{\|\hat{z}-E(D(\hat{z}))\|_{2}}{\max(\|\hat{z}\|_{2},\varepsilon)}.    
+  
+  (5)    
+ 
+ We compare every candidate with the same-coordinate latent filter on the same clip: 
+ 
+ 
+ 
+  
+     Δ  ​  PSNR   \displaystyle\Delta\mathrm{PSNR}    
+        =    PSNR  method   −   PSNR  LF     ,   \displaystyle=\mathrm{PSNR}_{\mathrm{method}}-\mathrm{PSNR}_{\mathrm{LF}},    
+  
+  (6)   
+ 
+  
+     Δ  ​  OffRel   \displaystyle\Delta\mathrm{OffRel}    
+        =    OffRel  method   −   OffRel  LF     .   \displaystyle=\mathrm{OffRel}_{\mathrm{method}}-\mathrm{OffRel}_{\mathrm{LF}}.    
+    
+ 
+ Paired bootstrap intervals yield the lower 95% bound     L  psnr   L^{\mathrm{psnr}}    and upper 95% bound     U  off   U^{\mathrm{off}}   . A candidate passes LFV when 
+ 
+
+  
+  
+        L  psnr   &gt;  0   ,    U  off   ≤  0    .   L^{\mathrm{psnr}}&gt;0,\qquad U^{\mathrm{off}}\leq 0.    
+  
+  (7)    
+ 
+ Equation (  7  ) defines a strict win over the latent shortcut: the learned response must improve target fidelity and preserve or improve round-trip stability. The same criterion is recomputed against the source-coordinate reference in the stride-aware comparison. 
+ 
+ 
+ 
+ Screened C1–Channel Mixing 
+
+ 
+ For fitting pairs     (   z  b   ,   z   θ  ,  b   ⋆   )   (z_{b},z_{\theta,b}^{\star})   , write      F   b  ,  c  ,  ω    =   ℱ  ​    (   z  b   )    c  ,  ω      F_{b,c,\omega}=\mathscr{F}(z_{b})_{c,\omega}    and      G   b  ,  c  ,  ω    =   ℱ  ​    (   z   θ  ,  b   ⋆   )    c  ,  ω      G_{b,c,\omega}=\mathscr{F}(z_{\theta,b}^{\star})_{c,\omega}   . C1 fits one complex gain per channel and frequency: 
+ 
+
+  
+  
+       min  ⁡     ∑  b      a   c  ,  ω       ⁡    |     a   c  ,  ω    ​   F   b  ,  c  ,  ω     −   G   b  ,  c  ,  ω     |   2     +    λ  C1   ​    |    a   c  ,  ω    −   a   c  ,  ω   0    |   2     ,   \min_{a_{c,\omega}}\sum_{b}|a_{c,\omega}F_{b,c,\omega}-G_{b,c,\omega}|^{2}+\lambda_{\mathrm{C1}}|a_{c,\omega}-a^{0}_{c,\omega}|^{2},    
+  
+  (8)    
+ 
+ with solution 
+ 
+
+  
+  
+       a   c  ,  ω   ⋆   =      ∑  b      F   b  ,  c  ,  ω    ¯   ​   G   b  ,  c  ,  ω      +    λ  C1   ​   a   c  ,  ω   0        ∑  b     |   F   b  ,  c  ,  ω    |   2    +   λ  C1      .   a_{c,\omega}^{\star}=\frac{\sum_{b}\overline{F_{b,c,\omega}}G_{b,c,\omega}+\lambda_{\mathrm{C1}}a^{0}_{c,\omega}}{\sum_{b}|F_{b,c,\omega}|^{2}+\lambda_{\mathrm{C1}}}.    
+  
+  (9)    
+ 
+ Let      D   θ  ,  ω    =   diag  ⁡   (   a   1  ,  ω   ⋆   ,  …  ,   a   C  ,  ω   ⋆   )     D_{\theta,\omega}=\operatorname{diag}(a_{1,\omega}^{\star},\ldots,a_{C,\omega}^{\star})   . 
+ 
+ 
+ Full channel mixing fits a matrix at each frequency. With      F  ω   =   [    f   1  ,  ω    ,  …  ,   f   B  ,  ω     ]    F_{\omega}=[f_{1,\omega},\ldots,f_{B,\omega}]    and      G  ω   =   [    g   1  ,  ω    ,  …  ,   g   B  ,  ω     ]    G_{\omega}=[g_{1,\omega},\ldots,g_{B,\omega}]   , 
+ 
+
+  
+  
+        min   K  ω    ⁡    ‖     K  ω   ​   F  ω    −   G  ω    ‖   F  2    +    λ  CM   ​    ‖    K  ω   −   K  ω  0    ‖   F  2     ,   \min_{K_{\omega}}\|K_{\omega}F_{\omega}-G_{\omega}\|_{F}^{2}+\lambda_{\mathrm{CM}}\|K_{\omega}-K^{0}_{\omega}\|_{F}^{2},    
+  
+  (10)    
+ 
+ whose ridge solution is 
+ 
+
+  
+  
+       K  ω  CM   =    (     G  ω   ​   F  ω  ∗    +    λ  CM   ​   K  ω  0     )   ​    (     F  ω   ​   F  ω  ∗    +    λ  CM   ​  I    )    −  1      .   K_{\omega}^{\mathrm{CM}}=(G_{\omega}F_{\omega}^{\ast}+\lambda_{\mathrm{CM}}K^{0}_{\omega})(F_{\omega}F_{\omega}^{\ast}+\lambda_{\mathrm{CM}}I)^{-1}.    
+  
+  (11)    
+ 
+ With matched priors and ridge weights, imposing a diagonal constraint on Eq. (  10  ) reduces it to independent C1 solves. Our final endpoints use separately selected regularization, so we treat them as complementary fitted hypotheses: C1 tests channel-separable response, while full CM estimates complete cross-channel transfer. The matched-regularization audit in Table   3   preserves the same coverage conclusion. Positive ridge weights make both systems uniquely solvable. A residual view makes the capacity difference explicit. If the target response at one frequency is     g  =    K  ​  f   +  ξ    g=Kf+\xi   , with      𝔼  ⁡   [   ξ  ​   f  ∗    ]    =  0   \mathbb{E}[\xi f^{\ast}]=0    and source covariance     Σ  f   \Sigma_{f}   , then any diagonal response    R  R    incurs 
+ 
+
+  
+  
+       𝔼  ​    ‖    R  ​  f   −  g   ‖   2  2    =     tr   ⁡   (    (   R  −  K   )   ​   Σ  f   ​    (   R  −  K   )   ∗    )    +   𝔼  ​    ‖  ξ  ‖   2  2      .   \mathbb{E}\|Rf-g\|_{2}^{2}=\operatorname{tr}\!\left((R-K)\Sigma_{f}(R-K)^{\ast}\right)+\mathbb{E}\|\xi\|_{2}^{2}.    
+  
+  (12)    
+ 
+ Off-diagonal target response therefore creates an approximation residual that C1 cannot remove. Channel mixing directly addresses this residual, while LFV determines how much of the fitted response should be used for deployment. 
+ 
+ 
+ Our candidate family is 
+ 
+
+  
+  
+         K  ω   ​   (  α  )    =     (   1  −  α   )   ​   D   θ  ,  ω     +   α  ​   K  ω  CM      ,   α  ∈  𝒜    .   K_{\omega}(\alpha)=(1-\alpha)D_{\theta,\omega}+\alpha K_{\omega}^{\mathrm{CM}},\qquad\alpha\in\mathcal{A}.    
+  
+  (13)    
+ 
+ Endpoints are fitted on the fitting split. Validation evaluates the capacity path, retains alphas satisfying Eq. (  7  ), and chooses the candidate with the largest fidelity lower bound, breaking ties by the smaller safety upper bound. If the path does not contain an eligible response, the cell routes to the reference branch. Test clips only evaluate the frozen choice. The selected matrix response is Hermitian-projected before inverse FFT so edited latents remain real. 
+ 
+ 
+ The three stages have distinct roles: fitting estimates the VAE response, validation chooses the supported amount of channel-mixing capacity, and test measures the frozen operator. At inference, deployment reduces to one fixed frequency response; there is no per-input search over    α  \alpha   . 
+ 
+ 
+ 
+ Experimental Design 
+
+ 
+ Models, data, and nested splits. 
+
+ 
+ We evaluate WAN, CogVideoX, Open-Sora v1.3, and HunyuanVideo on OpenVid1M  ( Nan et al. 2024 ) . Endpoint fitting uses 256 clips, validation selection uses 128, and final reporting uses 128 untouched clips. All comparisons remain paired within clip. Our primary confidence intervals use a source-video group bootstrap: source IDs are resampled with replacement, all clips from each sampled source are retained, and method differences remain paired within each clip. Paired clip bootstrap is reported as a sensitivity analysis. A cell is  emitted  only when validation selects an LFV-eligible path point; it is  path-rescued  when C1 fails but the selected path passes, and  fallback  when no validation-eligible point exists. 
+ 
+ 
+ 
+ Primary and breadth frequency settings. 
+
+ 
+ The primary sweep contains 30 radial band-pass centers per VAE,     0.025  ,  0.050  ,  …  ,  0.750   0.025,0.050,\ldots,0.750   , for 120 cells. The canonical grid uses raw  torch.fft.fftfreq  cycles per latent sample and radial coordinate     r  =     f  t  2   +   f  h  2   +   f  w  2      r=\sqrt{f_{t}^{2}+f_{h}^{2}+f_{w}^{2}}   , so the joint spatiotemporal corner exceeds the single-axis Nyquist value. Equation (  4  ) gives the corresponding source-video interpretation used by the stride-aware reference. Bands use width 0.10 and cosine transition width 0.02. Breadth experiments add 424 cells: 60 radial low-pass, 60 radial high-pass, 120 notch, 108 spatial-band, and 76 temporal-band cells. 
+ 
+ 
+ 
+ Mechanism and generalization studies. 
+
+ 
+ A five-center slice     {   0.05  ,  0.15  ,  0.25  ,  0.35  ,  0.45   }   \{0.05,0.15,0.25,0.35,0.45\}    across four VAEs provides a compact 20-cell mechanism study of C1 retention, CM-only upgrades, and stability frontiers. Additional evaluations regroup clips by source identity, vary band width, clip length, resolution, and sampling stride, stratify by motion, texture, and compression proxies, and include phase-based stress tests. Each evaluation preserves the fitting–validation–test separation. 
+ 
+ 
+ 
+ Frozen generated-domain transfer. 
+
+ 
+ We test whether the learned operator bank transfers from reconstruction clips to generated inputs without any domain-specific adaptation. For each evaluated cell, we freeze the C1 and CM endpoints and the validation-selected    α  \alpha    from the OpenVid study. We then evaluate this fixed operator on 64 generated samples per cell, with no refitting and no reselection. Two protocols are considered: direct generated latents and generated videos re-encoded by the corresponding VAE. We evaluate five centers for each of CogVideoX and HunyuanVideo under both protocols, for 20 generated-domain cells in total. 
+ 
+ 
+ 
+ Decoded and temporal diagnostics. 
+
+ 
+ We evaluate 18 representative emitted cells on the full 128-clip test split using LPIPS, temporal-difference error, temporal high-frequency error, and five-cycle VAE drift. These measurements provide decoded and temporal evidence for the selected responses without participating in operator selection. 
+ 
+ 
+ 
+ Hyperparameters and runtime. 
+
+ 
+ Inputs contain 16 frames at     256  ×  256   256\times 256    and produce latents of shape     16  ×  4  ×  32  ×  32   16\times 4\times 32\times 32   . The alpha grid is     {   0  ,  0.1  ,  0.2  ,  0.35  ,  0.5  ,  0.7  ,  0.85  ,  1   }   \{0,0.1,0.2,0.35,0.5,0.7,0.85,1\}   . C1 uses ridge     10   −  4    10^{-4}    with zero prior; full CM uses ridge     2  ×   10   −  2     2\times 10^{-2}   , identity prior, real gain mode, spectral-norm clamp 1.5, and Hermitian projection. LFV intervals use 4000 paired bootstrap replicates. Runtime is measured at center 0.25 on an NVIDIA L40S in FP16, batch size 1, with 120 timed runs per method and VAE. All  from_z  branches begin from an existing latent and include the spectral operation followed by one output decode. Diffusion sampling, data loading, and offline endpoint fitting are excluded. Pixel filter–reencode measures decode    →  \rightarrow    pixel filter    →  \rightarrow    encode    →  \rightarrow    output decode; LF projection measures latent filter    →  \rightarrow    decode    →  \rightarrow    encode    →  \rightarrow    output decode. 
+ 
+ 
+ 
+ 
+ Results 
+
+ 
+ LFV Reveals Three VAE-Specific Regimes 
+
+ 
+ Table   1   gives the primary operating map. C1 alone supports 59/120 cells; full channel mixing expands this to 86/120. The validation-selected path reaches 100 cells, of which 99 pass the held-out source-video-grouped LFV test. Paired clip bootstrap gives 100/100, and the two analyses agree on 119/120 map decisions; the sole change is the thin WAN 0.525 boundary cell. Most importantly, channel mixing creates 41 deployable operators beyond the diagonal endpoint. Figure   1   shows how these gains organize into distinct VAE regimes rather than a uniform global response. 
+ 
+ 
+  Table 1:  Primary 120-cell radial map. Group pass is the main statistic and resamples source-video IDs; clip pass is a paired clip-bootstrap sensitivity analysis. 
+  
+  
+  
+ 
+ 
+ 
+ Model 
+ C1 
+ Full CM 
+ Emitted 
+ Group pass 
+ Clip pass 
+ Rescued 
+ Fallback  
+ 
+ 
+ 
+ WAN 
+ 25 
+ 18 
+ 30 
+ 29/30 
+ 30/30 
+ 5 
+ 0  
+ 
+ CogVideoX 
+ 5 
+ 30 
+ 30 
+ 30/30 
+ 30/30 
+ 25 
+ 0  
+ 
+ Open-Sora v1.3 
+ 9 
+ 10 
+ 10 
+ 10/10 
+ 10/10 
+ 1 
+ 20  
+ 
+ HunyuanVideo 
+ 20 
+ 28 
+ 30 
+ 30/30 
+ 30/30 
+ 10 
+ 0  
+ 
+ Total 
+ 59 
+ 86 
+  100  
+  99/100  
+  100/100  
+  41  
+  20   
+ 
+   
+    
+ 
+   
+  Figure 1:  Dense LFV map. C1-sufficient and path-rescued cells form the emitted region; Open-Sora v1.3 exhibits a refined safety frontier at     (  0.25  ,  0.2625  ]   (0.25,0.2625]   , whereas no fallback is observed for the other three VAEs through center 0.75. 
+ 
+ 
+ The 20-cell mechanism slice makes the tradeoff explicit (Table   2  ). Full CM recovers all five upgrades unavailable to C1, but loses two WAN cells that C1 passes. The path retains all 13 C1 passes and all five CM-only upgrades, reaching 18/20. Anchored, off-diagonal-shrunk, and richer covered variants also reach 18/20 but do not improve coverage; a dense 120-cell rerun likewise adds no cells beyond the convex path. Table   3   tests the primary result under source dependence, source-coordinate frequency alignment, matched regularization, and a richer operator family. 
+ 
+ 
+  Table 2:  Mechanism study on five centers for each VAE. 
+  
+  
+  
+ 
+ 
+ 
+ Method 
+ Pass 
+ C1 retained 
+ CM-only retained 
+ Fallback  
+ 
+ 
+ 
+ C1 
+ 13/20 
+ 13/13 
+ 0/5 
+ 7  
+ 
+ Full CM 
+ 16/20 
+ 11/13 
+ 5/5 
+ 4  
+ 
+ C1–CM path 
+  18/20  
+  13/13  
+  5/5  
+  2   
+ 
+ Richer covered family 
+ 18/20 
+ 13/13 
+ 5/5 
+ 2  
+ 
+   
+    
+ 
+ 
+  Table 3:  Primary source-grouped reporting and complementary controls. The stride-aware row compares the frozen selected path with the best validation-selected source-coordinate latent filter. 
+  
+  
+  
+ 
+ 
+ 
+ Evaluation 
+ Result 
+ Main observation  
+ 
+ 
+ 
+ Source-video group bootstrap 
+ 99/100 
+ operating map is preserved  
+ 
+ Stride-aware latent reference 
+ 83/100 
+ learned response exceeds coordinate alignment  
+ 
+ Matched regularization 
+ 100/100 
+ full CM remains 86/120  
+ 
+ Richer covered family 
+ 100/100 
+ no additional expansions  
+ 
+   
+    
+ 
+ 
+ Source-video grouping is the main statistic and retains 99/100 emitted decisions. The complementary controls preserve the central conclusion: matching endpoint regularization yields 100/100 path coverage while full CM remains at 86/120, and richer covered families add no cells. Most notably, 83/100 emitted decisions retain both LFV advantages over the stride-aware source-coordinate filter. The learned response therefore captures VAE-specific spectral transfer beyond a simple correction for temporal and spatial stride. 
+ 
+ 
+ Validation-to-test transfer. 
+
+ 
+ Table   4   shows that validation margins carry cleanly to held-out data. Ordinary passes, thin passes, and channel-mixing rescues retain their decisions after    α  \alpha    is frozen, while Open-Sora 0.35 remains outside the selected path. 
+ 
+ 
+  Table 4:  Representative paired clip-bootstrap validation-to-test margins. Each selected    α  \alpha    is chosen on validation and evaluated once on the untouched test split. 
+  
+  
+  
+ 
+ 
+ 
+ Cell 
+    α  \alpha    
+ Val PSNR LB 
+ Val OffRel UB 
+ Test PSNR LB 
+ Test OffRel UB 
+ Outcome  
+ 
+ 
+ 
+ WAN 0.05 
+ 0.20 
+ +3.488 
+ -0.305 
+ +3.626 
+ -0.319 
+ pass  
+ 
+ WAN 0.25 
+ 0.50 
+ +2.661 
+ -0.047 
+ +2.757 
+ -0.050 
+ thin pass  
+ 
+ CogVideoX 0.15 
+ 1.00 
+ +6.792 
+ -4.528 
+ +6.754 
+ -4.521 
+ rescued  
+ 
+ Open-Sora 0.25 
+ 1.00 
+ +5.704 
+ -0.112 
+ +5.372 
+ -0.124 
+ rescued  
+ 
+ HunyuanVideo 0.25 
+ 1.00 
+ +5.510 
+ -0.003 
+ +5.408 
+ -0.030 
+ thin pass  
+ 
+   
+    
+ 
+ 
+ 
+ 
+ Channel Mixing Works Best as a Controlled Capacity Dial 
+
+ 
+ Full channel mixing supplies the capacity needed by CogVideoX and many spatial or temporal filters, but the best response is not always the endpoint     α  =  1   \alpha=1   . Table   5   shows two WAN cells in which the full-CM fit overuses cross-channel residuals. Intermediate path points improve fidelity over the latent shortcut while recovering the stable behavior of the diagonal response. The path therefore acts as a data-driven capacity dial, not merely a choice between two discrete estimators. 
+ 
+ 
+  Table 5:  WAN counterexamples showing why fitted full CM cannot simply replace C1. Intervals are held-out paired 95% confidence intervals. 
+  
+  
+  
+ 
+ 
+ 
+ Cell 
+ Method 
+     Δ  ​  PSNR   \Delta\mathrm{PSNR}    mean [95% CI] 
+     Δ  ​  OffRel   \Delta\mathrm{OffRel}    mean [95% CI] 
+ Decision  
+ 
+ 
+ 
+ WAN 0.05 
+ C1 
+     3.954  ,   [   3.457  ,  4.450   ]    3.954,[3.457,4.450]    
+      −  0.413   ,   [    −  0.448   ,   −  0.380    ]    -0.413,[-0.448,-0.380]    
+ pass  
+ 
+ WAN 0.05 
+ full CM 
+     2.043  ,   [   1.927  ,  2.167   ]    2.043,[1.927,2.167]    
+      +  0.079   ,   [   0.047  ,  0.107   ]    +0.079,[0.047,0.107]    
+ safety-limited  
+ 
+ WAN 0.05 
+ selected path 
+     4.078  ,   [   3.616  ,  4.540   ]    4.078,[3.616,4.540]    
+      −  0.351   ,   [    −  0.386   ,   −  0.319    ]    -0.351,[-0.386,-0.319]    
+ pass  
+ 
+ WAN 0.25 
+ C1 
+     2.908  ,   [   2.457  ,  3.355   ]    2.908,[2.457,3.355]    
+      −  0.218   ,   [    −  0.242   ,   −  0.195    ]    -0.218,[-0.242,-0.195]    
+ pass  
+ 
+ WAN 0.25 
+ full CM 
+     2.600  ,   [   2.509  ,  2.695   ]    2.600,[2.509,2.695]    
+      +  0.095   ,   [   0.074  ,  0.117   ]    +0.095,[0.074,0.117]    
+ safety-limited  
+ 
+ WAN 0.25 
+ selected path 
+     3.056  ,   [   2.754  ,  3.370   ]    3.056,[2.754,3.370]    
+      −  0.075   ,   [    −  0.099   ,   −  0.051    ]    -0.075,[-0.099,-0.051]    
+ thin pass  
+ 
+   
+    
+ 
+ 
+ Residual-control diagnostics. 
+
+ 
+ Off-diagonal shrinkage makes this interpretation concrete. In WAN 0.05, reducing the off-diagonal ratio from    0.853  0.853    to    0.372  0.372    improves both     Δ  ​  PSNR   \Delta\mathrm{PSNR}    (    +  3.568   +3.568    to     +  8.334   +8.334   ) and     Δ  ​  OffRel   \Delta\mathrm{OffRel}    (    −  0.124   -0.124    to     −  0.408   -0.408   ), showing that damping removes harmful residual mixing. CogVideoX 0.15 remains strongly improved even under heavy shrinkage (     Δ  ​  PSNR   ≥   +  6.89    \Delta\mathrm{PSNR}\geq+6.89   ,      Δ  ​  OffRel   &lt;   −  4.70    \Delta\mathrm{OffRel}&lt;-4.70   ), revealing a genuinely cross-channel target response. Open-Sora 0.35 and 0.45 remain beyond the stability boundary at every tested ratio, completing the three-regime picture. 
+ 
+ 
+ 
+ 
+ Cross-Channel Response Generalizes Across Spectral Operators 
+
+ 
+ Having established how the path controls channel-mixing capacity on the primary map, we next test whether the same response structure appears for other spectral operators.
+The learned response extends well beyond radial band-pass filters (Table   6  ). Across 424 additional cells, LFV emits 323 cheap operators, and all 323 pass the held-out LFV gate. Of these, 218 are diagonal-sufficient and 105 are created by the channel-mixing path. Cross-channel response is especially valuable for spatial and temporal bands, which contribute 38 and 43 rescues, respectively; high-pass filters add another 23. These results show that channel coupling is a recurring property of video-VAE spectral transfer rather than an artifact of one mask family. 
+ 
+ 
+  Table 6:  Held-out LFV outcomes on 424 additional spectral-edit cells. Each emitted operator is selected on validation and evaluated once on the held-out split. 
+  
+  
+  
+ 
+ 
+ 
+ Family 
+ Cells 
+ C1 sufficient 
+ Rescued 
+ Emitted 
+ Held-out pass 
+ Fallback  
+ 
+ 
+ 
+ Radial low-pass 
+ 60 
+ 59 
+ 0 
+ 59 
+ 59/59 
+ 1  
+ 
+ Radial high-pass 
+ 60 
+ 18 
+ 23 
+ 41 
+ 41/41 
+ 19  
+ 
+ Radial notch 
+ 120 
+ 71 
+ 1 
+ 72 
+ 72/72 
+ 48  
+ 
+ Spatial band 
+ 108 
+ 49 
+ 38 
+ 87 
+ 87/87 
+ 21  
+ 
+ Temporal band 
+ 76 
+ 21 
+ 43 
+ 64 
+ 64/64 
+ 12  
+ 
+ Total 
+  424  
+  218  
+  105  
+  323  
+  323/323  
+  101   
+ 
+   
+    
+ 
+ 
+ The 105 additional rescues are distributed across both models and operators: CogVideoX contributes 55, HunyuanVideo 23, Open-Sora 16, and WAN 11. Low-pass edits are predominantly diagonal-sufficient, whereas spatial and temporal bands expose the largest need for cross-channel transfer. High-pass and notch families produce sharper boundaries, particularly for Open-Sora. The operator family therefore reveals a structured interaction between the VAE architecture and the geometry of the requested filter. 
+ 
+ 
+ A unified 544-cell view. 
+
+ 
+ Combining the primary and breadth blocks gives the clearest summary of the method (Table   7  ). Of 544 tested VAE–edit cells, 277 are handled by diagonal C1 and 146 are unlocked by channel mixing, yielding 423 clip-level held-out LFV passes. More than one third of these operators (     146  /  423   =   34.5  %    146/423=34.5\%   ) would be unavailable to a diagonal method. The C1–CM path is therefore a substantive capacity expansion: it converts cross-channel spectral structure into deployable edits while routing the remaining 121 cells to the reference branch. 
+ 
+ 
+  Table 7:  The three LFV regimes across all reported frequency-family cells. 
+  
+  
+  
+ 
+ 
+ 
+ Block 
+ Cells 
+ C1 sufficient 
+ Rescued 
+ Emitted 
+ Fallback  
+ 
+ 
+ 
+ Primary radial band-pass 
+ 120 
+ 59 
+ 41 
+ 100 
+ 20  
+ 
+ Additional families 
+ 424 
+ 218 
+ 105 
+ 323 
+ 101  
+ 
+ All tested cells 
+  544  
+  277  
+  146  
+  423  
+  121   
+ 
+   
+    
+ 
+ 
+ 
+ 
+ The Map Reveals Video-VAE Spectral Geometry 
+
+ 
+ The aggregate map exposes two complementary axes of structure. Along the  filter  axis, low-pass edits are almost entirely diagonal, whereas spatial and temporal bands frequently require cross-channel response. Along the  model  axis, CogVideoX contributes 80 of the 146 rescues across the primary and breadth blocks, making it the clearest channel-coupled VAE. WAN contributes only 16 rescues and is mostly diagonal-sufficient; its characteristic behavior is not missing capacity but the need to damp an unnecessarily aggressive full-CM fit. HunyuanVideo occupies a mixed regime with 33 rescues and broad coverage. Open-Sora contributes 17 rescues but concentrates the high-frequency stability boundaries. 
+ 
+ 
+ These patterns are consistent with a learned spectral transfer geometry rather than a scalar frequency remapping. The fitted transfer-map diagonal mass has a moderate association with C1 fidelity (Spearman     ρ  =  0.501   \rho=0.501    over 20 mechanism cells), while the residual analysis in Eq. (  12  ) explains why cross-channel terms can reduce approximation error. The operating map therefore provides more than a collection of pass counts: it is a compact diagnostic of how each VAE redistributes temporal and spatial bands across latent channels. This diagnostic view explains why a single universal mask is insufficient and why a small, VAE-specific response bank is effective. 
+ 
+ 
+ 
+ Frozen Operators Transfer to Generated Inputs 
+
+ 
+ The operating map is learned on OpenVid reconstruction clips, but the resulting responses also apply to generated inputs without adaptation. We freeze the C1 and CM endpoints and the validation-selected    α  \alpha    from the OpenVid study, then evaluate the same operator on 64 generated samples per cell. No generated sample is used for fitting or selection. 
+ 
+ 
+ Table   8   reports two complementary input routes. In  generated-latent direct , the frozen response is applied to saved diffusion latents. In  generated-video source , generated videos are encoded by the corresponding VAE before applying the same frozen response. CogVideoX and HunyuanVideo pass all five tested centers under both routes, for 20/20 held-out generated-domain passes. The result shows that the learned spectral transfer is not confined to reconstruction latents from the fitting distribution; it remains effective on latents and videos produced by the corresponding generative models. 
+ 
+ 
+  Table 8:  Fully frozen generated-domain transfer. C1 and CM endpoints and the OpenVid-selected    α  \alpha    are evaluated on 64 generated samples per cell without refitting or reselection. 
+  
+  
+  
+ 
+ 
+ 
+ Model 
+ Direct generated latent 
+ Generated video 
+ Total  
+ 
+ 
+ 
+ CogVideoX 
+ 5/5 
+ 5/5 
+ 10/10  
+ 
+ HunyuanVideo 
+ 5/5 
+ 5/5 
+ 10/10  
+ 
+ Total 
+  10/10  
+  10/10  
+  20/20   
+ 
+   
+    
+ 
+ 
+ 
+ LFV Discovers a Sharp Open-Sora High-Band Frontier 
+
+ 
+ The same map that identifies deployable operators also localizes where the fast path should end.
+Open-Sora reveals the sharpest boundary in the operating map. The selected operator passes at 0.25, while half-step refinement places the transition in     (  0.25  ,  0.2625  ]   (0.25,0.2625]    (Table   9  ). Beyond the boundary, target-fidelity lower bounds remain strongly positive but round-trip upper bounds cross zero. LFV therefore separates a region where additional channel-mixing capacity is useful from a region where the cheap latent path should hand off to the reference implementation. 
+ 
+ 
+  Table 9:  Open-Sora half-step refinement. Every tested center above 0.25 is safety-limited despite positive fidelity lower bounds. 
+  
+  
+  
+ 
+ 
+ 
+ Center 
+    α  \alpha    
+ PSNR LB 
+ OffRel UB 
+ Decision  
+ 
+ 
+ 
+ 0.2500 
+ 1.0 
+ +5.707 
+ -0.112 
+ pass  
+ 
+ 0.2625 
+ – 
+ +5.569 
+ +0.025 
+ fallback  
+ 
+ 0.2750 
+ – 
+ +5.394 
+ +0.131 
+ fallback  
+ 
+ 0.2875 
+ – 
+ +5.812 
+ +0.285 
+ fallback  
+ 
+ 0.3000 
+ – 
+ +5.506 
+ +0.409 
+ fallback  
+ 
+ 0.3125 
+ – 
+ +4.809 
+ +0.448 
+ fallback  
+ 
+ 0.3250 
+ – 
+ +4.562 
+ +0.487 
+ fallback  
+ 
+ 0.3375 
+ – 
+ +4.178 
+ +0.533 
+ fallback  
+ 
+ 0.3500 
+ – 
+ +3.731 
+ +0.506 
+ fallback  
+ 
+ 0.3625 
+ – 
+ +3.704 
+ +0.563 
+ fallback  
+ 
+   
+    
+ 
+ 
+ The rejected high-band edit is not numerically negligible: mean relative edit energy is approximately    0.976  0.976    at 0.25,    0.975  0.975    at 0.275,    0.994  0.994    at 0.525, and    0.9999  0.9999    at 0.75. 
+ 
+ 
+ The decision also replicates under source-video grouping. Across the complete dense map, regrouping by source identity preserves 119/120 decisions; the sole change is WAN 0.525, whose grouped test safety upper bound is     +  0.0027   +0.0027   . An independently regenerated Open-Sora boundary split refits endpoints and reselects    α  \alpha    on validation, yet reproduces the pass at 0.25 and safety fallbacks above it (Table   10  ). 
+ 
+ 
+  Table 10:  Source-ID-grouped replication of the Open-Sora boundary neighborhood. 
+ 
+ 
+ 
+ Center 
+ Val PSNR LB 
+ Val OffRel UB 
+ Decision  
+ 
+ 
+ 
+ 0.2500 
+ +5.298 
+ -0.103 
+ pass  
+ 
+ 0.2625 
+ +5.190 
+ +0.042 
+ fallback  
+ 
+ 0.2750 
+ +5.062 
+ +0.159 
+ fallback  
+ 
+ 0.3000 
+ +5.071 
+ +0.439 
+ fallback  
+ 
+ 
+ 
+ 
+ The same frontier structure appears under broader settings. Width and input variations yield 48/72 and 45/50 passes, with the boundary again dominated by round-trip behavior. Motion subgroup decisions agree with the main map in 18/20 cells, while texture and compression groupings agree in 17/20. Six of eight phase-based stress tests also land outside the cheap operating region. 
+ 
+ 
+ 
+ OffRel Predicts Repeated Drift and Matches Decoded Quality 
+
+ 
+ One-round OffRel provides an efficient proxy for repeated VAE behavior. Across 9984 method–clip observations, its Spearman correlation with five-cycle drift is     ρ  =  0.948   \rho=0.948    with 95% CI     [  0.945  ,  0.950  ]   [0.945,0.950]   ; within-family correlations remain between    0.918  0.918    and    0.947  0.947   . This strong agreement makes the one-cycle statistic practical for dense validation while preserving the behavior of a more expensive multi-cycle diagnostic. 
+ 
+ 
+ At rejected Open-Sora center 0.35, full CM improves PSNR and LPIPS over the latent filter (24.935 versus 21.125 and 0.782 versus 0.939), but OffRel and five-cycle drift remain worse (1.465 versus 0.974 and 2.652 versus 2.154), matching the safety rejection. CogVideoX 0.15 shows the intended rescue: the selected path improves PSNR from 18.196 to 24.202, LPIPS from 0.918 to 0.344, OffRel from 5.322 to 0.338, and five-cycle drift from 4.841 to 0.662. WAN gives the damping case: at center 0.05, the selected path reaches PSNR 18.100 and LPIPS 0.618 while reducing OffRel and five-cycle drift to 0.310 and 0.690, whereas full CM remains closer to the round-trip boundary.
+WAN 0.25 provides a second damping example. Relative to the latent filter, the selected path improves PSNR by    3.04  3.04    dB while reducing OffRel from    0.709  0.709    to    0.608  0.608    and five-cycle drift from    1.371  1.371    to    1.204  1.204   . Full CM achieves slightly lower LPIPS (   0.618  0.618    versus    0.660  0.660   ) but worsens both stability measures, so interpolation preserves most of its fidelity gain without inheriting its drift. 
+ 
+ 
+ The full-test diagnostic sweep covers 18 representative emitted cells—five each for WAN, CogVideoX, and HunyuanVideo and three for Open-Sora—and all 18 pass LFV on 128 held-out clips (Table   11  ). LPIPS, temporal-difference error, temporal high-frequency error, and repeated-cycle drift provide complementary decoded and temporal corroboration of the capacity-limited, damping-sensitive, and frontier regimes identified by LFV. 
+ 
+ 
+  Table 11:  Full-test diagnostics for representative emitted cells. Margins are the weakest within each model group. 
+  
+  
+  
+ 
+ 
+ 
+ Model 
+ Cells 
+ Min PSNR LB 
+ Max OffRel UB 
+ Pass  
+ 
+ 
+ 
+ WAN 
+ 5 
+ +1.202 
+ -0.043 
+ 5/5  
+ 
+ CogVideoX 
+ 5 
+ +1.783 
+ -1.075 
+ 5/5  
+ 
+ Open-Sora v1.3 
+ 3 
+ +4.729 
+ -0.120 
+ 3/3  
+ 
+ HunyuanVideo 
+ 5 
+ +2.724 
+ -0.017 
+ 5/5  
+ 
+ Total 
+ 18 
+ – 
+ – 
+  18/18   
+ 
+   
+    
+ 
+ 
+  Table 12:  Mean online latency (ms) at center 0.25 on an NVIDIA L40S, FP16, batch size 1. 
+  
+  
+  
+ 
+ 
+ 
+ Model 
+ Latent filter 
+ Selected path 
+ Pixel reencode 
+ Speedup  
+ 
+ 
+ 
+ WAN 
+ 105.7 
+ 105.5 
+ 334.9 
+     3.17  ×   3.17\times     
+ 
+ Open-Sora v1.3 
+ 178.6 
+ 178.4 
+ 507.1 
+     2.84  ×   2.84\times     
+ 
+ CogVideoX 
+ 245.2 
+ 244.8 
+ 700.7 
+     2.86  ×   2.86\times     
+ 
+ HunyuanVideo 
+ 190.0 
+ 189.6 
+ 616.4 
+     3.25  ×   3.25\times     
+ 
+ Average 
+  179.9  
+  179.6  
+  539.8  
+     3.01  ×   \mathbf{3.01\times}     
+ 
+   
+    
+ 
+ 
+ 
+ Additional Validation 
+
+ 
+ Three checks reinforce the operating-map interpretation. Replacing the decode-target with source-filter-reencode preserves all 20 mechanism-slice decisions under frozen selections. No-op passes only a small number of cells, while every emitted path has a strictly positive paired fidelity lower bound relative to no-op. Decode–encode projection reaches Open-Sora centers 0.075–0.75, including the latent-path frontier, demonstrating that the target remains reachable through a more expensive branch. Reconstruction attenuation alone also fails to predict the map: CogVideoX suppresses high-frequency reconstruction power more strongly than Open-Sora yet remains deployable across the radial grid. The decisive quantity is the learned round-trip response, not decoder bandwidth in isolation. 
+ 
+ 
+ 
+ Latent-Level Online Cost 
+
+ 
+ At inference, LFV reduces to a fixed per-frequency matrix response. Table   12   shows that this response stays in the direct-latent cost regime across all four VAEs: average latency is 179.6 ms, essentially identical to the latent filter at 179.9 ms and     3.01  ×   3.01\times    faster than pixel filter–reencode at 539.8 ms. The method therefore converts offline measurement into online speed without inserting an additional VAE round trip. 
+ 
+ 
+ Within each VAE, no-op, latent filter, C1, full CM, and selected path differ by less than 0.6 ms, so the measured cross-channel operator overhead is negligible relative to the shared output decode. The larger cross-model spread (105.5–244.8 ms) is therefore dominated by the model-specific VAE path; the accompanying peak-memory range, from about 0.94 GB for WAN to 8.07 GB for CogVideoX, is consistent with this interpretation. A selected response stores 4.001 MiB per VAE/edit setting, and the complete bank for the 423 emitted cells occupies about 1.65 GiB. This yields a practical deployment pattern: fit and validate a VAE-specific operator bank once, query the operating map for the requested spectral edit, and execute the selected response at latent-filter speed. 
+ 
+ 
+ 
+ 
+ Conclusion 
+
+ 
+ Video VAEs exhibit structured, model-specific spectral transfer rather than a universal correspondence between pixel and latent frequency. LFV measures this transfer, selects the amount of channel mixing supported by each VAE–edit pair, and compiles the result into a fixed latent operator. Across 544 cells, LFV emits 423 operators: 277 are diagonal-sufficient and 146 require cross-channel response. Thus, more than one third of the emitted operator bank depends on channel coupling rather than independent latent-channel gains. 
+ 
+ 
+ The operating maps expose distinct model signatures and generalize across radial band-pass, low-pass, high-pass, notch, spatial, and temporal operators. Fully frozen OpenVid-fitted responses also pass all 20 generated-domain evaluations on CogVideoX and HunyuanVideo, demonstrating transfer beyond reconstruction clips without domain-specific adaptation. At inference, the selected response matches direct latent-filter latency and is about     3  ×   3\times    faster than pixel filter–reencode. LFV therefore converts offline VAE-specific measurement into a practical operator bank for fast, high-fidelity spectral control. 
+ 
+ 
+ 
+ References 
+
+ 
+  Almog  et al.  (2025) 
+  G. Almog, A. Shamir, and O. Fried 
+ 
+  REED-vae: re-encode decode training for iterative image editing with diffusion models .
+ 
+  Computer Graphics Forum   44  ( 2 ),  pp. e70020 .
+ 
+ External Links:   Document ,
+ Link ,
+ https://onlinelibrary.wiley.com/doi/pdf/10.1111/cgf.70020  
+ 
+ Cited by:   Decode consistency and evaluation.  .
+  
+  Blattmann  et al.  (2023) 
+  A. Blattmann, R. Rombach, H. Ling, T. Dockhorn, S. W. Kim, S. Fidler, and K. Kreis 
+ 
+  Align your latents: high-resolution video synthesis with latent diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 22563–22575 .
+ 
+ Cited by:   Video VAEs and latent generation.  .
+  
+  Bradbury and Zhong (2026) 
+  R. Bradbury and D. Zhong 
+ 
+  Your latent mask is wrong: pixel-equivalent latent compositing for diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 18630–18639 .
+ 
+ Cited by:   Decode consistency and evaluation.  .
+  
+  Guibas  et al.  (2022) 
+  J. Guibas, M. Mardani, Z. Li, A. Tao, A. Anandkumar, and B. Catanzaro 
+ 
+  Efficient token mixing for transformers via adaptive fourier neural operators .
+ 
+ In  International Conference on Learning Representations ,
+ 
+ External Links:   Link  
+ 
+ Cited by:   Frequency-domain operators and interventions.  .
+  
+  Huang  et al.  (2025) 
+  C. Huang, S. Liang, Y. Tang, J. Bi, L. Ma, Y. Tian, and C. Xu 
+ 
+  FreSca: scaling in frequency space enhances diffusion models .
+ 
+ External Links:   2504.02154 ,
+ Link  
+ 
+ Cited by:   Frequency-domain operators and interventions.  .
+  
+  Huang  et al.  (2024) 
+  Z. Huang, Y. He, J. Yu, F. Zhang, C. Si, Y. Jiang, Y. Zhang, T. Wu, Q. Jin, N. Chanpaisit, Y. Wang, X. Chen, L. Wang, D. Lin, Y. Qiao, and Z. Liu 
+ 
+  VBench: comprehensive benchmark suite for video generative models .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 21807–21818 .
+ 
+ Cited by:   Decode consistency and evaluation.  .
+  
+  Kingma and Welling (2022) 
+  D. P. Kingma and M. Welling 
+ 
+  Auto-encoding variational bayes .
+ 
+ External Links:   1312.6114 ,
+ Link  
+ 
+ Cited by:   Video VAEs and latent generation.  .
+  
+  Kong  et al.  (2025) 
+  W. Kong, Q. Tian, Z. Zhang, R. Min, Z. Dai, J. Zhou, J. Xiong, X. Li, B. Wu, J. Zhang, K. Wu, Q. Lin, J. Yuan, Y. Long, A. Wang, A. Wang, C. Li, D. Huang, F. Yang, H. Tan, H. Wang, J. Song, J. Bai, J. Wu, J. Xue, J. Wang, K. Wang, M. Liu, P. Li, S. Li, W. Wang, W. Yu, X. Deng, Y. Li, Y. Chen, Y. Cui, Y. Peng, Z. Yu, Z. He, Z. Xu, Z. Zhou, Z. Xu, Y. Tao, Q. Lu, S. Liu, D. Zhou, H. Wang, Y. Yang, D. Wang, Y. Liu, J. Jiang, and C. Zhong 
+ 
+  HunyuanVideo: a systematic framework for large video generative models .
+ 
+ External Links:   2412.03603 ,
+ Link  
+ 
+ Cited by:   Video VAEs and latent generation.  .
+  
+  Koo  et al.  (2025) 
+  G. Koo, S. Yoon, J. W. Hong, and C. D. Yoo 
+ 
+  FlexiEdit: frequency-aware latent refinement for enhanced non-rigid editing .
+ 
+ In  Computer Vision – ECCV 2024 ,   A. Leonardis, E. Ricci, S. Roth, O. Russakovsky, T. Sattler, and G. Varol (Eds.) ,
+ 
+  Cham ,  pp. 363–379 .
+ 
+ External Links:   ISBN 978-3-031-73036-8  
+ 
+ Cited by:   Frequency-domain operators and interventions.  .
+  
+  Kouzelis  et al.  (2025) 
+  T. Kouzelis, I. Kakogeorgiou, S. Gidaris, and N. Komodakis 
+ 
+  EQ-VAE: equivariance regularized latent space for improved generative image modeling .
+ 
+ In  Proceedings of the 42nd International Conference on Machine Learning ,   A. Singh, M. Fazel, D. Hsu, S. Lacoste-Julien, F. Berkenkamp, T. Maharaj, K. Wagstaff, and J. Zhu (Eds.) ,
+ 
+  Proceedings of Machine Learning Research , Vol.  267 ,  pp. 31648–31666 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   Spectral structure of autoencoder latents.  .
+  
+  Lai  et al.  (2026) 
+  B. Lai, X. Wang, S. Rambhatla, J. M. Rehg, Z. Kira, R. Girdhar, and I. Misra 
+ 
+  Toward diffusible high-dimensional latent spaces: a frequency perspective .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition ,
+ 
+  pp. 43450–43460 .
+ 
+ Cited by:   Spectral structure of autoencoder latents.  .
+  
+  Li  et al.  (2025) 
+  Z. Li, B. Lin, Y. Ye, L. Chen, X. Cheng, S. Yuan, and L. Yuan 
+ 
+  WF-vae: enhancing video vae by wavelet-driven energy flow for latent video diffusion model .
+ 
+ External Links:   2411.17459 ,
+ Link  
+ 
+ Cited by:   Spectral structure of autoencoder latents.  .
+  
+  Li  et al.  (2021) 
+  Z. Li, N. B. Kovachki, K. Azizzadenesheli, B. liu, K. Bhattacharya, A. Stuart, and A. Anandkumar 
+ 
+  Fourier neural operator for parametric partial differential equations .
+ 
+ In  International Conference on Learning Representations ,
+ 
+ External Links:   Link  
+ 
+ Cited by:   Frequency-domain operators and interventions.  .
+  
+  Liao  et al.  (2026) 
+  Y. Liao, J. Liang, K. Cui, B. Zhao, H. Xie, W. Liu, Q. Li, and X. Mao 
+ 
+  FreqEdit: preserving high-frequency features for robust multi-turn image editing .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 43525–43535 .
+ 
+ Cited by:   Decode consistency and evaluation.  .
+  
+  Lin  et al.  (2023) 
+  X. Lin, Y. Li, J. Hsiao, C. Ho, and Y. Kong 
+ 
+  Catch missing details: image reconstruction with frequency augmented variational autoencoder .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 1736–1745 .
+ 
+ Cited by:   Spectral structure of autoencoder latents.  .
+  
+  Liu  et al.  (2026) 
+  S. Liu, X. Deng, Z. Yang, J. Teng, X. Gu, and J. Tang 
+ 
+  Delving into latent spectral biasing of video vaes for superior diffusability .
+ 
+ External Links:   2512.05394 ,
+ Link  
+ 
+ Cited by:   Spectral structure of autoencoder latents.  .
+  
+  Nan  et al.  (2024) 
+  K. Nan, R. Xie, P. Zhou, T. Fan, Z. Yang, Z. Chen, X. Li, J. Yang, and Y. Tai 
+ 
+  OpenVid-1m: a large-scale high-quality dataset for text-to-video generation .
+ 
+  arXiv preprint arXiv:2407.02371 .
+ 
+ Cited by:   Models, data, and nested splits.  .
+  
+  Ning  et al.  (2026) 
+  M. Ning, M. Li, L. Zhang, L. Liu, M. B. Blaschko, A. A. Salah, and I. O. Ertugrul 
+ 
+  Spectrum matching: a unified perspective for superior diffusability in latent diffusion .
+ 
+ External Links:   2603.14645 ,
+ Link  
+ 
+ Cited by:   Spectral structure of autoencoder latents.  .
+  
+  Rao  et al.  (2021) 
+  Y. Rao, W. Zhao, Z. Zhu, J. Lu, and J. Zhou 
+ 
+  Global filter networks for image classification .
+ 
+ In  Advances in Neural Information Processing Systems ,   M. Ranzato, A. Beygelzimer, Y. Dauphin, P.S. Liang, and J. W. Vaughan (Eds.) ,
+ 
+ Vol.  34 ,  pp. 980–993 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   Frequency-domain operators and interventions.  .
+  
+  Ren  et al.  (2025) 
+  Y. Ren, Z. Jiang, T. Zhang, S. Forchhammer, and S. Süsstrunk 
+ 
+  FDS: frequency-aware denoising score for text-guided latent diffusion image editing .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 2651–2660 .
+ 
+ Cited by:   Frequency-domain operators and interventions.  .
+  
+  Rombach  et al.  (2022) 
+  R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer 
+ 
+  High-resolution image synthesis with latent diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 10684–10695 .
+ 
+ Cited by:   Video VAEs and latent generation.  .
+  
+  Skorokhodov  et al.  (2025) 
+  I. Skorokhodov, S. Girish, B. Hu, W. Menapace, Y. Li, R. Abdal, S. Tulyakov, and A. Siarohin 
+ 
+  Improving the diffusability of autoencoders .
+ 
+ In  Proceedings of the 42nd International Conference on Machine Learning ,   A. Singh, M. Fazel, D. Hsu, S. Lacoste-Julien, F. Berkenkamp, T. Maharaj, K. Wagstaff, and J. Zhu (Eds.) ,
+ 
+  Proceedings of Machine Learning Research , Vol.  267 ,  pp. 55876–55905 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   Spectral structure of autoencoder latents.  .
+  
+  Unterthiner  et al.  (2019) 
+  T. Unterthiner, S. van Steenkiste, K. Kurach, R. Marinier, M. Michalski, and S. Gelly 
+ 
+  FVD: a new metric for video generation .
+ 
+ External Links:   Link  
+ 
+ Cited by:   Decode consistency and evaluation.  .
+  
+  Wan  et al.  (2025) 
+  T. Wan, A. Wang, B. Ai, B. Wen, C. Mao, C. Xie, D. Chen, F. Yu, H. Zhao, J. Yang, J. Zeng, J. Wang, J. Zhang, J. Zhou, J. Wang, J. Chen, K. Zhu, K. Zhao, K. Yan, L. Huang, M. Feng, N. Zhang, P. Li, P. Wu, R. Chu, R. Feng, S. Zhang, S. Sun, T. Fang, T. Wang, T. Gui, T. Weng, T. Shen, W. Lin, W. Wang, W. Wang, W. Zhou, W. Wang, W. Shen, W. Yu, X. Shi, X. Huang, X. Xu, Y. Kou, Y. Lv, Y. Li, Y. Liu, Y. Wang, Y. Zhang, Y. Huang, Y. Li, Y. Wu, Y. Liu, Y. Pan, Y. Zheng, Y. Hong, Y. Shi, Y. Feng, Z. Jiang, Z. Han, Z. Wu, and Z. Liu 
+ 
+  Wan: open and advanced large-scale video generative models .
+ 
+  arXiv preprint arXiv:2503.20314 .
+ 
+ Cited by:   Video VAEs and latent generation.  .
+  
+  Wang  et al.  (2026) 
+  X. Wang, S. Zhou, K. Wang, L. Xu, X. Qiu, T. He, and M. Li 
+ 
+  Why do dit editors drift? plug-and-play low frequency alignment in vae latent space .
+ 
+ External Links:   2605.08250 ,
+ Link  
+ 
+ Cited by:   Decode consistency and evaluation.  .
+  
+  Wu  et al.  (2025) 
+  T. Wu, C. Si, Y. Jiang, Z. Huang, and Z. Liu 
+ 
+  FreeInit: bridging initialization gap in video diffusion models .
+ 
+ In  Computer Vision – ECCV 2024 ,   A. Leonardis, E. Ricci, S. Roth, O. Russakovsky, T. Sattler, and G. Varol (Eds.) ,
+ 
+  Cham ,  pp. 378–394 .
+ 
+ External Links:   ISBN 978-3-031-72646-0  
+ 
+ Cited by:   Frequency-domain operators and interventions.  .
+  
+  Yang  et al.  (2025) 
+  Z. Yang, J. Teng, W. Zheng, M. Ding, S. Huang, J. Xu, Y. Yang, W. Hong, X. Zhang, G. Feng, D. Yin, Yuxuan.Zhang, W. Wang, Y. Cheng, B. Xu, X. Gu, Y. Dong, and J. Tang 
+ 
+  CogVideoX: text-to-video diffusion models with an expert transformer .
+ 
+ In  The Thirteenth International Conference on Learning Representations ,
+ 
+ External Links:   Link  
+ 
+ Cited by:   Video VAEs and latent generation.  .
+  
+  Zhang  et al.  (2018) 
+  R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang 
+ 
+  The unreasonable effectiveness of deep features as a perceptual metric .
+ 
+ In  Proceedings of the IEEE Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+ Cited by:   Decode consistency and evaluation.  .
+  
+  Zhao  et al.  (2024) 
+  S. Zhao, Y. Zhang, X. Cun, S. Yang, M. Niu, X. Li, W. Hu, and Y. Shan 
+ 
+  CV-VAE: a compatible video VAE for latent generative video models .
+ 
+ In  The Thirty-eighth Annual Conference on Neural Information Processing Systems ,
+ 
+ External Links:   Link  
+ 
+ Cited by:   Video VAEs and latent generation.  .
+  
+  Zheng  et al.  (2024) 
+  Z. Zheng, X. Peng, T. Yang, C. Shen, S. Li, H. Liu, Y. Zhou, T. Li, and Y. You 
+ 
+  Open-sora: democratizing efficient video production for all .
+ 
+ External Links:   2412.20404 ,
+ Link  
+ 
+ Cited by:   Video VAEs and latent generation.  .
+  
+  Zhu  et al.  (2025) 
+  Y. Zhu, H. Wang, S. Ma, W. Zhao, Y. Tang, L. Chen, and J. Zhou 
+ 
+  FADE: frequency-aware diffusion model factorization for video editing .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 28426–28435 .
+ 
+ Cited by:   Frequency-domain operators and interventions.  .
+  
+ 
+ 
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

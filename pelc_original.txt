@@ -1,0 +1,2121 @@
+  
+ 
+ 
+ Your Latent Mask is Wrong: Pixel-Equivalent Latent Compositing for Diffusion Models 
+ 
+ 
+ 
+   
+ 
+  // Restore the saved color scheme preference, or
+  // enact the browser preference if "automatic", 
+  // without expecting DOM load to have completed.
+  //
+  // Also restore any saved readingmode and ToC display preferences.
+  function initializeReadingPreferences() {
+    let saved_theme = localStorage.getItem("ar5iv_theme") || "automatic";
+    if (saved_theme === "automatic") {
+      if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
+        saved_theme = "dark";
+      }
+    }
+    if (saved_theme == "dark") {
+      document.documentElement.setAttribute("data-theme", "dark");
+    } else {
+      document.documentElement.setAttribute("data-theme", "light");
+    }
+
+    const tocDisplay = localStorage.getItem('arxiv_html_paper_toc_display');
+    if (tocDisplay) {
+      document.documentElement.setAttribute("data-toc-display", tocDisplay);
+    }
+    const readingMode = localStorage.getItem('arxiv_html_paper_reading_mode');
+    if (readingMode) {
+      document.documentElement.setAttribute("data-reading-mode", readingMode);
+    }
+    // Pre-apply spinout-banner dismissal here, before the banner paints, so it
+    // never flashes in only to be hidden later by the deferred arxiv-header.js.
+    // Key matches arxiv-header.js: "arxiv-banner-dismissed:" + data-banner-name.
+    if (localStorage.getItem('arxiv-banner-dismissed:spinout-nonprofit')) {
+      document.documentElement.setAttribute("data-banner-dismissed", "");
+    }
+  }
+  // Run as soon as JS starts, to minimize repainting
+  initializeReadingPreferences();
+ 
+ 
+ 
+ 
+ 
+ 
+   
+  /* Banner pre-dismissal (set above before paint -> no flash-then-hide) and
+     reading-mode chrome hiding. */
+  html[data-banner-dismissed] .ds-announcement { display: none; }
+  html[data-reading-mode="enabled"] .ds-announcement,
+  html[data-reading-mode="enabled"] .ds-site-footer { display: none; }
+  /* Keep the announcement text dark on the Open-Blue band in both colour themes
+     (otherwise it inherits the paper's warm-wash text in dark mode and washes out). */
+  .ds-announcement-text { color: var(--arxiv-ink, #1c1a17); }
+ 
+  
+ 
+ 
+ 
+   
+     
+       Report GitHub Issue 
+       × 
+     
+
+     
+       Title: 
+       
+
+       Content selection saved. Describe the issue below: 
+
+       Description: 
+        
+     
+
+     
+       Submit without GitHub 
+       Submit in GitHub 
+     
+   
+  
+     
+     arXiv is now an independent nonprofit! 
+     Learn more 
+     &times; 
+   
+
+ 
+   
+      
+       Back to arXiv 
+     
+   
+   
+   
+     Why HTML? 
+     
+       
+         
+       
+       Report Issue  
+     
+     
+       
+         
+         
+       
+       Back to Abstract 
+     
+     
+     
+       
+         
+       
+       Download PDF  
+     
+     
+       
+         
+         
+       
+     
+     
+     
+        
+         
+       
+     
+     
+     
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+       
+         
+           
+           
+         
+       
+     
+   
+  
+ 
+ 
+   Abstract   
+    1  Introduction  
+ 
+   Contributions   
+  
+    2  Background  
+ 
+    2.1  LDMs and VAE latents  
+ 
+   Latent Diffusion   
+  
+    2.2  Heuristic latent masking  
+ 
+   Observation   
+  
+    2.3  Heuristic masking pathology  
+ 
+   Boundary leakage   
+   Invalid interpolation   
+   Mask downsampling   
+  
+    2.4  Related Work - LDM Inpainting and Editing  
+ 
+   Diffusion Inversion   
+  
+  
+    3  Methodology  
+ 
+    3.1  Formulation  
+ 
+   PELC objective   
+   Formulation   
+   Architecture   
+   Conditioning   
+   Alpha-Shift separation   
+   Efficiency and FLOP Budget   
+   Training   
+   Data   
+  
+    3.2  Using DecFormer for Diffusion Inpainting   
+  
+    4  Experiments  
+ 
+    4.1  Network Design Ablations  
+ 
+   Ablation strategy   
+  
+    4.2  DecFormer Achieves Pixel-Equivalent Compositing  
+ 
+   Metrics   
+   Results   
+   Signed Distance Field Analysis   
+   Visual Comparison   
+  
+    4.3  DecFormer is a strong Diffusion Inpainting Prior  
+ 
+   Setup   
+   Results   
+   Visual Comparison   
+  
+    4.4  Proof of Generality beyond Compositing  
+ 
+   Objective   
+   Setup &amp; Results   
+  
+  
+    5  Conclusion  
+ 
+   Limitations and future work   
+  
+   References   
+    A  Least-squares projection  
+ 
+    B  Blind Predictor Architecture   
+    C  DecFormer Extended Architecture   
+    D  Gamma Correction Proof-of-Concept Qualitative Results   
+  
+    E  Extended DecFormer Metrics Tables  
+ 
+    F  Alpha and Shift Visualisation and Target Visualisations   
+    G  DecFormer Qualitative Extended   
+  
+    H  Halo calculation   
+    I  Receptive Field Analysis   
+    J  Dual-Sigma Noise for Mask-Aware Inpainting LoRA  
+ 
+   Dual-sigma construction   
+   Regionwise noising   
+  
+  
+ 
+ 
+ 
+   
+    License: CC BY 4.0
+   
+   
+arXiv:2512.05198v1 [cs.CV] 04 Dec 2025 
+  
+ 
+ Your Latent Mask is Wrong: Pixel-Equivalent Latent Compositing for Diffusion Models 
+ 
+ 
+ Rowan Bradbury
+   †    †  thanks:  Equal contribution.    
+     
+ Dazhi Zhong  1    1  footnotemark:  
+           1 
+          
+          
+          
+          
+          
+          
+          
+           
+   
+  Affiliation:  Bradbury Group
+ 
+  Affiliation:  New York City, USA
+ 
+  Email:    {rowan,dazhi}@bradburygroup.org  
+     
+
+  Abstract 
+    
+ Latent inpainting in diffusion models still relies almost universally on linearly interpolating VAE latents under a downsampled mask. We propose a key principle for compositing image latents: Pixel-Equivalent Latent Compositing (PELC). An equivalent latent compositor should be the same as compositing in pixel space. This principle enables full-resolution mask control and true soft-edge alpha compositing, even though VAEs compress images 8x spatially. Modern VAEs capture global context beyond patch-aligned local structure, so linear latent blending cannot be pixel-equivalent: it produces large artifacts at mask seams and global degradation and color shifts. 
+    
+ We introduce DecFormer, a 7.7M-parameter transformer that predicts per-channel blend weights and an off-manifold residual correction to realize mask-consistent latent fusion. DecFormer is trained so that decoding after fusion matches pixel-space alpha compositing, is plug-compatible with existing diffusion pipelines, requires no backbone finetuning and adds only 0.07% of FLUX.1-Dev’s parameters and 3.5% FLOP overhead. 
+    
+ On the FLUX.1 family, DecFormer restores global color consistency, soft-mask support, sharp boundaries, and high-fidelity masking, reducing error metrics around edges by up to 53% over standard mask interpolation. Used as an inpainting prior, a lightweight LoRA on FLUX.1-Dev with DecFormer achieves fidelity comparable to FLUX.1-Fill, a fully finetuned inpainting model. While we focus on inpainting, PELC is a general recipe for pixel-equivalent latent editing, as we demonstrate on a complex color-correction task. 
+  
+ 
+  
+ 
+    
+ 
+ 
+  1  Introduction 
+
+ 
+ Latent diffusion models (LDMs)  [ 20 ,  18 ]  dominate modern image generation, yet a brittle operation is widespread for mixing image latents. In masked-conditioned generation tasks such as inpainting or editing, latents are interpolated via a mask the same way as pixels. However, this heuristic is a source of error which limit mask fidelity. VAE decoders are nonlinear and spatially entangled, so mixing latents does not mix pixels. The result is off-manifold seams, color shifts, and halos that diffusion then amplifies across denoising steps. 
+ 
+ 
+ We propose a simple principle: latent compositing should be  pixel-equivalent  (PE). For a frozen encoder    E  E   , decoder    D  D   , and any pixel-space operator    F  F   , a latent operator     C  F   C_{F}    should satisfy 
+ 
+
+  
+  
+        D   ⁡   (    C  F   ​   (  z  )    )    =    F   ⁡   (   D  ⁡   (  z  )    )     ,     C  F   ​   (   E  ⁡   (  x  )    )    =   E  ⁡   (   F  ⁡   (  x  )    )      D\!\left(C_{F}(z)\right)\;=\;F\!\left(D(z)\right),\hskip 5.0ptC_{F}(E(x))\;=\;E(F(x))    
+  
+  (1)    
+ 
+ That is, applying    F  F    after decoding should match applying     C  F   C_{F}    before decoding, and the same for encoding. We call these two equalities decoder equivalence (DE) and encoder equivalence (EE). As a concrete case, inpainting uses 
+ 
+ 
+ 
+
+  
+  
+      F  ⁡   (   x  A   ,   x  B   ,  M  )    =     (   1  −  M   )   ⊙   x  A    +   M  ⊙   x  B      F(x_{A},x_{B},M)=(1-M)\odot x_{A}+M\odot x_{B}    
+  
+  (2)    
+ 
+ To satisfy DE and EE, it must uphold 
+ 
+
+  
+  
+       D   ⁡   (    C  F   ​   (   z  A   ,   z  B   ,  M  )    )    =     (   1  −  M   )   ⊙   D  ⁡   (   z  A   )     +   M  ⊙   D  ⁡   (   z  B   )       \displaystyle D\!\left(C_{F}(z_{A},z_{B},M)\right)=(1-M)\odot D(z_{A})+M\odot D(z_{B})    
+    
+  
+  
+      and  ​   C  F   ​   (   E  ⁡   (   z  A   )    ,   E  ⁡   (   z  B   )    ,  M  )    =   E  ⁡   (     (   1  −  M   )   ⊙   x  A    +   M  ⊙   x  B     )     \displaystyle\text{and}\hskip 5.0ptC_{F}(E(z_{A}),E(z_{B}),M)=E((1-M)\odot x_{A}+M\odot x_{B})    
+    
+ 
+ 
+ 
+ Linear latent blending would satisfy decoder-consistency only if    D  D    were locally linear and channel-separable, assumptions that we empirically show fail in modern VAEs (Table   2  , Fig.   2  ). 
+ 
+ 
+ Modern VAE latents couple wide spatial context and heterogeneous channels; broadcasting a single, downsampled mask and linearly mixing latents introduces boundary leakage and global color drift. Figure   2   shows the effect on a latent mixing task: heuristic blending yields visible halos and boundary mismatch, while a pixel-equivalent compositor restores sharp edges and global image quality even away from the edge seams. 
+ 
+  
+   Figure 1 :   Each quadrant compares ground-truth pixel composites  2    2 
+                2  
+              
+              
+              
+              
+              
+              
+              
+            Validation images and alpha mattes not included in training set; sourced from withoutBG and COCO 2017.   , our DecFormer predictions, and heuristic latent interpolation. Across soft, binary, and structured masks, DecFormer restores sharp edges and high-frequency detail, whereas the heuristic exhibits smearing and artifacts on soft blends, halos and discoloration at boundaries, and blocky low-fidelity masks. Notably, in the bottom-right example, global background degradation occurs far from the masked region, reflecting how latent entanglement corrupts off-mask content; this effect is eliminated by DecFormer.  
+ 
+ 
+ We introduce  PELC  (Pixel-Equivalent Latent Compositing), a model-agnostic methodology for learning latent operators     C  θ   C_{\theta}    that are decode-equivalent with target pixel operators using only a frozen encoder–decoder and synthetic supervision from pixel composites. As an inpainting instantiation, we propose  DecFormer , a lightweight 7.7M-parameter transformer that predicts per-channel blend weights together with a nonlinear residual correction, supporting  genuinely soft masks , and is a drop-in replacement for heuristic latent compositing. The same principle of pixel-equivalence apply to non-compositing operations as well, such as the color corrections demonstrated in this work. 
+ 
+ 
+ Contributions 
+
+ 
+ 
+  •  
+ 
+ We formalize pixel-equivalence as a general criterion for latent operators and present PELC, a simple training recipe to realize latent compositing from pixel-space supervision. 
+  
+  •  
+ 
+ We formalize and demonstrate (Fig.   2  , Table   2  ) that linear latent interpolation cannot meet pixel-equivalence in modern VAEs, which exhibit nonlinearity and wide effective receptive fields. 
+  
+  •  
+ 
+ We design DecFormer, a 7.7M-parameter compositor that restores mask fidelity and supports genuinely soft masks with negligible overhead (3.5% FLOP overhead). Decformer consistently halves error metrics at key mask edge areas. 
+  
+  •  
+ 
+ For inpainting, Decformer improves all visual metrics as a drop-in replacement, and adding a lightweight LoRA achieves comparable visual quality with a dedicated inpainting model (Flux-Fill). 
+  
+  •  
+ 
+ Additionally to inpainting, our PE objective applies to any pixel-space operator    F  F   , providing a path to principled latent-space editing without repeated encoding and decoding at every step. 
+  
+ 
+ 
+ 
+ 
+ 
+  2  Background 
+
+ 
+  2.1  LDMs and VAE latents 
+
+ 
+ Instead of denoising in pixel space, modern diffusion models operate in the latent space of a pretrained variational autoencoder (VAE). We investigate Flux’s VAE  [ 11 ] , latest and state-of-the-art in the line of autoencoders following  [ 20 ] .
+Given an image     x  ∈   ℝ   H  ×  W  ×  3     x\in\mathbb{R}^{H\times W\times 3}   , the VAE encoder    E  E    produces a latent tensor 
+ 
+
+  
+  
+      z  =   E  ⁡   (  x  )    ∈   ℝ   h  ×  w  ×  C     ,   h  =   H  /  f    ,   w  =   W  /  f     z=E(x)\in\mathbb{R}^{h\times w\times C},\quad h=H/f,w=W/f    
+    
+ 
+ where    f  f    is the downsampling factor of the VAE. The decoder    D  D    then reconstructs pixels through     x  ≈   x  ^   =   D  ⁡   (  z  )     x\approx\hat{x}=D(z)   . 
+ 
+ 
+ A notable feature of these latents is that they resemble images. Channel-wise visualizations, show downsampled content aligned to the spatial     (  h  ,  w  )   (h,w)    grid. The convolution-based architecture creates inductive bias for latents to be spatially consistent with the encoded image. Each latent voxel     z   [  i  ,  j  ,  :  ]    z[i,j,:]    is aggregated by strided convolutions over a receptive field centered at approximately 
+ 
+
+  
+  
+      (   i  ⋅  f   ,   j  ⋅  f   )   .   \Bigl(i\cdot f,\;j\cdot f\Bigr).    
+    
+ 
+ The effective stride      S  E   =    ∏   i  =   l  +  1    L    s  i     S_{E}=\prod_{i=l+1}^{L}s_{i}    cumulatively over encoder layers    L  L    and their respective strides     s  i   s_{i}    is equal to the downsample factor    f  f   . In Flux’s autoencoder,      S  l   =  f  =  8   S_{l}=f=8   . Because convolutions are translation-equivariant, and each latent position’s receptive field over the pixel space is strided by    f  f   , latents features of the autoencoder are exactly spatially correlated with the image by patches of     f  ×  f   f\times f   . 
+ 
+ 
+ Latent Diffusion 
+
+ 
+ Flux is a rectified flow latent diffusion model (LDM) predicting a mapping between a noise distribution     ϵ  ∼   𝒩  ⁡   (  0  ,  1  )     \epsilon\sim\mathcal{N}(0,1)    to latent samples    z  z    through a velocity field      v  θ   ​   (   z  t   ,  t  )    v_{\theta}(z_{t},t)   , defined as an ordinary differential equation 
+ 
+
+  
+  
+      d  ​   z  t    =    v  θ   ​   (   z  t   ,  t  )   ​  d  ​  t    dz_{t}=v_{\theta}(z_{t},t)dt    
+    
+ 
+ Thus, we have flow sampling process given     t  ∈   [   0  ,  1   ]    t\in[0,1]    
+ 
+
+  
+  
+       z   t  ′    ←    z  t   +    (    t  ′   −  t   )   ​   v  θ   ​   (   z  t   ,  t  )      .   z_{t^{\prime}}\;\leftarrow\;z_{t}+(t^{\prime}-t)\,v_{\theta}(z_{t},t).    
+    
+ 
+ 
+ 
+ 
+ 
+  2.2  Heuristic latent masking 
+
+ 
+ This image-like structure motivated the heuristic of applying masks directly in the latent space for inpainting, which is now common practice in commercial use, academic literature  [ 7 ]  and mainstream pipelines. Concretely a pixel mask, often binary but common with softened edges   3    3 
+               3 
+              
+              
+              
+              
+              
+              
+              
+            Common inpainting pipelines, including Diffusers, apply edge-softening operations such as blurring or morphological smoothing when preparing masks.   ,     M  ∈    {   0  ,  1   }    H  ×  W  ×  1     M\in\{0,1\}^{H\times W\times 1}   , is interpolated to match the latent resolution of    z  z    with a fixed downsampler     𝒮  :     {  0  ,  1  }    H  ×  W    →    [   0  ,  1   ]    h  ×  w      \mathcal{S}:\{0,1\}^{H\times W}\to[0,1]^{h\times w}    and the result latent mask    m  m    is broadcast to match the channel dimensions of    z  z   . 
+ 
+ 
+ 
+
+  
+  
+    m  \displaystyle m    
+        =   𝒮  ⁡   (  M  )    ∈    [   0  ,  1   ]    h  ×  w     ,   \displaystyle=\;\mathcal{S}(M)\in[0,1]^{h\times w},    
+    
+  
+  
+     m  [  i  ,  j  ,  :  ]   \displaystyle m[i,j,:]    
+        =    m  ⁡   [   i  ,  j   ]    ​    1  C     .   \displaystyle=\;m[i,j]\,\mathbf{1}_{C}.    
+    
+ 
+ We write    α  \alpha    for a full-channel latent mask; we broadcast    m  m    across all latent channels for heuristic masking.
+At each sampling step, the latent update      z  ^    t  →   t  −  1     \hat{z}_{t\rightarrow t-1}    is convex blended with the original latent     z   t  −  1    o  ​  r  ​  i  ​  g    z_{t-1}^{orig}    using latent mask    m  m   . 
+ 
+
+  
+  
+       z   t  −  1    =     (   1  −  m   )   ⊙    z  ^    t  →   t  −  1      +   m  ⊙   z   t  −  1   orig      .   z_{t-1}\;=\;(1-m)\odot\hat{z}_{t\to t-1}\;+\;{m}\odot z^{\text{orig}}_{t-1}.    
+  
+  (3)    
+ 
+ Throughout our paper we refer to this approach as heuristic blending. This approach of blending latents like images worked  well enough  in early VAEs such as Stable Diffusion (SD) 1.x/2.x/XL, whose modest 4-channel latents were relatively image-like and whose decoder receptive fields were relatively narrow. But the justification is mathematically unsound. The autoencoder does  not  satisfy 
+ 
+
+  
+  
+     E   (   x  A    ⊕  M    x  B   )   =   (  1  −  m  )   ⋅  E   (   x  A   )   +  m  ⋅  E   (   x  B   )   ,   E(x_{A}\oplus_{M}x_{B})\;=\;(1-m)\cdot E(x_{A})+m\cdot E(x_{B}),    
+    
+ 
+ 
+ 
+ so convex mixing in latent space is not guaranteed to correspond to masked mixing in pixel space. 
+ 
+ 
+ Observation 
+
+ 
+ For a nonlinear VAE decoder    D  D   , there exist      z  A   ,   z  B    z_{A},z_{B}    and masks    M  M    such that 
+ 
+
+  
+  
+      D  ⁡   (     (   1  −  α   )   ​   z  A    +   α  ​   z  B     )    ≠     (   1  −  M   )   ⊙   D  ⁡   (   z  A   )     +   M  ⊙   D  ⁡   (   z  B   )       D((1-\alpha)z_{A}+\alpha z_{B})\neq(1-M)\odot D(z_{A})+M\odot D(z_{B})    
+    
+ 
+ for all     α  ∈    [   0  ,  1   ]    h  ×  w  ×  C     \alpha\in[0,1]^{h\times w\times C}   . That is, no convex latent interpolation is pixel-equivalent in general—a consequence of decoder nonlinearity that we demonstrate empirically in modern VAEs. 
+ 
+ 
+ 
+ 
+  2.3  Heuristic masking pathology 
+
+ 
+ Boundary leakage 
+
+ 
+ Flux’s VAE has a large receptive field, with global effects due to attention presence in the middle layer. Excluding the attention during mid-layers, we use recurrence formula defined by  [ 3 ]  to find the encoder receptive field to be 217 pixels for each latent position and decoder to be 35.5 latents per pixel (Appendix   I  ). For the decoder, we further calculate each latent’s ”influence field” to be 536 pixels in the reconstructed image. Measuring the effective receptive field through perturbations and gradient probes, the cumulative-energy radii     r  p   r_{p}    demonstrates Flux’s autoencoder to be sharply peaked and heavy tailed (Figure   2  ). On a     256  ×  256   256\times 256    image, the encoder’s      r  90   ≈  0.356  =  129   r_{90}\approx 0.356=129    pixels, and the decoder’s      r  90   ≈  0.291  =  105   r_{90}\approx 0.291=105    pixels. In theoretical and experimental examinations we find that information not localized to the     8  ×  8   8\times 8    grid. Thus, masking latents heuristically leads to both missing and leaked information. 
+ 
+ 
+ 
+ Invalid interpolation 
+
+ 
+ When heuristically compositing with soft masks, non-binary regions linearly interpolate two latents. However, we find that two latents cannot be mixed linearly to produce still valid latents. Empirically, more than half of voxels require mixing coefficients    α  \alpha    outside     [  0  ,  1  ]   [0,1]    to reproduce the ground-truth encoding. 
+ 
+ 
+ 
+ Mask downsampling 
+
+ 
+ Resizing the pixel mask to latent resolution discards fine structure, as it downsamples the mask by     1  8   \frac{1}{8}   . In effect, heuristic masking cannot apply a finer mask than     1  8   \frac{1}{8}    the resolution, which is inadequate for high-resolution inpainting. 
+ 
+  
+   Figure 2 :   Effective Receptive Field (ERF) analysis  of the Flux VAE on     256  ×  256   256{\times}256    images; panels (a–c) are randomly chosen near the pooled median. Statistics pool     128  ×  3   128{\times}3    probes with 95% bootstrap CIs; radii      r  50   ,   r  90    r_{50},r_{90}    are cumulative-energy radii (fraction of image/latent diagonal).  (a) Decoder FD ERF:  perturb one latent site by    ε  \varepsilon    in all channels and plot      ‖    D  ⁡   (   z  +   ε  ​  e    )    −   D  ⁡   (  z  )     ‖   2   \|D(z+\varepsilon e)-D(z)\|_{2}    per pixel (log). Visualization uses adaptive    ε  \varepsilon    (   ∼  \sim   0.5% decoded RMS; clamp     [   2  ×   10   −  3     ,   10   −  2    ]   [2{\times}10^{-3},10^{-2}]   );  metrics  use fixed     ε  =   10   −  3     \varepsilon{=}10^{-3}   .  Radii:      r  50   ≈   0.044  ±  0.024    r_{50}\!\approx\!0.044\pm 0.024   ,      r  90   ≈   0.291  ±  0.099    r_{90}\!\approx\!0.291\pm 0.099    . The bright core plus global low-amplitude ‘blanket’ highlights decoder non-locality, seems to echo high contrast structures in source image.  (b) Encoder FD ERF:  inject a 1px impulse (    δ  =  0.05   \delta{=}0.05   ) at pixel     (  i  ,  j  )   (i,j)   , compute      Δ  ​  z   =    E  ⁡   (   x  +   δ  ​   e   i  ,  j      )    −   E  ⁡   (  x  )      \Delta z{=}E(x+\delta e_{i,j}){-}E(x)   , and plot      ‖   Δ  ​   z   ⋅  ,  u  ,  v     ‖   2   \|\Delta z_{\cdot,u,v}\|_{2}    per latent site (log).  Radii:      r  50   ≈   0.091  ±  0.082    r_{50}\!\approx\!0.091\pm 0.082   ,      r  90   ≈   0.356  ±  0.099    r_{90}\!\approx\!0.356\pm 0.099    .  (c) Gradient ERF:  for     y  =   D  ⁡   (  z  )     y{=}D(z)    and     s  =    ∑   5  ×  5     y  2     s{=}\sum_{\text{5}\times\text{5}}y^{2}   , backpropagate to     ∂   s  /   ∂  z     \partial s/\partial z    and show channelwise     ℓ  2   \ell_{2}    per latent site. Central peak and multiple secondary latent clusters relied on by the same pixel patch, exposing repeated structure.  (d) Energy curves:  Shaded region shows 95% bootstrap confidence; both Encoder and Decoder shows a sharp core with long, low-amplitude tails, showing large ERFs; evidence that heuristic latent masking is inconsistent with the VAE and motivates DecFormer.   
+ 
+ 
+ Independent analyses of autoencoder interpolations  [ 17 ]  show that convex latent blends leave the data manifold, underscoring the need for an explicit compositor. Our contribution targets this missing piece: a lightweight latent operator that enforces pixel-equivalent blending, offloading mask geometry from giant finetunes while leaving semantic inpainting to those backbones. 
+ 
+ 
+ 
+ 
+  2.4  Related Work - LDM Inpainting and Editing 
+
+ 
+ Guided diffusion editing usually enlarges or retrains the denoiser. ControlNet adapters  [ 24 ] , Paint-by-Example  [ 23 ] , DiffEditor  [ 16 ] , BrushNet  [ 10 ] , and PowerPaint  [ 26 ]  each introduce hundreds of millions of new weights and require multi-GPU training just to teach the backbone mask awareness. In practice, foundation deployments still ship separate inpainting checkpoints—Stable Diffusion maintains SD-inpaint and SDXL-inpaint variants  [ 21 ,  22 ] , while FLUX Fill is a second 12B rectified-flow model  [ 5 ] . The added maintenance cost, and often worse generation ability has spurred community forks that graft extra control nets on top of the main models in search of cleaner seams  [ 1 ,  2 ,  8 ,  19 ] . LatentPaint  [ 6 ]  trims the training burden but still hands seam quality to the denoiser via broadcast latent masks. 
+ 
+ 
+ Diffusion Inversion 
+
+ 
+ Trajectory-level methods edit sampling paths instead: SDEdit  [ 15 ] , DiffEdit  [ 7 ] , Blended Diffusion  [ 4 ] , and Differential Diffusion  [ 12 ]  modulate the noise schedule or splice reference latents during denoising. These strategies improve controllability yet still stitch latents with a single-channel mask at each step, so VAE boundary coupling produces halos. 
+ 
+ 
+ 
+ 
+ 
+  3  Methodology 
+
+ 
+  3.1  Formulation 
+
+ 
+ PELC objective 
+
+ 
+ We define PE for a unary latent operator via (  1  ), and specify latent composition as (  2  ). We define the PELC objective to train latent compositor     C  F   C_{F}   :
+Let      z  ^   =    C  F  θ   ​   (   z  1   ,   z  2   ,  M  )     \hat{z}=C_{F}^{\theta}(z_{1},z_{2},M)    be the predicted latent and      z  T   =   E  ⁡   (   F  ⁡   (   x  1   ,   x  2   ,  M  )    )     z_{T}=E(F(x_{1},x_{2},M))    be the target latent. Let      x  ^   =   D  ⁡   (   z  ^   )     \hat{x}=D(\hat{z})    and      x  T   =   D  ⁡   (   z  T   )     x_{T}=D(z_{T})    be their decodings. 
+ 
+
+  
+  
+     ℒ  PELC   \displaystyle\mathcal{L}_{\text{PELC}}    
+       =     λ  E   ​   ℒ  E    +   ℒ  D     \displaystyle=\lambda_{E}\mathcal{L}_{\text{E}}+\mathcal{L}_{\text{D}}    
+  
+  (4)    
+  
+  
+     ℒ  E   \displaystyle\mathcal{L}_{\text{E}}    
+       =   𝔼  ⁡   [    ‖    z  ^   −   z  T    ‖   2  2   ]     \displaystyle=\mathbb{E}[\|\hat{z}-z_{T}\|_{2}^{2}]    
+  
+  (5)    
+  
+  
+     ℒ  D   \displaystyle\mathcal{L}_{\text{D}}    
+       =   𝔼  ⁡   [     ℒ  LPIPS   ​   (   x  ^   ,   x  T   )    +    λ  H   ​   ℒ  Halo-L1   ​   (   x  ^   ,   x  T   )     ]     \displaystyle=\mathbb{E}[\mathcal{L}_{\text{LPIPS}}(\hat{x},x_{T})+\lambda_{H}\mathcal{L}_{\text{Halo-L1}}(\hat{x},x_{T})]    
+  
+  (6)    
+ 
+ Note that pixel supervision from the Encoded-Decoded target is important such that VAE-related errors cancel rather than contaminate the objective. 
+ 
+ 
+ 
+ Formulation 
+
+ 
+ Heurisic latent blending by broadcasting a downsampled pixel mask produces systematic errors: artifacts cluster at mask boundaries and leakage arises from globally entangled VAE channels (Figure   4  ).
+Despite this, interpolation remains a strong inductive prior especially away from mask edges; we therefore instantiate PELC for inpainting as channel-adaptive—a hugely stronger formulation than broadcast masking—blending along the      z  A   ↔   z  B    z_{A}\!\leftrightarrow\!z_{B}    line, augmented with an explicit residual correction.
+We predict 
+ 
+
+  
+  
+        z  ^   =     (   1  −  α   )   ​   z  A    +   α  ​   z  B    +  s    ,   α  ∈    [   0  ,  1   ]    C  ×  H  ×  W     ,   s  ∈   ℝ   C  ×  H  ×  W      .   \hat{z}=(1-\alpha)z_{A}+\alpha z_{B}+s,\hskip 5.0pt\alpha\in[0,1]^{C\times H\times W},s\in\mathbb{R}^{C\times H\times W}.    
+    
+ 
+ Constraining    α  \alpha    to     [  0  ,  1  ]   [0,1]    yields a stable blend axis;    s  s    absorbs orthogonal leakage and curvature. This separation is critical: if    α  \alpha    is unconstrained it collapses both roles, destabilizing training. Appendix   A   gives a closed-form decomposition into     (   α  ∗   ,   s  ∗   )   (\alpha^{*},s^{*})   , and ablations are shown in Table   1  . 
+ 
+ 
+ 
+ Architecture 
+
+ 
+ Each block receives a  rich feature stack : latents     (   z  A   ,   z  B   )   (z_{A},z_{B})   , the running     (  α  ,  s  )   (\alpha,s)   , and error cues      ‖    z   (  t  )    −   z  A    ‖   ,   ‖    z   (  t  )    −   z  B    ‖    \|z^{(t)}-z_{A}\|,\|z^{(t)}-z_{B}\|   . Re-patching/unpatching permits injection of these per-voxel errors at each stage. Multi-scale blocks (    [   4  ,  2  ,  1  ,  1   ]   [4,2,1,1]    patch sizes) let coarse stages cheaply gather context, while patch       =  1   =1    refines pixel-level boundaries. Local convolutions after unpatching also suppress 1–2px halos. This design is both FLOP-efficient and effective at feeding both global and local signals. A lightweight, two-headed CNN, run only once-per-mask, maps the    M  M    to a content-agnostic prior     α  0   \alpha_{0}   , seeding the blend and block 0 inputs, and provides embeddings for cross-attention. 
+ 
+ 
+ 
+ Conditioning 
+
+ 
+ Blended latent errors concentrate near mask edges due to entangled channels; we therefore compute a pixel and latent-sized halo: a softly decaying band (   ≈  \approx   8 px radius in pixel space, stride-scaled, motivated by results from Figure   4   and Appendix   F  ) around mask boundaries and soft regions. The halo serves two roles. First, it directly conditions the model (via FiLM) so that both    α  \alpha    and    s  s    are aware of boundary context. Second, it provides a loss weighting that emphasizes precisely those regions where naïve interpolation fails.
+Cross-attention to mask tokens is confined to the patch       =  1   =1    blocks. Global blocks already access coarse mask embeddings through FiLM; but fine-scale editing at pixel resolution requires precise spatial alignment, which attention provides. Restricting cross-attention to the final stage keeps compute low while preserving boundary fidelity. FiLM also recieves input from a latent sized mask image, which gives strong signal to the alpha head. 
+ 
+ 
+ 
+ Alpha-Shift separation 
+
+ 
+ To disentangle the roles of    α  \alpha    and    s  s   , we experimented with several explicit regularizers:
+(i) a scale-aware     L  1   L_{1}    penalty on    s  s    controlled by an EMA target magnitude,
+(ii) a cosine-hinge that penalizes     |   cos  ⁡   (  s  ,  d  )    |   |\cos(s,d)|    when aligned with     d  =    z  A   −   z  B     d=z_{A}-z_{B}   , and
+(iii) direct supervision against     (   α  ∗   ,   s  ∗   )   (\alpha^{*},s^{*})   .
+However, we found that such constraints often over-regularized the model and hindered convergence.
+Instead, we adopt a staged training schedule: the shift head remains gated off until    α  \alpha    has converged, at which point    s  s    is warmed up gradually (see Appx.   H  ).
+Associated losses, including the halo-weighted     L  1   L_{1}   , are likewise ramped in during this phase, ensuring that    α  \alpha    receives a clean learning signal early on—particularly important since    α  \alpha    alone cannot correct decoder leakage at mask boundaries. 
+ 
+ 
+ 
+ Efficiency and FLOP Budget 
+
+ 
+ The full module has 7.7M parameters, almost three orders of magnitude fewer than the 12B-parameter diffusion model it augments. At 1024×1024 resolution, DecFormer has 7.0M parameters and costs 80.4 GFLOPs per diffusion step, while the mask pre-processor has 0.7M parameters and costs 28.5 GFLOPs (run once per mask or diffusion generation). For a standard 28-step generation, this adds only    ≈  \approx   2.3 TFLOPs in total, corresponding to a 3.4% overhead on top of FLUX’s 66-TFLOP 1024×1024 generation. 
+ 
+ 
+ 
+ Training 
+
+ 
+ We train DecFormer on NVIDIA H100 GPUs. Each run uses a batch size of 8 and proceeds for     8  ×   10  4    8\times 10^{4}    steps (approx 128 epochs,       ∼   10  6    \sim\!10^{6}    updates in total).
+Inputs are sampled at multi-resolution from     256  ×  256   256{\times}256    to     384  ×  384   384{\times}384    pixels with aspect ratios in     [  0.5  ,  2.0  ]   [0.5,2.0]   .
+Mask augmentation includes graduated edge detection (0–15%) and feathering ramps over 1000 steps.
+Optimization employs AdamW with cosine SGDR: warm restarts at 4k, 12k, and 14k steps with      η  max   =   10   −  3     \eta_{\max}=10^{-3}   ,      η  min   =   2  ×   10   −  4      \eta_{\min}=2{\times}10^{-4}   , followed by cosine annealing from 30k to 60k steps down to     10   −  4    10^{-4}   . 
+ 
+ 
+ 
+ Data 
+
+ 
+ We train DecFormer on a heterogeneous mix of images and masks.
+Our image set combines 30k natural photographs from Flickr30k, 10k artworks from WikiArt, and an additional 100k high-resolution images collected from internal web sources.
+Conditioning masks are drawn from P3M [ 13 ] , GFM  [ 14 ] , and procedurally generated random shapes. 
+ 
+  
+   Figure 3 :   Overview of our training pipeline and DecFormer architecture. The left panel illustrates the overall flow: two input images and a pixel mask are encoded by a frozen VAE, the mask is processed by a lightweight CNN prior (architecture detailed in Appendix   B  ), and DecFormer predicts channel-adaptive blend weights    α  \alpha    and residual corrections    s  s    at latent resolution. The right panel zooms into a single DecFormer block, showing the feature stack, patching/unpatching, FiLM conditioning, attention and cross attention. For an expanded diagram on the DecFormer architecture see Appendix   C  .  
+ 
+ 
+ 
+ 
+  3.2  Using DecFormer for Diffusion Inpainting 
+
+ 
+ DecFormer is trained on unnoised latents (    z  0   z_{0}   ), so we reformulate the scheduler step to predict and blend at the fully denoised     z  0   z_{0}    then re-noise to     z   t  −  1    z_{t-1}   . We  (A)  decode to     z  0   z_{0}   ,  (B)  blend there, then  (C)  re-target the velocity to land on the composed     z  0  ⋆   z_{0}^{\star}    and step once: 
+ 
+
+  
+  
+  
+     A:  z     0      θ   =  z     t   −  t  v     θ   (  z     t   ,  t  )   \displaystyle\textbf{A:}\quad z_{0}^{\theta}\;=\;z_{t}-t\,v_{\theta}(z_{t},t)    
+    
+  
+  
+  
+     B:  z     0      ⋆   =  (  1  −  α  )  ⊙  z     0      θ   +  α  ⊙  z     0      ref   +  s   \displaystyle\textbf{B:}\quad z_{0}^{\star}\;=\;(1-\alpha)\odot z_{0}^{\theta}+\alpha\odot z_{0}^{\text{ref}}+s    
+    
+  
+  
+  
+     C:  v     ⋆   =      z  t   −   z  0  ⋆    t    ,  z      t  ′    =  z     t   +  (  t     ′   −  t  )  v     ⋆   .   \displaystyle\textbf{C:}\quad v^{\star}\;=\;\dfrac{z_{t}-z_{0}^{\star}}{t},\qquad z_{t^{\prime}}\;=\;z_{t}+(t^{\prime}-t)\,v^{\star}.    
+    
+ 
+ For  (B) , we predict      (  α  ,  s  )   =    𝒟  ϕ   ​   (   z  0  θ   ,   z  0  ref   ,  M  )     (\alpha,s)=\mathcal{D}_{\phi}(z_{0}^{\theta},z_{0}^{\text{ref}},M)    from trained model     𝒟  ϕ   \mathcal{D}_{\phi}   . DecFormer acts as a direct replacement for heuristic blending during sampling. 
+ 
+ 
+ 
+ 
+  4  Experiments 
+
+ 
+  4.1  Network Design Ablations 
+
+ 
+   Table 1 :   Ablation results. Removing halo-focused losses degrades boundary quality (   ↑  \uparrow   Halo L1) even though global metrics are competitive. Removing the residual shift head (unconstrained    α  \alpha   -only) substantially harms all metrics, confirming the need for both    α  \alpha    and residual    s  s   . Baseline balances both.  
+  
+ 
+ 
+ 
+ Experiment 
+ Halo L1 (   ↓  \downarrow   ) 
+ LPIPS (   ↓  \downarrow   ) 
+ MSE (   ↓  \downarrow   )  
+ 
+ 
+ 
+ No Halo L1 Loss 
+     0.0973  ±  0.0002   0.0973\pm 0.0002    
+     0.0299  ±  0.0003   0.0299\pm 0.0003    
+     0.0297  ±  0.0003   0.0297\pm 0.0003     
+ 
+ Baseline 
+     0.0829  ±  0.0018   0.0829\pm 0.0018    
+     0.0303  ±  0.0015   0.0303\pm 0.0015    
+     0.0303  ±  0.0003   0.0303\pm 0.0003     
+ 
+ Unconstrained Alpha, No Shift 
+     0.1079  ±  0.0012   0.1079\pm 0.0012    
+     0.0514  ±  0.0012   0.0514\pm 0.0012    
+     0.0331  ±  0.0003   0.0331\pm 0.0003     
+ 
+ 
+  
+ 
+ 
+ We tested targeted ablations to isolate which components materially contribute to pixel-consistent compositing.
+Table   1   reports dataset-level means    ±  \pm   95% CIs over three seeds up to 80,000 steps. 
+ 
+ 
+ Ablation strategy 
+
+ 
+ We prioritize our presented ablations to test the principles that make equivalence attainable. We fully train ablated models with 80k steps, using three seeds. We report dataset-level means with 95% CIs for halo-weighted L1, LPIPS  [ 25 ] , and MSE. 
+ 
+ 
+ 
+ 
+  4.2  DecFormer Achieves Pixel-Equivalent Compositing 
+
+ 
+ Metrics 
+
+ 
+ We evaluate DecFormer by comparing its reconstruction fidelity against heuristic masking as the baseline. We evaluate on images from the Coco 2017 validation set and masks from the Compositions-1k dataset. We augment the masks in 3 ways to evaluate composition quality for specific mask types: Gaussian blurred soft masks with sigma=21, binarized masks, and thin masks by extracting the original mask edges. We use set seeds and dataset hashing to ensure the same experimental set is used each time. 
+ 
+ 
+ 
+ Results 
+
+ 
+ Our results show a decisive improvement across all metrics and mask types at all resolutions (Table   2  , extra resolutions and comparisons to different naive downscaling methods are shown in Appendix   E  ). The results further show that heuristic blending introduces measurable artifacts that DecFormer minimizes. 
+ 
+ 
+ 
+ Signed Distance Field Analysis 
+
+ 
+ To spatially locate where these improvements originate, we analyze the reconstruction error in relation to the signed distance field (SDF) from the mask boundary, shown in Figure   4  . For a given mask, each pixel’s signed distance is defined as the orthogonal distance from the mask boundary, with negative values indicating the pixel being inside the mask and positive values for outside the mask. 
+ 
+ 
+ We evaluate per-pixel and per-latent MSE for 10k images and masks, and for each distance value, we plot the mean MSE. The heuristic baseline (grey) exhibits a prominent error spike at the mask boundary (distance = 0) that decays slowly into both the inside and outside of mask regions. In contrast, DecFormer (green) achieves a noticeably lower peak error and sharper error fall-off. 
+ 
+ 
+ 
+ Visual Comparison 
+
+ 
+ These quantitative improvements translate directly to superior visual quality. As illustrated in qualitative comparisons in Figure   2   (and more extensively in Appendix   G  ), DecFormer produces seamless composites free of the halos, color shifts, and jagged boundary artifacts endemic to heuristic masking.
+We create a detailed visualization of DecFormer’s internal predictions for the channel-wise blend weights (   α  \alpha   ) and the residual correction (   s  s   ), included in Appendix   F  . Decformer utilizes the residual correction extensively at mask edges and soft mask areas, demonstrating that our training strategy leads to the model relying on convex blending where possible, and using the residual correction at challenging areas. 
+ 
+ 
+   Table 2 :   Comparison of DecFormer and the heuristic baseline at 1024px resolution (mean ± 95% CI, n=50).  
+  
+ 
+ 
+ 
+  Mask Type  
+  Method  
+  SSIM     ↑  \uparrow    
+  PSNR (dB)     ↑  \uparrow    
+  LPIPS     ↓  \downarrow    
+  Halo L1     ↓  \downarrow     
+ 
+ 
+ 
+  Soft (   σ  \sigma   =21)  
+ DecFormer 
+  0.985  ±.003    
+  41.3  ±.8    
+  0.027  ±.005    
+  0.018  ±.001     
+ 
+ Heuristic 
+ 0.941  ±.010   
+ 32.9  ±1.1   
+ 0.088  ±.016   
+ 0.050  ±.005    
+ 
+  Binary  
+ DecFormer 
+  0.964  ±.017    
+  35.7  ±1.5    
+  0.045  ±.018    
+  0.060  ±.006     
+ 
+ Heuristic 
+ 0.913  ±.025   
+ 28.4  ±1.3   
+ 0.110  ±.029   
+ 0.141  ±.008    
+ 
+  Original  
+ DecFormer 
+  0.968  ±.016    
+  38.6  ±1.5    
+  0.049  ±.018    
+  0.037  ±.005     
+ 
+ Heuristic 
+ 0.918  ±.024   
+ 31.1  ±1.4   
+ 0.104  ±.028   
+ 0.080  ±.007    
+ 
+  Thin  
+ DecFormer 
+  0.967  ±.014    
+  34.7  ±1.5    
+  0.045  ±.017    
+  0.073  ±.005     
+ 
+ Heuristic 
+ 0.920  ±.030   
+ 27.3  ±1.2   
+ 0.111  ±.031   
+ 0.174  ±.009    
+ 
+ 
+  
+ 
+  
+   Figure 4 :   Signed-distance analysis of mask edges. Left: example masks and their signed distance fields (SDF). Middle: Mean per-latent MSE relative to latent downsized mask SDF. Right: Mean per-pixel MSE relative to mask SDF. Heuristic (grey) applies the downsampled binary mask in latent space; Alpha‑clamped (orange) uses the clamped least-squares solved     α  ∗   \alpha^{*}    Appendix   A  ; DecFormer (green) is our model. DecFormer achieves the lowest error around the boundary with a sharper fall-off compared to baselines.  
+ 
+ 
+ 
+ 
+  4.3  DecFormer is a strong Diffusion Inpainting Prior 
+
+ 
+ Setup 
+
+ 
+ We now evaluate DecFormer as an inpainting prior for a diffusion backbone, both frozen and tuned with a small inpainting LoRA  [ 9 ] . The LoRA uses a dual-sigma noise schedule (Appendix   J  ) and is trained independently to demonstrate complementary benefits with DecFormer. We hypothesize that repairing the masking operation during the diffusion denoising process yields end-to-end improvements for a masked generation task. We integrate DecFormer into Flux.1-Dev using the     z  0   z_{0}    re-targeted scheduler from §  3.2  . At each sampling step (for 30 steps), we update the predicted velocity     v  ⋆   v^{\star}    using mask    m  m    and reference     z  0  ref   z_{0}^{\text{ref}}   . For training the LoRA, we use COCO-2017 train images with instance segmentations as masks. For evaluation, we report metrics on the validation split, filtering examples with masked area       &gt;   15  %    &gt;15\%    of the image; prompts and guidance are held fixed across methods. 
+ 
+ 
+ 
+ Results 
+
+ 
+ We compare five variants: 
+ 
+  1.  
+ 
+  Heuristic : downsampled, broadcast latent mask blended at every step (Equation(  3  )). 
+  
+  2.  
+ 
+  DecFormer : our compositor inserted at every step via     z  0   z_{0}    re-targeting; backbone frozen. 
+  
+  3.  
+ 
+  LoRA only : LoRA on  Flux.1-Dev  trained for inpainting using the same masks; no compositor. 
+  
+  4.  
+ 
+  DecFormer + LoRA : DecFormer plus the inpainting LoRA. 
+  
+  5.  
+ 
+  Flux.1-Fill : a fully finetuned, mask-aware inpainting model used as a strong reference. 
+  
+ 
+ 
+ 
+ We report SSIM, PSNR, LPIPS, and FID against ground-truth mask composites. DecFormer, without any backbone finetuning, improves inpainting over the latent-heuristic baseline across all metrics (see Table    3   and qualitative examples in Fig.   5  ). 
+ 
+ 
+ Adding a small LoRA ( DecFormer+LoRA ) further closes the gap to a dedicated inpainting model.  DecFormer+LoRA  achieves perceptual quality comparable to the fully finetuned Flux.1-Fill, though pixel-level reconstruction remains weaker (Table   3  ). 
+ 
+ 
+ 
+ Visual Comparison 
+
+ 
+ Figure   5   illustrates common failure modes with the heuristic. DecFormer reduces boundary artifacts, and the edits are more aware of the masked area. LoRA primarily helps with semantic plausibility inside the masked region, whereas DecFormer governs how content is stitched, yielding complementary gains. 
+ 
+ 
+ We show that errors introduced by heuristic masking indeed impact the generation quality for inpainting, and by correcting these errors with DecFormer, we gain inpainting quality improvements for training-free and light training contexts. 
+ 
+  
+   Figure 5 :   Inpainting quality comparisons for 4 images between heuristic, DecFormer, light-training inpainting LoRA, LoRA with DecFormer, and Flux.1 Fill, a fully finetuned image editing model.  
+ 
+ 
+   Table 3 :   Masked Editing results. Evaluated on all samples with masked area    &gt;  &gt;    0.15 in COCO-2017 validation set.   
+  
+ 
+ 
+ 
+ Method 
+ SSIM (mean   ±  \pm   std) 
+ PSNR (mean   ±  \pm   std) 
+ LPIPS (mean   ±  \pm   std) 
+ FID  
+ 
+ 
+ 
+ Baseline (Heuristic) 
+ 0.643    ±  \pm    0.145 
+ 13.578    ±  \pm    2.915 
+ 0.354    ±  \pm    0.152 
+ 23.514  
+ 
+ DecFormer 
+  0.682    ±  \pm    0.139  
+ 13.943    ±  \pm    2.870 
+ 0.314    ±  \pm    0.143 
+ 20.556  
+ 
+ LoRA with no DecFormer 
+ 0.653    ±  \pm    0.142 
+ 14.160    ±  \pm    2.620 
+ 0.331    ±  \pm    0.143 
+ 21.519  
+ 
+ Flux Fill 
+ 0.681    ±  \pm    0.141 
+  16.750    ±  \pm    3.199  
+ 0.313    ±  \pm    0.125 
+ 19.343  
+ 
+ DecFormer with LoRA 
+ 0.680    ±  \pm    0.139 
+ 14.231    ±  \pm    2.742 
+  0.303    ±  \pm    0.138  
+  19.280   
+ 
+ 
+  
+ 
+ 
+ 
+ 
+  4.4  Proof of Generality beyond Compositing 
+
+ 
+ Objective 
+
+ 
+ To validate the generality of the PELC objective beyond multi-image tasks, we test its ability to learn a complex parametric color transformation. This operator, defined as      F  ⁡   (  x  ,  γ  ,  c  ,  b  )    =     (    x   1  /  γ    −  0.5   )   ⋅  c   +  0.5  +  b    F(x;\gamma,c,b)=(x^{1/\gamma}-0.5)\cdot c+0.5+b   , combines gamma, contrast, and brightness adjustments. We compare LPIPS, PSNR, and SSIM metrics between our model and applying    F  F    directly onto latents as a baseline. 
+ 
+ 
+ 
+ Setup &amp; Results 
+
+ 
+ We train a lightweight, FiLM-conditioned transformer to predict a latent residual, conditioned on the transformation parameters     (   log  ⁡  γ   ,   log  ⁡  c   ,  b  )   (\log\gamma,\log c,b)   . The model is optimized via the PELC objective to be pixel-equivalent, using a combined objective of latent MSE and pixel-space LPIPS. As demonstrated quantitatively in Table   4   and qualitatively in Appendix   D  , our PELC-trained model successfully learns this complex mapping, reproducing the target transformation with high fidelity, whereas naively operating on the latent causes the image to degrade catastrophically. This success validates that PELC is a general framework for learning pixel-equivalent latent operators, including single-image parametric adjustments. We report results n=1024 on the COCO-2017 validation set. 
+ 
+ 
+   Table 4 :   
+Quantitative Metrics (Mean    ±  \pm    95% CI) on 1024 random samples images from the COCO-2017 validation dataset. The baseline applies the parametric color-transformation formula directly in latent space, following the same simplifying assumption used in heuristic latent masking.
+  
+ 
+ 
+ 
+ Metric 
+ Baseline (heuristic) 
+ PELC-trained model (Ours)  
+ 
+ 
+ 
+ LPIPS    ↓  \downarrow    
+    0.4996  0.4996   0.0076 
+ 0.0875 0.0023  
+ 
+ PSNR    ↑  \uparrow    
+    18.1630  18.1630   0.1968 
+ 27.2835 0.2301  
+ 
+ SSIM    ↑  \uparrow    
+    0.4359  0.4359   0.0112 
+ 0.8466 0.0059  
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+  5  Conclusion 
+
+ 
+ Linear latent mixing treats latents as pseudo-pixels, but modern VAEs are nonlinear and globally entangled, breaking pixel-equivalence and producing boundary and color artifacts that sampling amplifies. Pixel-Equivalent Latent Compositing (PELC) provides a principled alternative: we learn pixel-consistent latent operators using a frozen VAE for pixel-space supervision, avoiding the drift and computational cost of per-step encode–decode cycles. 
+ 
+ 
+ DecFormer instantiates this idea with a lightweight transformer that predicts per-channel blend weights and a nonlinear residual. It preserves thin structures, soft opacity gradients, and high-resolution boundaries that broadcast masking cannot represent after VAE downsampling. DecFormer reduces boundary errors by up to 53% and halves perceptual error (LPIPS) compared to heuristic masking (§  4  ) with negligible overhead (7.7M parameters,    &lt;  &lt;   0.1% of backbone size, 3.5% compute overhead). 
+ 
+ 
+ Because DecFormer corrects  how  latents are fused rather than  what  is generated, its benefits are orthogonal to semantic reasoning. It composes cleanly with mask-aware LoRAs and approaches the quality of fully finetuned inpainting backbones while remaining far smaller and cheaper than ControlNet-style hypernetworks. Beyond compositing, controlled experiments on nonlinear color transforms (§  4.4  ) show that pixel-equivalence extends naturally to non-compositing latent edits as well. 
+ 
+ 
+ Limitations and future work 
+
+ 
+ PELC addresses fusion, not semantic reconstruction; large context-dependent edits still require mask-aware denoisers. Broader validation on additional VAEs is required. Extending PELC to additional latent operators, including spatial warps and temporally coherent video edits, is a natural next step as well as supporting work investigating how training inpainting models or ControlNets with PELC in the loop could reduce task difficulty speed convergence or network size requirements. 
+ 
+ 
+ Pixel-equivalent latent compositing exposes a foundational flaw in current inpainting practice and replaces it with a simple, general, and geometrically consistent principle. It yields sharper seams, correct opacity handling, and high-resolution boundary fidelity with minimal cost, opening a path toward a library of decode-consistent latent operators for modern diffusion pipelines. 
+ 
+ 
+ 
+ 
+ Author Contributions 
+
+ 
+ R.B. initiated the research, formulated the core inconsistency of latent masking, developed the decoder-equivalence principle, DecFormer architecture, and training objectives. D.Z. built the training infrastructure and curated all datasets. Both jointly refined the PELC objective; D.Z. formulated the encoder–decoder pixel-equivalence extension from decoder-equivalence. R.B. performed the ERF analyses, developed the     z  0   z_{0}   -retargeting formulation and the    γ  \gamma   -correction generality, and led DecFormer training, ablations, and evaluation. D.Z. led all VAE latent-space analyses, designed the dual-sigmas inpainting schedule, and performed the diffusion and inpainting experiments, including FLUX/FLUX-Fill finetuning and evaluation. Both authors contributed equally to writing, visualization, and manuscript preparation. R.B. arranged computing resources from Modal that enabled this work. 
+ 
+ 
+ 
+ Acknowledgements 
+
+ 
+ This work was conducted by the Bradbury Group, an independent non-profit AI research lab. We gratefully acknowledge Modal for providing the compute support that enabled our large-scale parallel training. Beyond the listed authors, we thank the broader Bradbury Group research community for internal reviews, discussion of early prototypes, and support with maintaining our shared infrastructure. 
+ 
+ 
+ 
+ References 
+
+ 
+  [1] 
+  Alimama Creative Team   (2024) 
+ 
+  FLUX-controlnet-inpainting .
+ 
+ Note:  GitHub:  https://github.com/alimama-creative/FLUX-Controlnet-Inpainting  
+ 
+ Cited by:   §2.4  .
+  
+  [2] 
+  Alimama Creative Team   (2024) 
+ 
+  FLUX.1-dev controlnet inpainting (alpha/beta) .
+ 
+ Note:   https://huggingface.co/alimama-creative/FLUX.1-dev-Controlnet-Inpainting-Beta  
+ 
+ Cited by:   §2.4  .
+  
+  [3] 
+  A. Araujo, W. Norris, and J. Sim   (2019) 
+ 
+  Computing receptive fields of convolutional neural networks .
+ 
+  Distill .
+ 
+ Note:  https://distill.pub/2019/computing-receptive-fields 
+ 
+ External Links:   Document  
+ 
+ Cited by:   §2.3  .
+  
+  [4] 
+  O. Avrahami, D. Lischinski, and O. Fried   (2022) 
+ 
+  Blended diffusion for text-driven editing of natural images .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 18208–18218 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.4  .
+  
+  [5] 
+  Black Forest Labs   (2024) 
+ 
+  FLUX.1 fill: state-of-the-art inpainting and outpainting models .
+ 
+ Note:   https://huggingface.co/black-forest-labs/FLUX.1-Fill-dev 12B parameter inpainting model 
+ 
+ Cited by:   §2.4  .
+  
+  [6] 
+  C. Corneanu, R. Gadde, and A. M. Martinez   (2024) 
+ 
+  LatentPaint: image inpainting in latent space with diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision (WACV) ,
+ 
+  pp. 4334–4343 .
+ 
+ Cited by:   §2.4  .
+  
+  [7] 
+  G. Couairon, J. Verbeek, H. Schwenk, and M. Cord   (2023) 
+ 
+  DiffEdit: diffusion-based semantic image editing with mask guidance .
+ 
+  International Conference on Learning Representations (ICLR) .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.2  ,
+  §2.4  .
+  
+  [8] 
+   (2024) 
+ 
+  Flux-dev inpainting controlnet .
+ 
+ Note:  Replicate:  https://replicate.com/zsxkib/flux-dev-inpainting-controlnet  
+ 
+ Cited by:   §2.4  .
+  
+  [9] 
+  E. J. Hu, Y. Shen, P. Wallis, Z. Allen-Zhu, Y. Li, S. Wang, L. Wang, and W. Chen   (2021) 
+ 
+  LoRA: low-rank adaptation of large language models .
+ 
+ External Links:   2106.09685 ,
+ Link  
+ 
+ Cited by:   §4.3  .
+  
+  [10] 
+  X. Ju, X. Liu, X. Wang, Y. Bian, Y. Shan, and Q. Xu   (2024) 
+ 
+  BrushNet: a plug-and-play image inpainting model with decomposed dual-branch diffusion .
+ 
+  arXiv preprint arXiv:2403.06976 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.4  .
+  
+  [11] 
+  B. F. Labs, S. Batifol, A. Blattmann, F. Boesel, S. Consul, C. Diagne, T. Dockhorn, J. English, Z. English, P. Esser, S. Kulal, K. Lacey, Y. Levi, C. Li, D. Lorenz, J. Müller, D. Podell, R. Rombach, H. Saini, A. Sauer, and L. Smith   (2025) 
+ 
+  FLUX.1 kontext: flow matching for in-context image generation and editing in latent space .
+ 
+ External Links:   2506.15742 ,
+ Link  
+ 
+ Cited by:   §2.1  .
+  
+  [12] 
+  E. Levin and O. Fried   (2023) 
+ 
+  Differential diffusion: giving each pixel its strength .
+ 
+  Computer Graphics Forum   42  ( 6 ),  pp. e15040 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.4  .
+  
+  [13] 
+  J. Li, S. Ma, J. Zhang, and D. Tao   (2021) 
+ 
+  Privacy-preserving portrait matting .
+ 
+ External Links:   2104.14222 ,
+ Link  
+ 
+ Cited by:   §3.1  .
+  
+  [14] 
+  J. Li, J. Zhang, S. J. Maybank, and D. Tao   (2021) 
+ 
+  Bridging composite and real: towards end-to-end deep image matting .
+ 
+ External Links:   2010.16188 ,
+ Link  
+ 
+ Cited by:   §3.1  .
+  
+  [15] 
+  C. Meng, Y. He, Y. Song, J. Song, J. Wu, J. Zhu, and S. Ermon   (2022) 
+ 
+  SDEdit: guided image synthesis and editing with stochastic differential equations .
+ 
+  International Conference on Learning Representations (ICLR) .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.4  .
+  
+  [16] 
+  C. Mou, X. Wang, J. Song, Y. Shan, and J. Zhang   (2024) 
+ 
+  DiffEditor: boosting accuracy and flexibility on diffusion-based image editing .
+ 
+ External Links:   2402.02583 ,
+ Link  
+ 
+ Cited by:   §2.4  .
+  
+  [17] 
+  A. Oring, Z. Yakhini, and Y. Hel-Or   (2021) 
+ 
+  Autoencoder image interpolation by shaping the latent space .
+ 
+ In  Proceedings of the 38th International Conference on Machine Learning (ICML) ,
+ 
+  pp. 8281–8290 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.3  .
+  
+  [18] 
+  W. Peebles and S. Xie   (2022) 
+ 
+  Scalable diffusion models with transformers .
+ 
+  arXiv preprint arXiv:2212.09748 .
+ 
+ Cited by:   §1  .
+  
+  [19] 
+   (2024) 
+ 
+  Problem with fluxinpaintpipeline when doing a replace .
+ 
+ Note:  Hugging Face Diffusers Issue #9486:  https://github.com/huggingface/diffusers/issues/9486  
+ 
+ Cited by:   §2.4  .
+  
+  [20] 
+  R. Rombach, A. Blattmann, D. Lorenz, P. Esser, and B. Ommer   (2022) 
+ 
+  High-resolution image synthesis with latent diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 10684–10695 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §1  ,
+  §2.1  .
+  
+  [21] 
+  RunwayML   (2022) 
+ 
+  Stable diffusion inpainting model card (v1.5) .
+ 
+ Note:   https://huggingface.co/stable-diffusion-v1-5/stable-diffusion-inpainting UNet has 5 additional input channels (4 masked-image latents + 1 mask) 
+ 
+ Cited by:   §2.4  .
+  
+  [22] 
+   (2023) 
+ 
+  Stable diffusion xl 1.0 inpainting 0.1 .
+ 
+ Note:   https://huggingface.co/diffusers/stable-diffusion-xl-1.0-inpainting-0.1 Adopts the same 5 additional input channels for inpainting 
+ 
+ Cited by:   §2.4  .
+  
+  [23] 
+  B. Yang, S. Gu, B. Zhang, T. Zhang, X. Chen, X. Sun, D. Chen, and F. Wen   (2023) 
+ 
+  Paint by example: exemplar-based image editing with diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) ,
+ 
+  pp. 18381–18391 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.4  .
+  
+  [24] 
+  L. Zhang, A. Rao, and M. Agrawala   (2023) 
+ 
+  Adding conditional control to text-to-image diffusion models .
+ 
+ In  Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV) ,
+ 
+  pp. 3836–3847 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.4  .
+  
+  [25] 
+  R. Zhang, P. Isola, A. A. Efros, E. Shechtman, and O. Wang   (2018) 
+ 
+  The unreasonable effectiveness of deep features as a perceptual metric .
+ 
+ External Links:   1801.03924 ,
+ Link  
+ 
+ Cited by:   §4.1  .
+  
+  [26] 
+  J. Zhuang, Y. Zeng, W. Liu, C. Yuan, and K. Chen   (2024) 
+ 
+  A task is worth one word: learning with task prompts for high-quality versatile image inpainting .
+ 
+  arXiv preprint arXiv:2312.03594 .
+ 
+ External Links:   Link  
+ 
+ Cited by:   §2.4  .
+  
+ 
+ 
+  
+ 
+ Appendix 
+
+ 
+ 
+  Appendix A  Least-squares projection 
+
+ 
+ Given target latent     z  T   z_{T}    and source latents      z  A   ,   z  B    z_{A},z_{B}   , we seek the optimal decomposition: 
+ 
+
+  
+  
+      (   α  ∗   ,   s  ∗   )   =   arg  ⁡   min   α  ,  s      \displaystyle(\alpha^{*},s^{*})=\arg\min_{\alpha,s}    
+      ‖    z  T   −   [     (   1  −  α   )   ​   z  A    +   α  ​   z  B    +  s   ]    ‖   2  2   \displaystyle\;\;\big\|z_{T}-\big[(1-\alpha)z_{A}+\alpha z_{B}+s\big]\big\|_{2}^{2}    
+  
+  (7)    
+  
+  
+  s.t.  
+      α  ∈    [   0  ,  1   ]    C  ×  H  ×  W     .   \displaystyle\alpha\in[0,1]^{C\times H\times W}.    
+  
+  (8)    
+ 
+ 
+ 
+ This yields the closed-form solution 
+ 
+
+  
+  
+     α   i  ​  j  ​  c   ∗   \displaystyle\alpha^{*}_{ijc}    
+        =    Π   [  0  ,  1  ]    ​   (      (    z  T   i  ​  j  ​  c    −   z  B   i  ​  j  ​  c     )   ​   (    z  A   i  ​  j  ​  c    −   z  B   i  ​  j  ​  c     )       ‖    z  A   i  ​  j  ​  c    −   z  B   i  ​  j  ​  c     ‖   2  2   +  ϵ     )     ,   \displaystyle=\Pi_{[0,1]}\!\left(\frac{(z_{T}^{ijc}-z_{B}^{ijc})(z_{A}^{ijc}-z_{B}^{ijc})}{\|z_{A}^{ijc}-z_{B}^{ijc}\|_{2}^{2}+\epsilon}\right),    
+  
+  (9)    
+  
+  
+     s   i  ​  j  ​  c   ∗   \displaystyle s^{*}_{ijc}    
+        =    z  T   i  ​  j  ​  c    −   [     (   1  −   α   i  ​  j  ​  c   ∗    )   ​   z  A   i  ​  j  ​  c     +    α   i  ​  j  ​  c   ∗   ​   z  B   i  ​  j  ​  c      ]     ,   \displaystyle=z_{T}^{ijc}-\big[(1-\alpha^{*}_{ijc})z_{A}^{ijc}+\alpha^{*}_{ijc}z_{B}^{ijc}\big],    
+  
+  (10)    
+ 
+ where     Π   [  0  ,  1  ]    \Pi_{[0,1]}    denotes projection onto     [  0  ,  1  ]   [0,1]   . 
+ 
+ 
+ This formulation interprets     α  ∗   \alpha^{*}    as the projection of     z  T   z_{T}    onto the line spanned by     (   z  A   ,   z  B   )   (z_{A},z_{B})   , while     s  ∗   s^{*}    captures the orthogonal residual. 
+ 
+ 
+ 
+  Appendix B  Blind Predictor Architecture 
+
+  
+ 
+ 
+   Figure 6 :   A lightweight CNN maps the input pixel mask (augmented with Fourier features) into latent-resolution, per-channel soft masks. The stem is a     3  ×  3   3\times 3    conv with GELU, followed by three stages: Stage 1: MBConv block with depth-wise squeeze–excite, followed by a learnable low-pass filter and     2  ×   2\times    downsampling; Stage 2: MBConv → pointwise expansion → GELU → learnable low-pass, giving another     2  ×   2\times    downsample; Stage 3: MBConv → strided conv for     8  ×   8\times    total reduction → MBConv (extra receptive field). Final shared features branch into two FFNGlU heads: (i) an    α  \alpha    head predicting per-channel blending masks with bounded activation, and (ii) a token head producing spatial embeddings for cross-attention in DecFormer. The diagram expands the MBConv block (pointwise–depthwise–pointwise with SE and normalization); the learnable low-pass filters are depth-wise convolutions initialized as binomial blur kernels.  
+ 
+ 
+ 
+  Appendix C  DecFormer Extended Architecture 
+
+  
+ 
+ 
+   Figure 7 :   Extended DecFormer architecture diagram. The figure highlights more precisely the internal composition of each block, including the location and type of normalization layers, as well as the flow of intermediate projections and residual connections.  
+ 
+ 
+ 
+  Appendix D  Gamma Correction Proof-of-Concept Qualitative Results 
+
+  
+ 
+ 
+   Figure 8 :   A qualitative example shows how the naive method fails catastrophically with severe artifacts when faced with more aggressive color correction, while our model’s output is nearly indistinguishable from the ground truth. This illustrates that VAE latents are not pixel-like and require a principled framework like PELC.  
+ 
+  
+ 
+ 
+  Appendix E  Extended DecFormer Metrics Tables 
+
+ 
+   Table 5 :   Complete method comparison at 1024px resolution (mean ± 95% CI, n=50). DecFormer variants compared against all heuristic baselines.  
+  
+ 
+ 
+ 
+  Mask Type  
+  Method  
+  SSIM     ↑  \uparrow    
+  PSNR (dB)     ↑  \uparrow    
+  LPIPS     ↓  \downarrow    
+  Halo L1     ↓  \downarrow     
+ 
+ 
+ 
+  Soft (   σ  \sigma   =21)  
+ DecFormer 
+ 0.985  ±.003   
+  41.3  ±.8    
+  0.027  ±.005    
+  0.018  ±.001     
+ 
+ DecFormer-Pretrain 
+  0.986  ±.002    
+ 40.9  ±.7   
+ 0.028  ±.005   
+  0.018  ±.001     
+ 
+ Heuristic Area 
+ 0.941  ±.010   
+ 32.9  ±1.1   
+ 0.088  ±.016   
+ 0.050  ±.005    
+ 
+ Heuristic Bilinear 
+ 0.941  ±.010   
+ 32.9  ±1.1   
+ 0.088  ±.016   
+ 0.050  ±.005    
+ 
+ Heuristic Nearest 
+ 0.940  ±.010   
+ 32.4  ±1.0   
+ 0.089  ±.016   
+ 0.054  ±.004    
+ 
+  Binary  
+ DecFormer 
+  0.964  ±.017    
+  35.7  ±1.5    
+  0.045  ±.018    
+  0.060  ±.006     
+ 
+ DecFormer-Pretrain 
+ 0.961  ±.018   
+ 34.8  ±1.5   
+ 0.058  ±.022   
+ 0.068  ±.005    
+ 
+ Heuristic Area 
+ 0.915  ±.025   
+ 29.2  ±1.2   
+ 0.112  ±.029   
+ 0.135  ±.007    
+ 
+ Heuristic Bilinear 
+ 0.913  ±.025   
+ 28.4  ±1.3   
+ 0.110  ±.029   
+ 0.141  ±.008    
+ 
+ Heuristic Nearest 
+ 0.903  ±.028   
+ 26.3  ±1.2   
+ 0.115  ±.030   
+ 0.183  ±.010    
+ 
+  Original  
+ DecFormer 
+  0.968  ±.016    
+  38.6  ±1.5    
+  0.049  ±.018    
+  0.037  ±.005     
+ 
+ DecFormer-Pretrain 
+ 0.965  ±.017   
+ 37.9  ±1.4   
+ 0.056  ±.021   
+ 0.040  ±.005    
+ 
+ Heuristic Area 
+ 0.919  ±.024   
+ 31.5  ±1.3   
+ 0.104  ±.028   
+ 0.078  ±.006    
+ 
+ Heuristic Bilinear 
+ 0.918  ±.024   
+ 31.1  ±1.4   
+ 0.104  ±.028   
+ 0.080  ±.007    
+ 
+ Heuristic Nearest 
+ 0.907  ±.027   
+ 28.9  ±1.2   
+ 0.110  ±.030   
+ 0.110  ±.009    
+ 
+  Thin  
+ DecFormer 
+  0.967  ±.014    
+  34.7  ±1.5    
+  0.045  ±.017    
+  0.073  ±.005     
+ 
+ DecFormer-Pretrain 
+ 0.960  ±.016   
+ 33.4  ±1.4   
+ 0.061  ±.020   
+ 0.085  ±.005    
+ 
+ Heuristic Area 
+ 0.922  ±.029   
+ 28.6  ±1.2   
+ 0.112  ±.032   
+ 0.167  ±.008    
+ 
+ Heuristic Bilinear 
+ 0.920  ±.030   
+ 27.3  ±1.2   
+ 0.111  ±.031   
+ 0.174  ±.009    
+ 
+ Heuristic Nearest 
+ 0.908  ±.034   
+ 25.6  ±1.3   
+ 0.116  ±.032   
+ 0.207  ±.011    
+ 
+ 
+  
+ 
+ 
+   Table 6 :   DecFormer vs. Heuristic bilinear at 512px resolution (mean ± 95% CI, n=50).  
+  
+ 
+ 
+ 
+  Mask Type  
+  Method  
+  SSIM     ↑  \uparrow    
+  PSNR (dB)     ↑  \uparrow    
+  LPIPS     ↓  \downarrow    
+  Halo L1     ↓  \downarrow     
+ 
+ 
+ 
+  Soft (   σ  \sigma   =21)  
+ DecFormer 
+  0.957  ±.008    
+  36.0  ±.9    
+  0.051  ±.009    
+  0.029  ±.003     
+ 
+ Heuristic Bilinear 
+ 0.859  ±.024   
+ 28.6  ±1.0   
+ 0.149  ±.021   
+ 0.072  ±.007    
+ 
+  Binary  
+ DecFormer 
+  0.924  ±.028    
+  31.0  ±1.5    
+  0.069  ±.022    
+  0.087  ±.011     
+ 
+ Heuristic Bilinear 
+ 0.848  ±.037   
+ 25.2  ±1.2   
+ 0.145  ±.029   
+ 0.168  ±.010    
+ 
+  Original  
+ DecFormer 
+  0.930  ±.026    
+  33.1  ±1.5    
+  0.068  ±.021    
+  0.064  ±.009     
+ 
+ Heuristic Bilinear 
+ 0.853  ±.036   
+ 27.1  ±1.3   
+ 0.139  ±.029   
+ 0.123  ±.011    
+ 
+  Thin  
+ DecFormer 
+  0.942  ±.018    
+  30.7  ±1.1    
+  0.063  ±.018    
+  0.091  ±.007     
+ 
+ Heuristic Bilinear 
+ 0.878  ±.034   
+ 24.4  ±1.0   
+ 0.139  ±.028   
+ 0.193  ±.013    
+ 
+ 
+  
+ 
+ 
+   Table 7 :   DecFormer vs. Heuristic bilinear at 256px resolution (mean ± 95% CI, n=50)  
+  
+ 
+ 
+ 
+  Mask Type  
+  Method  
+  SSIM     ↑  \uparrow    
+  PSNR (dB)     ↑  \uparrow    
+  LPIPS     ↓  \downarrow    
+  Halo L1     ↓  \downarrow     
+ 
+ 
+ 
+  Soft (   σ  \sigma   =21)  
+ DecFormer 
+  0.934  ±.007    
+  33.0  ±.7    
+  0.071  ±.007    
+  0.034  ±.003     
+ 
+ Heuristic Bilinear 
+ 0.804  ±.019   
+ 26.0  ±.7   
+ 0.204  ±.018   
+ 0.082  ±.006    
+ 
+  Binary  
+ DecFormer 
+  0.892  ±.029    
+  27.9  ±1.3    
+  0.098  ±.026    
+  0.097  ±.013     
+ 
+ Heuristic Bilinear 
+ 0.808  ±.037   
+ 23.0  ±1.0   
+ 0.187  ±.032   
+ 0.172  ±.013    
+ 
+  Original  
+ DecFormer 
+  0.902  ±.027    
+  29.7  ±1.3    
+  0.097  ±.026    
+  0.077  ±.009     
+ 
+ Heuristic Bilinear 
+ 0.812  ±.037   
+ 24.3  ±1.0   
+ 0.183  ±.033   
+ 0.142  ±.010    
+ 
+  Thin  
+ DecFormer 
+  0.911  ±.017    
+  27.4  ±1.0    
+  0.092  ±.017    
+  0.097  ±.006     
+ 
+ Heuristic Bilinear 
+ 0.809  ±.032   
+ 21.5  ±.8   
+ 0.202  ±.027   
+ 0.199  ±.010    
+ 
+ 
+  
+ 
+ 
+ 
+  Appendix F  Alpha and Shift Visualisation and Target Visualisations 
+
+  
+ 
+ 
+   Figure 9 :   Qualitative comparison of DecFormer interpolation against a heuristic baseline and ground truth. For each method, we visualize the output alongside the corresponding    α  \alpha    and shift predictions, compressed to 1-D profiles using multiple metrics. In the heuristic baseline, the naive mask collapses to a single scalar channel (zero variance), revealing its broadcast nature. The ground truth reference uses optimal     α  ∗   \alpha^{*}   ,     s  ∗   s^{*}    values (Appendix   A  ). Notably, the predicted shift and projected shift exhibits ring-like halos aligned with the mask boundaries, the latter of which was used to justify halo loss metrics and conditioning and ring radius.  
+ 
+ 
+ 
+  Appendix G  DecFormer Qualitative Extended 
+
+  
+ 
+ 
+   Figure 10 :   Further qualitative results illustrating the failure modes of heuristic interpolation and the improvements achieved by DecFormer (see Fig.   2  ).  
+ 
+  
+ 
+ 
+  Appendix H  Halo calculation 
+
+ 
+ Compute the 1-px edge set    e  e    of    m  m    (morphological XOR of 1-px dilate/erode). Convolve    e  e    with a linear disk kernel of radius     R  px   R_{\text{px}}    (We empirically find radius      R  px   =  8   R_{\text{px}}=8    (approximately one VAE receptive field) provides good coverage) to obtain a two-sided, softly decaying ring      w  px   ∈    [   0  ,  1   ]    H  ×  W     w^{\text{px}}\in[0,1]^{H\times W}   .
+Anti-alias downsample    m  m    to     m  ℓ   m_{\ell}   , then reproduce the same ring construction at latent scale with radius      R  ℓ   =    max   ⁡   (  1  ,   ⌊    R  px   /  s   ⌉   )     R_{\ell}=\max\!\big(1,\;\lfloor R_{\text{px}}/s\rceil\big)   ,     s  =   max  ⁡   (   H  /  h   ,   W  /  w   )     s=\max(H/h,\,W/w)   , yielding      w  ℓ   ∈    [   0  ,  1   ]    h  ×  w     w^{\ell}\in[0,1]^{h\times w}   . 
+ 
+ 
+ Staged training via local quadratic surrogate 
+
+ 
+  Setup. 
+Near a current iterate     (  α  ,  s  )   (\alpha,s)    we linearize the decoder    D  D    and form a local Gauss–Newton surrogate for the decoded losses. This yields a quadratic objective 
+ 
+
+  
+  
+         min    δ  ​  α   ,   δ  ​  s     ⁡   1  2    ​    [      δ  ​  α        δ  ​  s      ]   ⊤   ​     [     M    B       B  ⊤     N     ]   ⏟    H  loc    ​   [      δ  ​  α        δ  ​  s      ]    −   ⟨   g  ,   [      δ  ​  α        δ  ​  s      ]    ⟩    ,   \min_{\delta\alpha,\;\delta s}\;\frac{1}{2}\!\begin{bmatrix}\delta\alpha\\
+\delta s\end{bmatrix}^{\!\top}\underbrace{\begin{bmatrix}M&amp;B\\
+B^{\top}&amp;N\end{bmatrix}}_{H_{\text{loc}}}\begin{bmatrix}\delta\alpha\\
+\delta s\end{bmatrix}-\left\langle g,\begin{bmatrix}\delta\alpha\\
+\delta s\end{bmatrix}\right\rangle,    
+    
+ 
+ where     M  ≻  0   M\!\succ\!0    and     N  ≻  0   N\!\succ\!0    are the Gauss–Newton blocks for    α  \alpha    and    s  s   , and    B  B    captures their interaction (concentrated near mask boundaries). 
+ 
+ 
+  Block coordinate view. 
+Training    α  \alpha    first with     s  =  0   s{=}0    and then    s  s    with    α  \alpha    frozen is equivalent to applying a block Gauss–Seidel step on the local system. The second stage solves the Schur–complement system 
+ 
+
+  
+  
+        S  ​  δ  ​  s   =    r  s   −    B  ⊤   ​   M   −  1    ​   r  α      ,   S  =   N  −    B  ⊤   ​   M   −  1    ​  B      ,   S\,\delta s\;=\;r_{s}-B^{\top}M^{-1}r_{\alpha},\qquad S\;=\;N-B^{\top}M^{-1}B,    
+    
+ 
+ which can be interpreted as preconditioning the joint problem by    M  M    along the blend axis. 
+ 
+ 
+  Conditioning implication (local surrogate). 
+Let     κ  ⁡   (  ⋅  )    \kappa(\cdot)    denote the spectral condition number. For the preconditioned local system one obtains the bound 
+ 
+
+  
+  
+        κ  BCGD   ≤    κ  ⁡   (  M  )    ​  κ  ​   (  S  )     ,   S  =   N  −    B  ⊤   ​   M   −  1    ​  B    ⪯  N    ,   \kappa_{\text{BCGD}}\;\leq\;\kappa(M)\,\kappa(S),\qquad S=N-B^{\top}M^{-1}B\preceq N,    
+    
+ 
+ so     κ  BCGD   \kappa_{\text{BCGD}}    is no worse than using    N  N    alone and improves as the coupling    B  B    is explained by the    α  \alpha   -update. Empirically, we observe a reduced spectrum of    S  S    (vs.    N  N   ) concentrated at mask boundaries.   4    4 
+               4 
+              
+              
+              
+              
+              
+              
+              
+            This statement is for the  local quadratic surrogate  induced by a frozen decoder Jacobian and squared decoded losses; in practice we use LPIPS and halo weightings, for which Gauss–Newton is a standard approximation.    
+ 
+ 
+  Practical schedule. 
+Motivated by this decomposition, we  stage  training:
+(i) optimize    α  \alpha    with    s  s    gated off until validation stabilizes;
+(ii) warm up the shift head over    2  2   k steps while reducing    α  \alpha   ’s LR;
+(iii) ramp in halo-weighted losses to focus    s  s    on boundary residuals.
+This preserves a clean early gradient signal for    α  \alpha    and directs    s  s    to the orthogonal residual where it is most needed. 
+ 
+  
+ 
+ 
+ 
+  Appendix I  Receptive Field Analysis 
+
+ 
+ We calculate the receptive field according to formula: 
+ 
+
+  
+  
+      r  0   =     ∑   l  =  1   L    (    (    k  l   −  1   )   ​    ∏   i  =  1    l  −  1     s  i     )    +  1    r_{0}=\sum_{l=1}^{L}\left((k_{l}-1)\prod_{i=1}^{l-1}s_{i}\right)+1    
+    
+ 
+ we modify this formula to find influence field 
+ 
+
+  
+  
+      i  0   =     ∑   l  =  1   L    (    (    k  l   −  1   )   ​    ∏   i  =  1    l  −  1      s  i   ​    ∏   j  =   l  −  1    L    f  j       )    +    ∏   k  =  1   L    f  k      i_{0}=\sum_{l=1}^{L}\left((k_{l}-1)\prod_{i=1}^{l-1}s_{i}\prod_{j=l-1}^{L}f_{j}\right)+\prod_{k=1}^{L}f_{k}    
+    
+ 
+ where    f  f    denotes the upscaling factor for each module, which will be 2 for linearly interpolating the hidden state, and 1 for other operations such as convolutions. 
+ 
+ 
+   Table 8 :   Encoder receptive field  
+  
+ 
+ 
+ 
+  Layer  
+  Effective Stride  
+  Layer Sum  
+  Cumulative field   
+ 
+ 
+ 
+ Conv_in 
+ 1 
+ 2 
+ 3  
+ 
+ Down L0 
+ 1 
+ 10 
+ 13  
+ 
+ Down L1 
+ 2 
+ 20 
+ 33  
+ 
+ Down L2 
+ 4 
+ 40 
+ 73  
+ 
+ Down L3 
+ 8 
+ 64 
+ 137  
+ 
+ Middle 
+ 8 
+ 64 
+ 201  
+ 
+ Conv_out 
+ 8 
+ 16 
+ 217  
+ 
+ 
+  
+ 
+ 
+   Table 9 :   Decoder influence field  
+  
+ 
+ 
+ 
+  Layer  
+  Effective Stride  
+  Upscale Factor  
+  Layer Sum  
+  Cumulative field   
+ 
+ 
+ 
+ Conv_in 
+ 1 
+ 1 
+ 2 
+ 3  
+ 
+ Middle 
+ 1 
+ 1 
+ 8 
+ 11  
+ 
+ Up L3 
+ 1 
+ 2 
+ 16 
+ 50  
+ 
+ Up L2 
+ 2 
+ 2 
+ 32 
+ 156  
+ 
+ Up L1 
+ 4 
+ 2 
+ 64 
+ 424  
+ 
+ Up L0 
+ 8 
+ 1 
+ 96 
+ 520  
+ 
+ Conv_out 
+ 8 
+ 1 
+ 16 
+ 536  
+ 
+ 
+  
+   Table 10 :   Note that for upscaling layers, the order is reversed, from starting from L3 to L0  
+ 
+ 
+   Table 11 :   Decoder receptive field  
+  
+ 
+ 
+ 
+  Layer  
+  Effective Stride  
+  Layer Sum  
+  Cumulative field   
+ 
+ Conv_in 
+ 1 
+ 2 
+ 3  
+ 
+ Middle 
+ 1 
+ 8 
+ 11  
+ 
+ Up L3 
+ 1 
+ 13 
+ 24  
+ 
+ Up L2 
+ 1/2 
+ 6.5 
+ 30.5  
+ 
+ Up L1 
+ 1/4 
+ 3.25 
+ 33.75  
+ 
+ Up L0 
+ 1/8 
+ 1.5 
+ 35.25  
+ 
+ Conv_out 
+ 1/8 
+ 0.25 
+ 35.5  
+ 
+ 
+  
+ 
+ 
+ 
+  Appendix J  Dual-Sigma Noise for Mask-Aware Inpainting LoRA 
+
+ 
+ Standard diffusion applies a single global noise level    σ  \sigma    to all latent
+locations, 
+ 
+
+  
+  
+        z  σ   =     (   1  −  σ   )   ​   z  0    +   σ  ​  ϵ     ,   ϵ  ∼   𝒩  ⁡   (  0  ,  I  )      ,   z_{\sigma}=(1-\sigma)z_{0}+\sigma\,\epsilon,\qquad\epsilon\sim\mathcal{N}(0,I),    
+    
+ 
+ yielding a spatially uniform SNR. This provides no mechanism to distinguish pixels that are context from the inpainting region. More critically, in few-step samplers and velocity-based flows, the first update step largely fixes the denoising trajectory. Under uniform corruption, the model begins this first step from a state in which the true context is fully noised, forcing a blind prediction. The resulting early commitment often drives the masked and unmasked regions toward different modes, producing visible seams or the appearance of two incompatible images interpolated together. 
+ 
+ 
+ To avoid this failure mode, we impose a SNR contrast between the two regions. The surrounding context is assigned lower noise (higher SNR), while the masked region receives higher noise (lower SNR). This ensures that the model sees an accurate representation of the context at the first denoising step, providing a reliable conditioning signal before any irreversible trajectory decisions are made. 
+ 
+ 
+ Dual-sigma construction 
+
+ 
+ Let     m  ∈    [   0  ,  1   ]    H  ×  W     m\!\in\![0,1]^{H\times W}    denote the latent-resolution mask. For each
+sample we draw     u  ∼   𝒰  ⁡   (  0  ,  1  )     u\!\sim\!\mathcal{U}(0,1)    and construct 
+ 
+
+  
+  
+        σ  in   =   g  ⁡   (  u  )     ,    σ  out   =   g  ⁡   (   λ  ​  u   )      ,   \sigma_{\text{in}}=g(u),\qquad\sigma_{\text{out}}=g(\lambda u),    
+    
+ 
+ where     λ  =  0.75  &lt;  1   \lambda=0.75&lt;1    is a fixed scalar controlling the
+maximum noise level applied to the context region. 
+ 
+ 
+ and thus a corresponding SNR contrast 
+ 
+
+  
+  
+       SNR  out   =     (   1  −   σ  out    )   2    σ  out  2    ≫     (   1  −   σ  in    )   2    σ  in  2    =   SNR  in    .   \mathrm{SNR}_{\text{out}}=\frac{(1-\sigma_{\text{out}})^{2}}{\sigma_{\text{out}}^{2}}\;\gg\;\frac{(1-\sigma_{\text{in}})^{2}}{\sigma_{\text{in}}^{2}}=\mathrm{SNR}_{\text{in}}.    
+    
+ 
+ 
+ 
+ 
+ Regionwise noising 
+
+ 
+ Per-region noisy latents are constructed as 
+ 
+
+  
+  
+       z  σ   =     (   1  −  σ   )   ​   z  0    +   σ  ​  ϵ     ,   z_{\sigma}=(1-\sigma)z_{0}+\sigma\,\epsilon,    
+    
+ 
+ and the composite latent is 
+ 
+
+  
+  
+      z  =    m  ⊙   z   σ  in     +    (   1  −  m   )   ⊙   z   σ  out       .   z=m\odot z_{\sigma_{\text{in}}}+(1-m)\odot z_{\sigma_{\text{out}}}.    
+    
+ 
+ 
+ 
+ This yields a piecewise noise field 
+ 
+
+  
+  
+       σ  ⁡   (  i  ,  j  )    =     m  ⁡   (  i  ,  j  )    ​   σ  in    +    (   1  −   m  ⁡   (  i  ,  j  )     )   ​   σ  out      ,   \sigma(i,j)=m(i,j)\sigma_{\text{in}}+(1-m(i,j))\sigma_{\text{out}},    
+    
+ 
+ in contrast to the spatially uniform    σ  \sigma    used in standard diffusion. The denoiser naturally relies on the preserved context to guide reconstruction
+of the masked region, producing an inpainting-aware model without modifying architecture. This modification is not significantly out of distribution, and is easy to learn in a low rank manner. We train a 16 rank LoRA on this formulation. 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+   
+    Experimental support, please
+     view the build logs 
+    for errors. Generated by
+     
+       
+        L
+         A 
+        T
+         E 
+       
+       xml 
+       
+     .
+   
+   
+     Instructions for reporting errors 
+     We are continuing to improve HTML versions of papers, and your feedback helps enhance accessibility and mobile
+      support. To report errors in the HTML that will help us improve conversion and rendering, choose any of the
+      methods listed below: 
+     
+       Click the "Report Issue"  ( 
+             
+           )  button, located in the page header. 
+     
+      Tip:  You can select the relevant text first, to include it in your report. 
+     Our team has already identified  the following issues . We appreciate your time reviewing and reporting rendering errors we
+      may not have found yet. Your efforts will help us improve the HTML versions for all readers, because disability
+      should not be a barrier to accessing research. Thank you for your continued support in championing open access for
+      all. 
+     Have a free development cycle? Help support accessibility at arXiv! Our collaborators at LaTeXML maintain a  list of packages that need conversion , and welcome  developer contributions . 
+   
+  
+   
+     
+       
+        We gratefully acknowledge support from
+        our  major funders ,
+          member institutions   ,    ,
+        and all contributors.
+       
+       
+         About 
+         &middot; 
+         Help 
+         &middot; 
+         Contact 
+         &middot; 
+         Subscribe 
+         &middot; 
+         Copyright 
+         &middot; 
+         Privacy 
+         &middot; 
+         Accessibility 
+         &middot; 
+         Operational Status  (opens in new tab)  
+       
+     
+
+     
+       Major funding support from 
+       
+         
+           
+         
+         
+           
+         
+         
+           
+         
+       
+     
+   
+  
+   
+      
+       
+     
+   
+  
+ 

@@ -1,0 +1,16 @@
+VERIFIED model_index.json
+VERIFIED LICENSE
+VERIFIED scheduler/scheduler_config.json
+VERIFIED text_encoder/config.json
+VERIFIED text_encoder/model-00002-of-00002.safetensors
+VERIFIED text_encoder/model.safetensors.index.json
+VERIFIED tokenizer/added_tokens.json
+VERIFIED tokenizer/special_tokens_map.json
+VERIFIED tokenizer/spiece.model
+VERIFIED tokenizer/tokenizer_config.json
+VERIFIED transformer/config.json
+VERIFIED text_encoder/model-00001-of-00002.safetensors
+VERIFIED vae/config.json
+VERIFIED vae/diffusion_pytorch_model.safetensors
+VERIFIED transformer/diffusion_pytorch_model.safetensors
+COMPLETE

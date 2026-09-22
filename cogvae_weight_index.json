@@ -1,0 +1,20 @@
+[
+  {
+    "type": "file",
+    "oid": "c402176986b75b2f31dd0837ea8a412f52a57eca",
+    "size": 879,
+    "path": "vae/config.json"
+  },
+  {
+    "type": "file",
+    "oid": "bb977c24bd502a1b34c74b78bc8c524fcc0833aa",
+    "size": 862388596,
+    "lfs": {
+      "oid": "a410e48d988c8224cef392b68db0654485cfd41f345f4a3a81d3e6b765bb995e",
+      "size": 862388596,
+      "pointerSize": 134
+    },
+    "xetHash": "23afaade637c71806362599ce483d69ef3e9b52d500f74ad78adef692e3cd0f4",
+    "path": "vae/diffusion_pytorch_model.safetensors"
+  }
+]
