@@ -1,0 +1,102 @@
+/root/viewdit/experiments/video/latte_conflict_probe.py:129: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(dtype=torch.float16):
+[base_classA] class=14 cfg=7.0 shape=(1, 16, 4, 32, 32)
+[edit_classB] class=95 cfg=7.0 shape=(1, 16, 4, 32, 32)
+ROW boundary_rank2 keep_err=0.575906 resid=0.3860 aligned=0.9225
+ROW boundary_rank4 keep_err=0.435022 resid=0.2916 aligned=0.9565
+ROW boundary_rank8 keep_err=0.286375 resid=0.1920 aligned=0.9814
+ROW boundary_rank16 keep_err=0.123863 resid=0.0830 aligned=0.9965
+ROW boundary_rank24 keep_err=2.86126e-06 resid=0.0000 aligned=1.0000
+ROW boundary_rank24 keep_err=2.86126e-06 resid=0.0000 aligned=1.0000
+{
+  "complete": true,
+  "protocol": {
+    "model": "Latte-XL/2",
+    "ckpt": "ucf101.pt",
+    "steps": 12,
+    "frames": 16,
+    "prefix": 6,
+    "ranks": [
+      2,
+      4,
+      8,
+      16,
+      32,
+      64
+    ],
+    "class_a": 14,
+    "class_b": 95,
+    "seed": 999,
+    "cfg": 7.0,
+    "note": "Round-2 method-core probe: edit-vs-preserve conflict on the SAME prefix frames. Checks whether low-rank boundary separates 'keep A' from 'release B' inside the subspace, instead of either ignoring the conflict (none) or blindly pasting zA prefix (full_oracle = pure cache)."
+  },
+  "observed_edit_norm_prefix": 233.86968994140625,
+  "rows": [
+    {
+      "method": "none",
+      "prefix_keep_err": 1.4918266534805298,
+      "edit_signal": {
+        "residual_frac": 0.9999999999957242,
+        "aligned_frac": 0.0
+      }
+    },
+    {
+      "method": "full_oracle",
+      "prefix_keep_err": 0.0,
+      "edit_signal": {
+        "residual_frac": 1.831900366210308e-14,
+        "aligned_frac": 0.9999999999957058
+      }
+    },
+    {
+      "method": "boundary_rank2",
+      "prefix_keep_err": 0.575905978679657,
+      "edit_signal": {
+        "residual_frac": 0.38604082696209574,
+        "aligned_frac": 0.922481696246507
+      }
+    },
+    {
+      "method": "boundary_rank4",
+      "prefix_keep_err": 0.4350220561027527,
+      "edit_signal": {
+        "residual_frac": 0.29160363642770054,
+        "aligned_frac": 0.9565392408121863
+      }
+    },
+    {
+      "method": "boundary_rank8",
+      "prefix_keep_err": 0.286375492811203,
+      "edit_signal": {
+        "residual_frac": 0.1919629867062733,
+        "aligned_frac": 0.9814021661511753
+      }
+    },
+    {
+      "method": "boundary_rank16",
+      "prefix_keep_err": 0.12386276572942734,
+      "edit_signal": {
+        "residual_frac": 0.0830275864384568,
+        "aligned_frac": 0.9965472491967535
+      }
+    },
+    {
+      "method": "boundary_rank24",
+      "prefix_keep_err": 2.8612612368306145e-06,
+      "edit_signal": {
+        "residual_frac": 1.877185611419411e-06,
+        "aligned_frac": 0.9999999999939441
+      }
+    },
+    {
+      "method": "boundary_rank24",
+      "prefix_keep_err": 2.8612612368306145e-06,
+      "edit_signal": {
+        "residual_frac": 1.877185611419411e-06,
+        "aligned_frac": 0.9999999999939441
+      }
+    }
+  ],
+  "interpretation": "If boundary_rank{k>=some} hits keep_err~0 AND residual_frac>0 at modest k, the subspace does a selective trade-off rather than pure cache. If boundary_rank ~ full_oracle across all k, it is compressed-prefix-cache (erases the observed edit on protected frames)."
+}
+LATTE_CONFLICT_PROBE_OK

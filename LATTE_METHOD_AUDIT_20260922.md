@@ -61,3 +61,35 @@ Latte 无 temporal attention（帧独立处理，仅 temp_embed 注入），因�
 
 加一个让校准与编辑在**同一批帧上冲突**的探针（不再前缀=确认值/未来=编辑值完全分离），
 看低秩边界是否能在"保住语义 A"与"让出语义 B"之间找到子空间内的解。这一步才触及核心机制。
+
+---
+
+## Round-2 追加：编辑-保持冲突内检探针（2026-09-22）
+
+脚本：`scripts/latte_conflict_probe.py`；日志：`latte_method_audit_trace/latte_conflict/run.log`
+数据：`latte_method_audit_trace/latte_conflict/stats.json`
+设置：同帧（prefix=6）冲突，Bowling[14]→YoYo[95]，CFG=7，seed=999。编辑范数 233.87。
+
+### 数据（同一批前缀帧）
+
+| method       | keep_err | aligned | residual |
+|---|---|---|---|
+| none         | 1.49183  | 0.0000  | 1.0000   |
+| full_oracle  | 0        | 1.0000  | 0.0000   |
+| boundary_rank2  | 0.5759 | 0.9225 | 0.3860 |
+| boundary_rank4  | 0.4350 | 0.9565 | 0.2916 |
+| boundary_rank8  | 0.2864 | 0.9814 | 0.1920 |
+| boundary_rank16 | 0.1239 | 0.9965 | 0.0830 |
+| boundary_rank24 | 2.86e-06 | 1.0000 | 0.0000 |
+
+### 判定：该探针失败于设计目标 —— 未制造出真正的正交"编辑-保持"冲突
+
+`aligned` = 边界施加的校正方向与"观测编辑方向 (zA−zB)"的对齐度，`residual` = 其正交余量。
+数据里 aligned 随 rank 单调→1、residual→0、keep_err→0，这正是**构造性重合**的结果，不是选择性机制的证据：
+
+- 本探针里"保持方向"与"编辑方向"都指向同一个向量 `zA[:p]−zB[:p]`（同一 z0、同 seed、仅换 class token 生成的两段前缀差）。二者在子空间**方向重合**，因而 rank→满秩时边界校正 = 完整前缀替换 = full_oracle，无真正冲突可言。
+- 这是**负面但有价值**的方法学结论：仅在同一批帧上做前缀补齐，无法检验"选择性取舍"，因为 Latte 中保持与编辑共享同一 latent 方向。
+
+根因仍是指向 P3 已确认的事实：Latte 帧独立（无 temporal attention），前缀保护与未来编辑本就不在同一批帧碰撞，故"编辑-保持"在 Latte 上是**构造性伪问题**。真正的冲突只会出现在**有时域耦合**的底座（如 Wan 因果注意力）上，那里前缀校准才会真正连带影响未来编辑——这才是下一步要验证的方向。
+
+> 结论修正：当前 Latte 代理底座不足以检验"选择性释放 vs 保持"的取舍；该探针不改判 P1/P2/P3 的既有结论，但把"选择性"的验证责任彻底移交到时域耦合底座。
