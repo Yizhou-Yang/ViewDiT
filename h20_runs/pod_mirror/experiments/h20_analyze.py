@@ -41,6 +41,12 @@ for m in methods:
         ps = [sc[(*k, m)]['psnr_to_full'] for k in sk if sc[(*k, m)]['psnr_to_full'] is not None]
         row['psnr'] = statistics.mean(ps) if ps else None
         row['tde'] = statistics.mean(sc[(*k, m)]['temporal_delta_error'] for k in sk)
+        for q in ['subject_consistency', 'background_consistency', 'motion_magnitude', 'sharpness']:
+            vals = [sc[(*k, m)].get(q) for k in sk if sc[(*k, m)].get(q) is not None]
+            if vals:
+                row[q] = statistics.mean(vals)
+                dv = [sc[(*k, m)][q] - sc[(*k, 'full')][q] for k in sk if (*k, 'full') in sc and sc[(*k, 'full')].get(q) is not None]
+                row[q + '_minus_full'] = statistics.mean(dv) if dv else None
     summary['methods'][m] = row
 
 comparisons = {}
@@ -71,5 +77,13 @@ print(f"{'method':28s} {'n':>3s} {'sec':>6s} {'spd':>5s} {'calls':>5s} {'lat_mse
 for m, r in summary['methods'].items():
     print(f"{m:28s} {r['n']:3d} {r['seconds']:6.2f} {r['speedup']:5.2f} {r['full_calls']:5d} {r['latent_mse']:8.4f} "
           f"{(r.get('psnr') or 0):6.2f} {(r.get('clip') or 0):6.2f} {(r.get('clip_minus_full') or 0):6.2f}")
+print(f"\n{'method':28s} {'tde':>8s} {'dSubj':>8s} {'dBg':>8s} {'dMotion%':>8s} {'dSharp%':>8s}")
+for m, r in summary['methods'].items():
+    if 'tde' not in r:
+        continue
+    fm = summary['methods'].get('full', {})
+    mo = 100 * (r.get('motion_magnitude_minus_full') or 0) / max(fm.get('motion_magnitude', 1e-9), 1e-9)
+    sh = 100 * (r.get('sharpness_minus_full') or 0) / max(fm.get('sharpness', 1e-9), 1e-9)
+    print(f"{m:28s} {r['tde']:8.5f} {(r.get('subject_consistency_minus_full') or 0):+8.4f} {(r.get('background_consistency_minus_full') or 0):+8.4f} {mo:+8.2f} {sh:+8.2f}")
 for k, v in comparisons.items():
     print(f"{k:55s} mean={v['mean']:+.4f} ci=[{v['ci95'][0]:+.4f},{v['ci95'][1]:+.4f}] win={v['win_rate']:.2f} n={v['n']}")

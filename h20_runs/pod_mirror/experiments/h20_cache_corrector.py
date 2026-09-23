@@ -123,7 +123,22 @@ class Executor:
             return out
         m = self.mem[idx]
         dh, de = m['dh'], m['de']
-        if self.mode == 'linear' and m['pdh'] is not None:
+        if self.mode in ('damped', 'freq_hi', 'freq_lo') and m['pdh'] is not None:
+            r = (self.step - m['s']) / (m['s'] - m['ps'])
+            ddh = r * (dh - m['pdh'])
+            if self.mode == 'damped':
+                dh = dh + float(self.W) * ddh
+            else:
+                B_, N_, C_ = ddh.shape
+                g = ddh.float().reshape(B_, 5, 30, 45, C_)
+                G = torch.fft.rfft2(g, dim=(2, 3))
+                fy = torch.fft.fftfreq(30, device=g.device).abs()[:, None]
+                fx = torch.fft.rfftfreq(45, device=g.device)[None, :]
+                low = ((fy ** 2 + fx ** 2).sqrt() <= float(self.W)).to(G.dtype)[None, None, :, :, None]
+                keep = (1 - low) if self.mode == 'freq_hi' else low
+                g = torch.fft.irfft2(G * keep, s=(30, 45), dim=(2, 3))
+                dh = dh + g.reshape(B_, N_, C_).to(dh.dtype)
+        elif self.mode == 'linear' and m['pdh'] is not None:
             r = (self.step - m['s']) / (m['s'] - m['ps'])
             dh = dh + r * (dh - m['pdh'])
             de = de + r * (de - m['pde'])
@@ -265,6 +280,10 @@ def cmd_eval(a):
         if a.part in ('base', 'all'):
             methods += [(f'steps{matched_steps(b)}', {}, matched_steps(b)), (f'{b}_zero', dict(blocks=blocks, k=k, mode='zero'), STEPS),
                         (f'{b}_linear', dict(blocks=blocks, k=k, mode='linear'), STEPS)]
+        if a.part == 'freq' and b in ('B2', 'B3'):
+            methods += [(f'{b}_damped0.5', dict(blocks=blocks, k=k, mode='damped', W=0.5), STEPS),
+                        (f'{b}_freqhi0.15', dict(blocks=blocks, k=k, mode='freq_hi', W=0.15), STEPS),
+                        (f'{b}_freqlo0.15', dict(blocks=blocks, k=k, mode='freq_lo', W=0.15), STEPS)]
         if a.part in ('ridge', 'all'):
             for arm in ['ridge_off', 'ridge_off2x', 'ridge_dagger', 'ridge_dagger2']:
                 Wp = ROOT / f'results/fit_{b}/W_{arm}.pt'
