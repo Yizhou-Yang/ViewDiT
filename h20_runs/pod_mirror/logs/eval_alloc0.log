@@ -65,3 +65,17 @@ The config attributes {'invert_scale_latents': False} were passed to Autoencoder
 {"prompt": 12, "seed": 3000, "method": "A_all_k4", "steps": 30, "latent_mse_to_full": 0.16242554783821106, "gpu": "NVIDIA H20", "seconds": 10.479318723082542, "full_calls": 390, "reused_calls": 510}
 {"prompt": 12, "seed": 3000, "method": "A_all_w10k4", "steps": 30, "latent_mse_to_full": 0.09580710530281067, "gpu": "NVIDIA H20", "seconds": 11.809706896543503, "full_calls": 450, "reused_calls": 450}
 {"prompt": 13, "seed": 3000, "method": "A_mid_k2", "steps": 30, "latent_mse_to_full": 0.001522217644378543, "gpu": "NVIDIA H20", "seconds": 15.716246582567692, "full_calls": 636, "reused_calls": 264}
+{"prompt": 13, "seed": 3000, "method": "A_mid_k3", "steps": 30, "latent_mse_to_full": 0.005495269782841206, "gpu": "NVIDIA H20", "seconds": 13.6348163112998, "full_calls": 540, "reused_calls": 360}
+{"prompt": 13, "seed": 3000, "method": "A_all_k3", "steps": 30, "latent_mse_to_full": 0.00536000682041049, "gpu": "NVIDIA H20", "seconds": 11.684140421450138, "full_calls": 450, "reused_calls": 450}
+{"prompt": 13, "seed": 3000, "method": "A_all_k4", "steps": 30, "latent_mse_to_full": 0.008924596942961216, "gpu": "NVIDIA H20", "seconds": 10.364970177412033, "full_calls": 390, "reused_calls": 510}
+{"prompt": 13, "seed": 3000, "method": "A_all_w10k4", "steps": 30, "latent_mse_to_full": 0.0040146769024431705, "gpu": "NVIDIA H20", "seconds": 11.681103691458702, "full_calls": 450, "reused_calls": 450}
+{"prompt": 14, "seed": 3000, "method": "A_mid_k2", "steps": 30, "latent_mse_to_full": 0.00979490578174591, "gpu": "NVIDIA H20", "seconds": 15.457577303051949, "full_calls": 636, "reused_calls": 264}
+{"prompt": 14, "seed": 3000, "method": "A_mid_k3", "steps": 30, "latent_mse_to_full": 0.04472702741622925, "gpu": "NVIDIA H20", "seconds": 13.369435600936413, "full_calls": 540, "reused_calls": 360}
+{"prompt": 14, "seed": 3000, "method": "A_all_k3", "steps": 30, "latent_mse_to_full": 0.050898075103759766, "gpu": "NVIDIA H20", "seconds": 11.68051616102457, "full_calls": 450, "reused_calls": 450}
+{"prompt": 14, "seed": 3000, "method": "A_all_k4", "steps": 30, "latent_mse_to_full": 0.06170589104294777, "gpu": "NVIDIA H20", "seconds": 10.397060558199883, "full_calls": 390, "reused_calls": 510}
+{"prompt": 14, "seed": 3000, "method": "A_all_w10k4", "steps": 30, "latent_mse_to_full": 0.01432070229202509, "gpu": "NVIDIA H20", "seconds": 11.716265074908733, "full_calls": 450, "reused_calls": 450}
+{"prompt": 15, "seed": 3000, "method": "A_mid_k2", "steps": 30, "latent_mse_to_full": 0.016632478684186935, "gpu": "NVIDIA H20", "seconds": 15.453199684619904, "full_calls": 636, "reused_calls": 264}
+{"prompt": 15, "seed": 3000, "method": "A_mid_k3", "steps": 30, "latent_mse_to_full": 0.046926286071538925, "gpu": "NVIDIA H20", "seconds": 13.364061087369919, "full_calls": 540, "reused_calls": 360}
+{"prompt": 15, "seed": 3000, "method": "A_all_k3", "steps": 30, "latent_mse_to_full": 0.0486883707344532, "gpu": "NVIDIA H20", "seconds": 11.794060789048672, "full_calls": 450, "reused_calls": 450}
+{"prompt": 15, "seed": 3000, "method": "A_all_k4", "steps": 30, "latent_mse_to_full": 0.054149311035871506, "gpu": "NVIDIA H20", "seconds": 10.44490022957325, "full_calls": 390, "reused_calls": 510}
+{"prompt": 15, "seed": 3000, "method": "A_all_w10k4", "steps": 30, "latent_mse_to_full": 0.02554354816675186, "gpu": "NVIDIA H20", "seconds": 11.735734790563583, "full_calls": 450, "reused_calls": 450}
