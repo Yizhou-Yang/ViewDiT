@@ -23,7 +23,10 @@ from diffusers import CogVideoXPipeline, CogVideoXTransformer3DModel, Autoencode
 
 ROOT = Path('/data/viewdit')
 MODEL = ROOT / 'weights/CogVideoX-2b'
-H, W_, F, STEPS, CFG = 480, 720, 17, 30, 6.0
+H, W_, STEPS, CFG = 480, 720, 30, 6.0
+F = int(os.environ.get('VIEWDIT_F', '17'))
+TAG = os.environ.get('VIEWDIT_TAG', '')
+LT = (F - 1) // 4 + 1
 CAL = [
     'A golden retriever runs across a grassy park chasing a ball, sunny afternoon, realistic footage.',
     'Waves crash against black rocks on a rugged coastline at sunset, cinematic, realistic.',
@@ -146,7 +149,7 @@ class Executor:
         dh, de = m['dh'], m['de']
         if self.mode == 'hiboost':
             B_, N_, C_ = dh.shape
-            g = dh.float().reshape(B_, 5, 30, 45, C_)
+            g = dh.float().reshape(B_, LT, 30, 45, C_)
             G = torch.fft.rfft2(g, dim=(2, 3))
             fy = torch.fft.fftfreq(30, device=g.device).abs()[:, None]
             fx = torch.fft.rfftfreq(45, device=g.device)[None, :]
@@ -160,7 +163,7 @@ class Executor:
                 dh = dh + float(self.W) * ddh
             else:
                 B_, N_, C_ = ddh.shape
-                g = ddh.float().reshape(B_, 5, 30, 45, C_)
+                g = ddh.float().reshape(B_, LT, 30, 45, C_)
                 G = torch.fft.rfft2(g, dim=(2, 3))
                 fy = torch.fft.fftfreq(30, device=g.device).abs()[:, None]
                 fx = torch.fft.rfftfreq(45, device=g.device)[None, :]
@@ -230,7 +233,7 @@ class Runner:
     @torch.no_grad()
     def run(self, prompt, seed, steps=STEPS, perturb=0., **cfg):
         self.ex.configure(**cfg)
-        init = torch.randn((1, 5, 16, 60, 90), generator=torch.Generator(device='cuda').manual_seed(seed), device='cuda', dtype=torch.float16)
+        init = torch.randn((1, LT, 16, 60, 90), generator=torch.Generator(device='cuda').manual_seed(seed), device='cuda', dtype=torch.float16)
         if perturb:
             eps = torch.randn(init.shape, generator=torch.Generator(device='cuda').manual_seed(seed + 7), device='cuda', dtype=torch.float32)
             init = ((init.float() + perturb * eps) / (1 + perturb ** 2) ** .5).half()
@@ -298,8 +301,8 @@ def cmd_fit(a):
     json.dump({n: dict(val_latent_mse=b[0], alpha=b[1]) for n, b in arms.items()}, open(out / 'fit_summary.json', 'w'), indent=2)
 
 def cmd_eval(a):
-    out = ROOT / 'results/eval'; out.mkdir(parents=True, exist_ok=True)
-    lat = ROOT / 'latents/eval'; lat.mkdir(parents=True, exist_ok=True)
+    out = ROOT / f'results{TAG}/eval'; out.mkdir(parents=True, exist_ok=True)
+    lat = ROOT / f'latents{TAG}/eval'; lat.mkdir(parents=True, exist_ok=True)
     R = Runner(out); L = out / f'eval_shard{a.shard}.jsonl'
     done = set()
     for f in out.glob('eval_shard*.jsonl'):
@@ -333,6 +336,13 @@ def cmd_eval(a):
                     ('L3_all_w7_k4', dict(blocks=allb, k=4, mode='zero', win=(7, 29)), STEPS),
                     ('L4_all_w10_k4', dict(blocks=allb, k=4, mode='zero', win=(10, 29)), STEPS),
                     ('steps16', {}, 16), ('steps15', {}, 15), ('steps13', {}, 13)]
+    if a.part == 'f49':
+        allb = list(range(30)); mid = list(range(3, 27))
+        methods += [('full', {}, STEPS),
+                    ('B2_zero', dict(blocks=mid, k=2, mode='zero'), STEPS),
+                    ('B2_zero_late', dict(blocks=mid, k=2, mode='zero', win=(7, 29)), STEPS),
+                    ('L4_all_w10_k4', dict(blocks=allb, k=4, mode='zero', win=(10, 29)), STEPS),
+                    ('steps15', {}, 15), ('tea0.1', dict(blocks=allb, mode='tea', W=0.1), STEPS)]
     if a.part == 'tea':
         for th in (0.03, 0.05, 0.08, 0.1, 0.15):
             methods.append((f'tea{th}', dict(blocks=list(range(30)), mode='tea', W=th), STEPS))
@@ -361,7 +371,7 @@ def cmd_eval(a):
             methods.append((name, dict(blocks=blocks, mode='zero', sched=allocate(sens, n, run)), STEPS))
         json.dump({m[0]: sorted(m[1]['sched']) for m in methods if 'sched' in m[1]}, open(out / 'alloc_schedules.json', 'w'), indent=1)
     seen = set(); methods = [m for m in methods if not (m[0] in seen or seen.add(m[0]))]
-    jobs = [(i, s) for i in range(len(TEST)) for s in TEST_SEEDS]
+    jobs = [(i, s) for i in range(int(os.environ.get('VIEWDIT_NTEST', len(TEST)))) for s in TEST_SEEDS[:int(os.environ.get('VIEWDIT_NSEED', len(TEST_SEEDS)))]]
     jobs = jobs[a.shard::a.nshards]
     for i, s in jobs:
         d = lat / f'p{i:02d}_s{s}'; d.mkdir(exist_ok=True)
@@ -443,8 +453,8 @@ def allocate(sens, n, max_run):
 def cmd_score(a):
     from transformers import CLIPModel, CLIPProcessor
     from PIL import Image
-    out = ROOT / 'results/score'; out.mkdir(parents=True, exist_ok=True)
-    lat = ROOT / 'latents/eval'; gif = out / 'gifs'; gif.mkdir(exist_ok=True)
+    out = ROOT / f'results{TAG}/score'; out.mkdir(parents=True, exist_ok=True)
+    lat = ROOT / f'latents{TAG}/eval'; gif = out / 'gifs'; gif.mkdir(exist_ok=True)
     L = out / f'score_shard{a.shard}.jsonl'
     done = set()
     for f in out.glob('score_shard*.jsonl'):
