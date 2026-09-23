@@ -43,3 +43,6 @@ h20_runs/pod_mirror/results/embeddings.pt
 h20_runs/pod_mirror/results/fit_*/W_*.pt
 h20_runs/pod_mirror/results/score/gifs/
 h20_sync_loop.out
+h20_runs/pod_mirror/latents_f49/
+h20_runs/pod_mirror/results_f49/score/gifs/
+h20_runs/pod_mirror/results_f49/embeddings.pt
