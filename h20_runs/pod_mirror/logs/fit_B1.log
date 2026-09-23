@@ -33,3 +33,15 @@ The config attributes {'invert_scale_latents': False} were passed to Autoencoder
 {"stage": "select", "arm": "ridge_dagger", "alpha": 0.01, "val_latent_mse": 0.03660211339592934}
 {"stage": "select", "arm": "ridge_dagger", "alpha": 0.1, "val_latent_mse": 0.036002657492645085}
 {"stage": "collect", "teacher": false, "seed": 1000, "prompt": 0, "seconds": 26.437717363238335, "full_calls": 768, "reused_calls": 132}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 1, "seconds": 26.68509165942669, "full_calls": 768, "reused_calls": 132}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 2, "seconds": 26.508682176470757, "full_calls": 768, "reused_calls": 132}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 3, "seconds": 26.57427630573511, "full_calls": 768, "reused_calls": 132}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 4, "seconds": 26.574949868023396, "full_calls": 768, "reused_calls": 132}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 5, "seconds": 26.707718394696712, "full_calls": 768, "reused_calls": 132}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 6, "seconds": 26.74383196234703, "full_calls": 768, "reused_calls": 132}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 7, "seconds": 26.576562345027924, "full_calls": 768, "reused_calls": 132}
+{"stage": "select", "arm": "ridge_dagger2", "alpha": 0.001, "val_latent_mse": 0.0362163771642372}
+{"stage": "select", "arm": "ridge_dagger2", "alpha": 0.01, "val_latent_mse": 0.036157469847239554}
+{"stage": "select", "arm": "ridge_dagger2", "alpha": 0.1, "val_latent_mse": 0.035672812489792705}
+{"stage": "select", "arm": "zero", "alpha": null, "val_latent_mse": 0.03595509333536029}
+{"stage": "select", "arm": "linear", "alpha": null, "val_latent_mse": 0.05500535457395017}

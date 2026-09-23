@@ -1,0 +1,13 @@
+The config attributes {'invert_scale_latents': False} were passed to AutoencoderKLCogVideoX, but are not expected and will be ignored. Please verify your config.json configuration file.
+{"prompt": "val0", "budget": "B2", "mode": "zero", "lam": null, "latent_mse": 0.005323193036019802}
+{"prompt": "val0", "budget": "B2", "mode": "oracle_both", "lam": 0.25, "latent_mse": 0.005127541720867157}
+{"prompt": "val0", "budget": "B2", "mode": "oracle_both", "lam": 0.5, "latent_mse": 0.004452288616448641}
+{"prompt": "val0", "budget": "B2", "mode": "oracle_both", "lam": 0.75, "latent_mse": 0.0031996453180909157}
+{"prompt": "val0", "budget": "B2", "mode": "oracle_both", "lam": 0.9, "latent_mse": 0.0009957834845408797}
+{"prompt": "val0", "budget": "B2", "mode": "oracle_dh", "lam": 0.25, "latent_mse": 0.005171654280275106}
+{"prompt": "val0", "budget": "B2", "mode": "oracle_dh", "lam": 0.5, "latent_mse": 0.004427958279848099}
+{"prompt": "val0", "budget": "B2", "mode": "oracle_dh", "lam": 0.75, "latent_mse": 0.003216733690351248}
+{"prompt": "val0", "budget": "B2", "mode": "oracle_dh", "lam": 0.9, "latent_mse": 0.002482537878677249}
+{"prompt": "val0", "budget": "B2", "mode": "perturb", "lam": 0.001, "latent_mse": 6.073041004128754e-05}
+{"prompt": "val0", "budget": "B2", "mode": "perturb", "lam": 0.01, "latent_mse": 0.0022375353146344423}
+{"prompt": "val0", "budget": "B1", "mode": "zero", "lam": null, "latent_mse": 0.006037986371666193}

@@ -1,0 +1,90 @@
+{
+  "n_videos_full": 6,
+  "methods": {
+    "B1_linear": {
+      "n": 6,
+      "seconds": 18.924724895507097,
+      "speedup": 1.1471918485637191,
+      "full_calls": 768,
+      "latent_mse": 0.08114180574193597
+    },
+    "B1_zero": {
+      "n": 6,
+      "seconds": 18.895388076702755,
+      "speedup": 1.1489729688698231,
+      "full_calls": 768,
+      "latent_mse": 0.05575428639228145
+    },
+    "B2_linear": {
+      "n": 5,
+      "seconds": 15.975087569653988,
+      "speedup": 1.3500222688961219,
+      "full_calls": 636,
+      "latent_mse": 0.08394835833460093
+    },
+    "B2_zero": {
+      "n": 5,
+      "seconds": 15.863571462035178,
+      "speedup": 1.3595125169771611,
+      "full_calls": 636,
+      "latent_mse": 0.05011246129870415
+    },
+    "B3_linear": {
+      "n": 5,
+      "seconds": 14.036707834899426,
+      "speedup": 1.536451725024669,
+      "full_calls": 540,
+      "latent_mse": 0.19663413539528846
+    },
+    "B3_zero": {
+      "n": 5,
+      "seconds": 14.00551579296589,
+      "speedup": 1.5398735959035619,
+      "full_calls": 540,
+      "latent_mse": 0.0967629760503769
+    },
+    "full": {
+      "n": 6,
+      "seconds": 21.710290136436623,
+      "speedup": 1.0,
+      "full_calls": 900,
+      "latent_mse": 0.0
+    },
+    "full_perturb1e-2": {
+      "n": 6,
+      "seconds": 21.602347436050575,
+      "speedup": 1.004996804199432,
+      "full_calls": 900,
+      "latent_mse": 0.019275853779011715
+    },
+    "full_perturb1e-3": {
+      "n": 6,
+      "seconds": 21.570179720719654,
+      "speedup": 1.0064955608868842,
+      "full_calls": 900,
+      "latent_mse": 0.0023839309766723695
+    },
+    "steps18": {
+      "n": 5,
+      "seconds": 12.954949861764907,
+      "speedup": 1.6647477756938522,
+      "full_calls": 540,
+      "latent_mse": 0.4035598933696747
+    },
+    "steps21": {
+      "n": 5,
+      "seconds": 15.053606347739697,
+      "speedup": 1.432661613995025,
+      "full_calls": 630,
+      "latent_mse": 0.307490137219429
+    },
+    "steps26": {
+      "n": 6,
+      "seconds": 18.715750417361658,
+      "speedup": 1.1600010500405626,
+      "full_calls": 780,
+      "latent_mse": 0.12831235056122145
+    }
+  },
+  "comparisons": {}
+}

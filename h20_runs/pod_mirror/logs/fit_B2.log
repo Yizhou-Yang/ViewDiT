@@ -1,0 +1,36 @@
+The config attributes {'invert_scale_latents': False} were passed to AutoencoderKLCogVideoX, but are not expected and will be ignored. Please verify your config.json configuration file.
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 0, "seconds": 29.851814575493336, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 1, "seconds": 28.93446896970272, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 2, "seconds": 28.840915866196156, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 3, "seconds": 28.867125667631626, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 4, "seconds": 28.798232942819595, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 5, "seconds": 28.58154808729887, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 6, "seconds": 28.663879327476025, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 7, "seconds": 28.443406119942665, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 0, "seconds": 28.573761582374573, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 1, "seconds": 28.45395205169916, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 2, "seconds": 28.39017577469349, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 3, "seconds": 28.844695396721363, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 4, "seconds": 28.831340104341507, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 5, "seconds": 28.902215123176575, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 6, "seconds": 28.78802840411663, "full_calls": 636, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 7, "seconds": 28.686658695340157, "full_calls": 636, "reused_calls": 0}
+{"stage": "select", "arm": "ridge_off", "alpha": 0.001, "val_latent_mse": 0.036214809166267514}
+{"stage": "select", "arm": "ridge_off", "alpha": 0.01, "val_latent_mse": 0.03632683865725994}
+{"stage": "select", "arm": "ridge_off", "alpha": 0.1, "val_latent_mse": 0.03634823951870203}
+{"stage": "select", "arm": "ridge_off2x", "alpha": 0.001, "val_latent_mse": 0.03713631723076105}
+{"stage": "select", "arm": "ridge_off2x", "alpha": 0.01, "val_latent_mse": 0.03582523041404784}
+{"stage": "select", "arm": "ridge_off2x", "alpha": 0.1, "val_latent_mse": 0.03614500164985657}
+{"stage": "collect", "teacher": false, "seed": 2000, "prompt": 0, "seconds": 30.04940242320299, "full_calls": 636, "reused_calls": 264}
+{"stage": "collect", "teacher": false, "seed": 2000, "prompt": 1, "seconds": 29.856062524020672, "full_calls": 636, "reused_calls": 264}
+{"stage": "collect", "teacher": false, "seed": 2000, "prompt": 2, "seconds": 29.626544691622257, "full_calls": 636, "reused_calls": 264}
+{"stage": "collect", "teacher": false, "seed": 2000, "prompt": 3, "seconds": 29.700353138148785, "full_calls": 636, "reused_calls": 264}
+{"stage": "collect", "teacher": false, "seed": 2000, "prompt": 4, "seconds": 48.84230411797762, "full_calls": 636, "reused_calls": 264}
+{"stage": "collect", "teacher": false, "seed": 2000, "prompt": 5, "seconds": 57.67654191702604, "full_calls": 636, "reused_calls": 264}
+{"stage": "collect", "teacher": false, "seed": 2000, "prompt": 6, "seconds": 58.13986384868622, "full_calls": 636, "reused_calls": 264}
+{"stage": "collect", "teacher": false, "seed": 2000, "prompt": 7, "seconds": 58.16627110540867, "full_calls": 636, "reused_calls": 264}
+{"stage": "select", "arm": "ridge_dagger", "alpha": 0.001, "val_latent_mse": 0.03727881773374975}
+{"stage": "select", "arm": "ridge_dagger", "alpha": 0.01, "val_latent_mse": 0.036739216186106205}
+{"stage": "select", "arm": "ridge_dagger", "alpha": 0.1, "val_latent_mse": 0.03693604189902544}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 0, "seconds": 58.62367757409811, "full_calls": 636, "reused_calls": 264}
+{"stage": "collect", "teacher": false, "seed": 1000, "prompt": 1, "seconds": 58.42279567569494, "full_calls": 636, "reused_calls": 264}

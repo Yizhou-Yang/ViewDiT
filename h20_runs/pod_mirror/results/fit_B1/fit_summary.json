@@ -1,0 +1,18 @@
+{
+  "ridge_off": {
+    "val_latent_mse": 0.03723627550061792,
+    "alpha": 0.1
+  },
+  "ridge_off2x": {
+    "val_latent_mse": 0.036446288926526904,
+    "alpha": 0.001
+  },
+  "ridge_dagger": {
+    "val_latent_mse": 0.036002657492645085,
+    "alpha": 0.1
+  },
+  "ridge_dagger2": {
+    "val_latent_mse": 0.035672812489792705,
+    "alpha": 0.1
+  }
+}
