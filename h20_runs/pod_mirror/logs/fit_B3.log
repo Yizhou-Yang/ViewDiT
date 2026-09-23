@@ -1,0 +1,18 @@
+The config attributes {'invert_scale_latents': False} were passed to AutoencoderKLCogVideoX, but are not expected and will be ignored. Please verify your config.json configuration file.
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 0, "seconds": 60.13754057884216, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 1, "seconds": 58.95941710472107, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 2, "seconds": 58.98946437984705, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 3, "seconds": 58.86871027946472, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 4, "seconds": 58.97960828244686, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 5, "seconds": 59.656228601932526, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 6, "seconds": 58.70089574158192, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 1000, "prompt": 7, "seconds": 59.50768496096134, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 0, "seconds": 60.169444009661674, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 1, "seconds": 59.79924749583006, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 2, "seconds": 58.3168555572629, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 3, "seconds": 59.27401556819677, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 4, "seconds": 59.31653894484043, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 5, "seconds": 59.4885995388031, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 6, "seconds": 59.59500893205404, "full_calls": 540, "reused_calls": 0}
+{"stage": "collect", "teacher": true, "seed": 2000, "prompt": 7, "seconds": 59.423194862902164, "full_calls": 540, "reused_calls": 0}
+{"stage": "select", "arm": "ridge_off", "alpha": 0.001, "val_latent_mse": 0.07554728770628572}
