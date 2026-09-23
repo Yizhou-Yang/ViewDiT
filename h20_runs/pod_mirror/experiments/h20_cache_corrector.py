@@ -298,6 +298,9 @@ def cmd_score(a):
     vae = AutoencoderKLCogVideoX.from_pretrained(MODEL / 'vae', torch_dtype=torch.float32).cuda().eval().requires_grad_(False)
     clip = CLIPModel.from_pretrained(ROOT / 'weights/clip-vit-large-patch14', torch_dtype=torch.float16).cuda().eval()
     proc = CLIPProcessor.from_pretrained(ROOT / 'weights/clip-vit-large-patch14')
+    from transformers import AutoModel, AutoImageProcessor
+    dino = AutoModel.from_pretrained(ROOT / 'weights/dinov2-base', torch_dtype=torch.float16).cuda().eval()
+    dproc = AutoImageProcessor.from_pretrained(ROOT / 'weights/dinov2-base')
     dirs = sorted(lat.glob('p*_s*'))[a.shard::a.nshards]
     with torch.no_grad():
         for d in dirs:
@@ -320,12 +323,23 @@ def cmd_score(a):
                 pix = proc(images=frames[::4], return_tensors='pt')['pixel_values'].half().cuda()
                 imf = clip.get_image_features(pixel_values=pix); imf = imf / imf.norm(dim=-1, keepdim=True)
                 clip_score = float((imf @ tf.T).mean() * 100)
+                cf = clip.get_image_features(pixel_values=proc(images=frames, return_tensors='pt')['pixel_values'].half().cuda())
+                cf = cf / cf.norm(dim=-1, keepdim=True)
+                df = dino(pixel_values=dproc(images=frames, return_tensors='pt')['pixel_values'].half().cuda()).last_hidden_state[:, 0]
+                df = df / df.norm(dim=-1, keepdim=True)
+                subject = float(((df[1:] * df[:-1]).sum(-1) + (df[1:] * df[:1]).sum(-1)).mean() / 2)
+                background = float(((cf[1:] * cf[:-1]).sum(-1) + (cf[1:] * cf[:1]).sum(-1)).mean() / 2)
+                gray = v.mean(0)
+                motion = float((gray[1:] - gray[:-1]).abs().mean())
+                lap = gray[:, 1:-1, 1:-1] * 4 - gray[:, :-2, 1:-1] - gray[:, 2:, 1:-1] - gray[:, 1:-1, :-2] - gray[:, 1:-1, 2:]
+                sharpness = float(lap.var(dim=(1, 2)).mean())
                 mse = float((v - ref).square().mean())
                 tde = float(((v[:, 1:] - v[:, :-1]) - (ref[:, 1:] - ref[:, :-1])).square().mean())
                 if i < 4 and s == TEST_SEEDS[0]:
                     small = [f.resize((360, 240)) for f in frames]
                     small[0].save(gif / f'p{i:02d}_{name}.gif', save_all=True, append_images=small[1:], duration=125, loop=0)
-                log(L, dict(prompt=i, seed=s, method=name, clip_score=clip_score, rgb_mse_to_full=mse,
+                log(L, dict(prompt=i, seed=s, method=name, clip_score=clip_score, subject_consistency=subject,
+                            background_consistency=background, motion_magnitude=motion, sharpness=sharpness, rgb_mse_to_full=mse,
                             psnr_to_full=None if mse == 0 else float(-10 * torch.log10(torch.tensor(mse))), temporal_delta_error=tde))
 
 if __name__ == '__main__':

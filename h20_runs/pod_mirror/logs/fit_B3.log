@@ -44,3 +44,4 @@ The config attributes {'invert_scale_latents': False} were passed to Autoencoder
 {"stage": "select", "arm": "ridge_dagger2", "alpha": 0.01, "val_latent_mse": 0.07292645564302802}
 {"stage": "select", "arm": "ridge_dagger2", "alpha": 0.1, "val_latent_mse": 0.07244709460064769}
 {"stage": "select", "arm": "zero", "alpha": null, "val_latent_mse": 0.07105487305670977}
+{"stage": "select", "arm": "linear", "alpha": null, "val_latent_mse": 0.16819819062948227}
