@@ -1,0 +1,293 @@
+{
+  "complete": true,
+  "protocol": {
+    "cases": [
+      [
+        "cal_water",
+        "A white swan swims slowly across a calm blue pond, gentle ripples follow the swan, steady camera, realistic wildlife footage.",
+        2026092301
+      ],
+      [
+        "test_street",
+        "A red bus drives slowly along a city street, buildings in the background, steady camera, realistic footage.",
+        2026092302
+      ]
+    ],
+    "groups": [
+      [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8
+      ],
+      [
+        9,
+        10,
+        11,
+        12,
+        13,
+        14
+      ],
+      [
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      [
+        21,
+        22,
+        23,
+        24,
+        25,
+        26
+      ]
+    ],
+    "skip_steps_zero_indexed": [
+      5,
+      7,
+      9,
+      11,
+      13,
+      15,
+      17,
+      19,
+      21,
+      23,
+      25
+    ],
+    "frames": 17,
+    "height": 480,
+    "width": 720,
+    "steps": 30,
+    "cfg": 6,
+    "eta": 0,
+    "source_video": null,
+    "selection": "calibration prompt singles only; no test access",
+    "limitations": "one calibration and one held-out development prompt; not a confirmatory benchmark"
+  },
+  "script_sha256": "1f65e0987f85a8f309332209b4520d9482566807b040b9075fa8f563a8c15707",
+  "gpu": "Tesla V100-SXM2-32GB",
+  "runs": [
+    {
+      "case": "cal_water",
+      "method": "full",
+      "seconds_denoising_only": 42.12319201900391,
+      "actual_block_calls": 900,
+      "reused_block_calls": 0,
+      "peak_allocated_bytes": 4178237440,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "single_0",
+      "seconds_denoising_only": 39.30129082698841,
+      "actual_block_calls": 834,
+      "reused_block_calls": 66,
+      "peak_allocated_bytes": 4502185984,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "single_1",
+      "seconds_denoising_only": 39.29094587499276,
+      "actual_block_calls": 834,
+      "reused_block_calls": 66,
+      "peak_allocated_bytes": 4502185984,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "single_2",
+      "seconds_denoising_only": 39.28731947799679,
+      "actual_block_calls": 834,
+      "reused_block_calls": 66,
+      "peak_allocated_bytes": 4502185984,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "single_3",
+      "seconds_denoising_only": 39.31895341904601,
+      "actual_block_calls": 834,
+      "reused_block_calls": 66,
+      "peak_allocated_bytes": 4502185984,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "pair_0_1",
+      "seconds_denoising_only": 36.595708612992894,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "pair_0_2",
+      "seconds_denoising_only": 36.56865003000712,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "pair_0_3",
+      "seconds_denoising_only": 36.59099152794806,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "pair_1_2",
+      "seconds_denoising_only": 36.78349934099242,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "pair_1_3",
+      "seconds_denoising_only": 36.73189465200994,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "pair_2_3",
+      "seconds_denoising_only": 36.64423409604933,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "fewer26",
+      "seconds_denoising_only": 36.79256182996323,
+      "actual_block_calls": 780,
+      "reused_block_calls": 0,
+      "peak_allocated_bytes": 4178237440,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "full",
+      "seconds_denoising_only": 42.477919263008516,
+      "actual_block_calls": 900,
+      "reused_block_calls": 0,
+      "peak_allocated_bytes": 4178237440,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "single_0",
+      "seconds_denoising_only": 39.588421210006345,
+      "actual_block_calls": 834,
+      "reused_block_calls": 66,
+      "peak_allocated_bytes": 4502185984,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "single_1",
+      "seconds_denoising_only": 39.57107340003131,
+      "actual_block_calls": 834,
+      "reused_block_calls": 66,
+      "peak_allocated_bytes": 4502185984,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "single_2",
+      "seconds_denoising_only": 39.6067448380054,
+      "actual_block_calls": 834,
+      "reused_block_calls": 66,
+      "peak_allocated_bytes": 4502185984,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "single_3",
+      "seconds_denoising_only": 39.58767770999111,
+      "actual_block_calls": 834,
+      "reused_block_calls": 66,
+      "peak_allocated_bytes": 4502185984,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "pair_0_1",
+      "seconds_denoising_only": 36.764716233999934,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "pair_0_2",
+      "seconds_denoising_only": 36.74906009703409,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "pair_0_3",
+      "seconds_denoising_only": 36.68846889300039,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "pair_1_2",
+      "seconds_denoising_only": 36.715668398013804,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "pair_1_3",
+      "seconds_denoising_only": 36.78464919497492,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "pair_2_3",
+      "seconds_denoising_only": 36.72727044596104,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 4825022464,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "fewer26",
+      "seconds_denoising_only": 36.83197823702358,
+      "actual_block_calls": 780,
+      "reused_block_calls": 0,
+      "peak_allocated_bytes": 4178237440,
+      "finite": true
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "complete": true,
+  "description": "first order residual extrapolation, standard baseline not official TaylorSeer",
+  "chosen_from_calibration": [
+    2,
+    3
+  ],
+  "runs": [
+    {
+      "case": "cal_water",
+      "method": "linear_selected",
+      "seconds_denoising_only": 37.45912621100433,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 5470336000,
+      "latent_mse_to_full": 0.028600631281733513,
+      "finite": true
+    },
+    {
+      "case": "cal_water",
+      "method": "linear_all4",
+      "seconds_denoising_only": 31.575431687000673,
+      "actual_block_calls": 636,
+      "reused_block_calls": 264,
+      "peak_allocated_bytes": 6760760320,
+      "latent_mse_to_full": 0.028576740995049477,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "linear_selected",
+      "seconds_denoising_only": 37.21739056397928,
+      "actual_block_calls": 768,
+      "reused_block_calls": 132,
+      "peak_allocated_bytes": 5470336000,
+      "latent_mse_to_full": 0.2506228983402252,
+      "finite": true
+    },
+    {
+      "case": "test_street",
+      "method": "linear_all4",
+      "seconds_denoising_only": 31.562907332961913,
+      "actual_block_calls": 636,
+      "reused_block_calls": 264,
+      "peak_allocated_bytes": 6761681920,
+      "latent_mse_to_full": 0.2629798948764801,
+      "finite": true
+    }
+  ]
+}

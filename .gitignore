@@ -37,3 +37,9 @@ __pycache__/
 # keep method-audit trace (json + logs) even though *.log is ignored above
 !latte_method_audit_trace/
 !latte_method_audit_trace/**
+# H20 pod mirror: large tensors and gifs stay local/dev4
+h20_runs/pod_mirror/latents/
+h20_runs/pod_mirror/results/embeddings.pt
+h20_runs/pod_mirror/results/fit_*/W_*.pt
+h20_runs/pod_mirror/results/score/gifs/
+h20_sync_loop.out

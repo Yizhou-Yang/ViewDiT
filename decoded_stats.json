@@ -1,0 +1,122 @@
+{
+  "complete": true,
+  "note": "clamped RGB PSNR to full, temporal-delta error, and visual panels are fidelity checks, not FID/VBench quality",
+  "cases": {
+    "cal_water": {
+      "selection": {
+        "diagonal": [
+          2,
+          3
+        ],
+        "joint": [
+          2,
+          3
+        ],
+        "oracle_diagnostic": [
+          2,
+          3
+        ]
+      },
+      "metrics": {
+        "full": {
+          "decode_seconds": 9.842492689960636,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": null,
+          "rgb_mse_to_full": 0.0,
+          "temporal_difference_error": 0.0,
+          "finite": true
+        },
+        "fewer26": {
+          "decode_seconds": 9.608457175956573,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": 20.97732925415039,
+          "rgb_mse_to_full": 0.00798485241830349,
+          "temporal_difference_error": 0.0060019781813025475,
+          "finite": true
+        },
+        "pair_2_3": {
+          "decode_seconds": 9.613038022012915,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": 27.276519775390625,
+          "rgb_mse_to_full": 0.001872180961072445,
+          "temporal_difference_error": 0.001769677852280438,
+          "finite": true
+        },
+        "linear_selected": {
+          "decode_seconds": 9.600234587967861,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": 25.89653778076172,
+          "rgb_mse_to_full": 0.0025724456645548344,
+          "temporal_difference_error": 0.0022001280449330807,
+          "finite": true
+        },
+        "linear_all4": {
+          "decode_seconds": 9.61578767496394,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": 25.84760284423828,
+          "rgb_mse_to_full": 0.0026015962939709425,
+          "temporal_difference_error": 0.002250046469271183,
+          "finite": true
+        }
+      }
+    },
+    "test_street": {
+      "selection": {
+        "diagonal": [
+          2,
+          3
+        ],
+        "joint": [
+          2,
+          3
+        ],
+        "oracle_diagnostic": [
+          2,
+          3
+        ]
+      },
+      "metrics": {
+        "full": {
+          "decode_seconds": 9.605619065987412,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": null,
+          "rgb_mse_to_full": 0.0,
+          "temporal_difference_error": 0.0,
+          "finite": true
+        },
+        "fewer26": {
+          "decode_seconds": 9.622813317982946,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": 15.901739120483398,
+          "rgb_mse_to_full": 0.025693660601973534,
+          "temporal_difference_error": 0.010402434505522251,
+          "finite": true
+        },
+        "pair_2_3": {
+          "decode_seconds": 9.630225018016063,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": 19.07405662536621,
+          "rgb_mse_to_full": 0.012376399710774422,
+          "temporal_difference_error": 0.0019481562776491046,
+          "finite": true
+        },
+        "linear_selected": {
+          "decode_seconds": 9.631123610015493,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": 16.53653907775879,
+          "rgb_mse_to_full": 0.02219964936375618,
+          "temporal_difference_error": 0.002635646378621459,
+          "finite": true
+        },
+        "linear_all4": {
+          "decode_seconds": 9.61947691399837,
+          "peak_allocated_bytes": 25763853312,
+          "psnr_to_full": 16.169511795043945,
+          "rgb_mse_to_full": 0.0241573303937912,
+          "temporal_difference_error": 0.0028137615881860256,
+          "finite": true
+        }
+      }
+    }
+  }
+}
