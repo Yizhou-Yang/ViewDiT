@@ -63,8 +63,8 @@ BUDGETS = {  # name: (blocks, refresh interval)
     'B3': (list(range(3, 27)), 3),
 }
 
-def reuse_steps(k):
-    return {s for s in range(4, 27) if (s - 4) % k != 0}
+def reuse_steps(k, lo=4, hi=26):
+    return {s for s in range(lo, hi + 1) if (s - lo) % k != 0}
 
 def matched_steps(budget):
     blocks, k = BUDGETS[budget]
@@ -90,9 +90,9 @@ class Executor:
     def _tick(self, *_):
         self.step += 1
 
-    def configure(self, blocks=(), k=2, mode='zero', W=None, collect=None):
+    def configure(self, blocks=(), k=2, mode='zero', W=None, collect=None, win=(4, 26)):
         self.blocks = set(blocks)
-        self.reuse = reuse_steps(k) if blocks else set()
+        self.reuse = reuse_steps(k, *win) if blocks else set()
         self.mode, self.W, self.collect = mode, W, collect
         self.mem = {}
         self.step = -1
@@ -123,7 +123,16 @@ class Executor:
             return out
         m = self.mem[idx]
         dh, de = m['dh'], m['de']
-        if self.mode in ('damped', 'freq_hi', 'freq_lo') and m['pdh'] is not None:
+        if self.mode == 'hiboost':
+            B_, N_, C_ = dh.shape
+            g = dh.float().reshape(B_, 5, 30, 45, C_)
+            G = torch.fft.rfft2(g, dim=(2, 3))
+            fy = torch.fft.fftfreq(30, device=g.device).abs()[:, None]
+            fx = torch.fft.rfftfreq(45, device=g.device)[None, :]
+            hi = ((fy ** 2 + fx ** 2).sqrt() > 0.15).to(G.dtype)[None, None, :, :, None]
+            g = torch.fft.irfft2(G * hi, s=(30, 45), dim=(2, 3))
+            dh = dh + ((float(self.W) - 1) * g).reshape(B_, N_, C_).to(dh.dtype)
+        elif self.mode in ('damped', 'freq_hi', 'freq_lo') and m['pdh'] is not None:
             r = (self.step - m['s']) / (m['s'] - m['ps'])
             ddh = r * (dh - m['pdh'])
             if self.mode == 'damped':
@@ -280,6 +289,12 @@ def cmd_eval(a):
         if a.part in ('base', 'all'):
             methods += [(f'steps{matched_steps(b)}', {}, matched_steps(b)), (f'{b}_zero', dict(blocks=blocks, k=k, mode='zero'), STEPS),
                         (f'{b}_linear', dict(blocks=blocks, k=k, mode='linear'), STEPS)]
+        if a.part == 'boost' and b in ('B2', 'B3'):
+            for gm in (1.1, 1.25):
+                methods.append((f'{b}_hiboost{gm}', dict(blocks=blocks, k=k, mode='hiboost', W=gm), STEPS))
+        if a.part == 'window' and b in ('B2', 'B3'):
+            for name, win in [('early', (1, 23)), ('late', (7, 29))]:
+                methods.append((f'{b}_zero_{name}', dict(blocks=blocks, k=k, mode='zero', win=win), STEPS))
         if a.part == 'freq' and b in ('B2', 'B3'):
             methods += [(f'{b}_damped0.5', dict(blocks=blocks, k=k, mode='damped', W=0.5), STEPS),
                         (f'{b}_freqhi0.15', dict(blocks=blocks, k=k, mode='freq_hi', W=0.15), STEPS),
