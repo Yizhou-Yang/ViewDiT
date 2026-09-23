@@ -19,3 +19,7 @@
 {"cmd": "eval", "args": {"cmd": "eval", "shard": 0, "nshards": 2, "part": "boost"}, "script_sha256": "7bf27b5aef37807140c1145746ee74c7b8fc2e3dbdddd3908ef201df9ae325da", "cuda_visible": "0", "start": "2026-09-24 01:35:16"}
 {"cmd": "score", "args": {"cmd": "score", "shard": 1, "nshards": 2}, "script_sha256": "2c00578612a5e1337682ba20bf5d8a7207e8c26a03520fee7011b878b51b3882", "cuda_visible": "1", "start": "2026-09-24 01:51:47"}
 {"cmd": "score", "args": {"cmd": "score", "shard": 0, "nshards": 2}, "script_sha256": "2c00578612a5e1337682ba20bf5d8a7207e8c26a03520fee7011b878b51b3882", "cuda_visible": "0", "start": "2026-09-24 01:51:47"}
+{"cmd": "eval", "args": {"cmd": "eval", "shard": 0, "nshards": 2, "part": "late"}, "script_sha256": "2c00578612a5e1337682ba20bf5d8a7207e8c26a03520fee7011b878b51b3882", "cuda_visible": "0", "start": "2026-09-24 01:56:31"}
+{"cmd": "eval", "args": {"cmd": "eval", "shard": 1, "nshards": 2, "part": "late"}, "script_sha256": "2c00578612a5e1337682ba20bf5d8a7207e8c26a03520fee7011b878b51b3882", "cuda_visible": "1", "start": "2026-09-24 01:56:31"}
+{"cmd": "score", "args": {"cmd": "score", "shard": 0, "nshards": 2}, "script_sha256": "7a285213687ff6b9cec1200472cf60c1d814e428ecb54054b65062da3ad29ab3", "cuda_visible": "0", "start": "2026-09-24 02:17:53"}
+{"cmd": "score", "args": {"cmd": "score", "shard": 1, "nshards": 2}, "script_sha256": "7a285213687ff6b9cec1200472cf60c1d814e428ecb54054b65062da3ad29ab3", "cuda_visible": "1", "start": "2026-09-24 02:17:53"}

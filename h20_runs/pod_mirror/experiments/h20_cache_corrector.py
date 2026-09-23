@@ -15,6 +15,7 @@ Test prompts are disjoint from calibration/validation and never used for selecti
 Not an official reproduction of any published cache method.
 """
 import argparse, gc, hashlib, json, os, time, types
+from collections import defaultdict
 from pathlib import Path
 import torch
 from transformers import T5EncoderModel, T5Tokenizer
@@ -90,9 +91,9 @@ class Executor:
     def _tick(self, *_):
         self.step += 1
 
-    def configure(self, blocks=(), k=2, mode='zero', W=None, collect=None, win=(4, 26)):
+    def configure(self, blocks=(), k=2, mode='zero', W=None, collect=None, win=(4, 26), sched=None):
         self.blocks = set(blocks)
-        self.reuse = reuse_steps(k, *win) if blocks else set()
+        self.reuse = (set(sched) if sched is not None else reuse_steps(k, *win)) if blocks else set()
         self.mode, self.W, self.collect = mode, W, collect
         self.mem = {}
         self.step = -1
@@ -312,6 +313,14 @@ def cmd_eval(a):
                     ('L3_all_w7_k4', dict(blocks=allb, k=4, mode='zero', win=(7, 29)), STEPS),
                     ('L4_all_w10_k4', dict(blocks=allb, k=4, mode='zero', win=(10, 29)), STEPS),
                     ('steps16', {}, 16), ('steps15', {}, 15), ('steps13', {}, 13)]
+    if a.part == 'alloc':
+        sens = load_profile()
+        allb = list(range(30)); mid = list(range(3, 27))
+        for name, blocks, k, lo, run in [('A_mid_k2', mid, 2, 7, 1), ('A_mid_k3', mid, 3, 7, 2), ('A_all_k3', allb, 3, 7, 2),
+                                          ('A_all_k4', allb, 4, 7, 3), ('A_all_w10k4', allb, 4, 10, 3)]:
+            n = len(reuse_steps(k, lo, 29))
+            methods.append((name, dict(blocks=blocks, mode='zero', sched=allocate(sens, n, run)), STEPS))
+        json.dump({m[0]: sorted(m[1]['sched']) for m in methods if 'sched' in m[1]}, open(out / 'alloc_schedules.json', 'w'), indent=1)
     seen = set(); methods = [m for m in methods if not (m[0] in seen or seen.add(m[0]))]
     jobs = [(i, s) for i in range(len(TEST)) for s in TEST_SEEDS]
     jobs = jobs[a.shard::a.nshards]
@@ -325,6 +334,47 @@ def cmd_eval(a):
             torch.save(z.cpu(), d / f'{name}.pt')
             mse = float((z.float().cpu() - torch.load(fullp, weights_only=True).float()).square().mean()) if name != 'full' else 0.
             log(L, dict(prompt=i, seed=s, method=name, steps=steps, latent_mse_to_full=mse, gpu=torch.cuda.get_device_name(), **info))
+
+def cmd_profile(a):
+    """Per-step endpoint sensitivity on CAL prompts: reuse ALL 30 blocks at exactly one step s, measure latent MSE vs full."""
+    out = ROOT / 'results/profile'; out.mkdir(parents=True, exist_ok=True)
+    R = Runner(out); L = out / f'profile_shard{a.shard}.jsonl'
+    done = set()
+    for f in out.glob('profile_shard*.jsonl'):
+        for line in open(f):
+            r = json.loads(line); done.add((r['prompt'], r['step']))
+    jobs = list(range(len(CAL)))[a.shard::a.nshards]
+    for i in jobs:
+        zf = R.run(CAL[i], SEED_A)[0].float()
+        for s in range(1, STEPS):
+            if (i, s) in done:
+                continue
+            z, info = R.run(CAL[i], SEED_A, blocks=list(range(30)), mode='zero', sched={s})
+            log(L, dict(prompt=i, step=s, latent_mse_to_full=float((z.float() - zf).square().mean()), **info))
+
+def load_profile():
+    d = defaultdict(list)
+    for f in (ROOT / 'results/profile').glob('profile_shard*.jsonl'):
+        for line in open(f):
+            r = json.loads(line); d[r['step']].append(r['latent_mse_to_full'])
+    assert len(d) == STEPS - 1 and all(len(v) == len(CAL) for v in d.values()), 'profile incomplete'
+    return {s: sum(v) / len(v) for s, v in d.items()}
+
+def allocate(sens, n, max_run):
+    """Greedy: pick n least-sensitive steps, never reuse more than max_run consecutive steps (cache must be refreshed)."""
+    chosen = set()
+    for s in sorted(sens, key=sens.get):
+        if len(chosen) == n:
+            break
+        c = chosen | {s}
+        lo = s
+        while lo - 1 in c: lo -= 1
+        hi = s
+        while hi + 1 in c: hi += 1
+        if hi - lo + 1 <= max_run:
+            chosen = c
+    assert len(chosen) == n, (n, len(chosen))
+    return chosen
 
 def cmd_score(a):
     from transformers import CLIPModel, CLIPProcessor
@@ -389,9 +439,10 @@ if __name__ == '__main__':
     f = sp.add_parser('fit'); f.add_argument('--budget', required=True); f.add_argument('--alphas', type=float, nargs='+', default=[1e-3, 1e-2, 1e-1])
     e = sp.add_parser('eval'); e.add_argument('--shard', type=int, default=0); e.add_argument('--nshards', type=int, default=1); e.add_argument('--part', default='all')
     s = sp.add_parser('score'); s.add_argument('--shard', type=int, default=0); s.add_argument('--nshards', type=int, default=1)
+    q = sp.add_parser('profile'); q.add_argument('--shard', type=int, default=0); q.add_argument('--nshards', type=int, default=1)
     a = p.parse_args()
     meta = ROOT / 'results/run_meta.jsonl'; meta.parent.mkdir(parents=True, exist_ok=True)
     with open(meta, 'a') as fh:
         fh.write(json.dumps(dict(cmd=a.cmd, args=vars(a), script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                                  cuda_visible=os.environ.get('CUDA_VISIBLE_DEVICES'), start=time.strftime('%F %T'))) + '\n')
-    dict(embed=cmd_embed, fit=cmd_fit, eval=cmd_eval, score=cmd_score)[a.cmd](a)
+    dict(embed=cmd_embed, fit=cmd_fit, eval=cmd_eval, score=cmd_score, profile=cmd_profile)[a.cmd](a)
