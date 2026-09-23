@@ -1,0 +1,172 @@
+{
+  "complete": true,
+  "gpu": "Tesla V100-SXM2-32GB",
+  "torch": "2.6.0+cu124",
+  "script_sha256": "7d1d7a9a6ca6c90a5a6efd0f8a65dc36e55b4194b2c0d192b2db127905dbbac4",
+  "protocol": {
+    "h": 480,
+    "w": 720,
+    "frames": 17,
+    "steps": 50,
+    "strength": 0.75,
+    "cfg": 6.0,
+    "seeds": [
+      20261001,
+      20261002
+    ],
+    "prompts": {
+      "bear": [
+        "A white polar bear walking on rocky ground, realistic wildlife footage.",
+        "A black and white panda walking on rocky ground, realistic wildlife footage."
+      ],
+      "bus": [
+        "A bright red bus driving on a city street, realistic video.",
+        "A bright yellow bus driving on a city street, realistic video."
+      ]
+    },
+    "method": "untrained V2V with DDIM eta0; no prefix pins",
+    "limits": "two development clips; native spatial resolution but short17 frames; no semantic success metric; border proxy not mask; assignment is standard baseline"
+  },
+  "clips": {
+    "bear": {
+      "same_seed_odd_border_mse": 0.03492288291454315,
+      "random_permutation_expected_odd_border_mse": 0.10614175349473953,
+      "matched_odd_border_mse": 0.03492288291454315,
+      "reduction_vs_same": 0.0,
+      "reduction_vs_random": 0.6709788394792822,
+      "permutation_tail_fraction_diagnostic_not_scene_p": 0.5,
+      "assignment": [
+        0,
+        1
+      ],
+      "same_full_mse": 0.04378124326467514,
+      "matched_full_mse": 0.04378124326467514,
+      "same_center_mse": 0.059529438614845276,
+      "matched_center_mse": 0.059529438614845276,
+      "within_branch_diversity": [
+        0.179192453622818,
+        0.16764740645885468
+      ],
+      "marginal_multiset_preserved": true,
+      "even_border_cost_matrix": [
+        [
+          0.04470847547054291,
+          0.1785174310207367
+        ],
+        [
+          0.17433586716651917,
+          0.026148736476898193
+        ]
+      ],
+      "odd_border_cost_matrix": [
+        [
+          0.04394930228590965,
+          0.17939302325248718
+        ],
+        [
+          0.17532822489738464,
+          0.02589646726846695
+        ]
+      ]
+    },
+    "bus": {
+      "same_seed_odd_border_mse": 0.009168775752186775,
+      "random_permutation_expected_odd_border_mse": 0.05030108615756035,
+      "matched_odd_border_mse": 0.009168775752186775,
+      "reduction_vs_same": 0.0,
+      "reduction_vs_random": 0.81772211193478,
+      "permutation_tail_fraction_diagnostic_not_scene_p": 0.5,
+      "assignment": [
+        0,
+        1
+      ],
+      "same_full_mse": 0.014414297416806221,
+      "matched_full_mse": 0.014414297416806221,
+      "same_center_mse": 0.02373966947197914,
+      "matched_center_mse": 0.02373966947197914,
+      "within_branch_diversity": [
+        0.12124316394329071,
+        0.11693619936704636
+      ],
+      "marginal_multiset_preserved": true,
+      "even_border_cost_matrix": [
+        [
+          0.006651212461292744,
+          0.09319781512022018
+        ],
+        [
+          0.09081009775400162,
+          0.012704404070973396
+        ]
+      ],
+      "odd_border_cost_matrix": [
+        [
+          0.00650681322440505,
+          0.09269215911626816
+        ],
+        [
+          0.09017463028430939,
+          0.011830738745629787
+        ]
+      ]
+    }
+  },
+  "sampling": [
+    {
+      "clip": "bear",
+      "branch": 0,
+      "seed": 20261001,
+      "effective_steps": 37,
+      "seconds": 53.948044476041105
+    },
+    {
+      "clip": "bear",
+      "branch": 0,
+      "seed": 20261002,
+      "effective_steps": 37,
+      "seconds": 54.055772174033336
+    },
+    {
+      "clip": "bear",
+      "branch": 1,
+      "seed": 20261001,
+      "effective_steps": 37,
+      "seconds": 53.99777185701532
+    },
+    {
+      "clip": "bear",
+      "branch": 1,
+      "seed": 20261002,
+      "effective_steps": 37,
+      "seconds": 54.05990863405168
+    },
+    {
+      "clip": "bus",
+      "branch": 0,
+      "seed": 20261001,
+      "effective_steps": 37,
+      "seconds": 54.19268466101494
+    },
+    {
+      "clip": "bus",
+      "branch": 0,
+      "seed": 20261002,
+      "effective_steps": 37,
+      "seconds": 54.55061792198103
+    },
+    {
+      "clip": "bus",
+      "branch": 1,
+      "seed": 20261001,
+      "effective_steps": 37,
+      "seconds": 54.419656843005214
+    },
+    {
+      "clip": "bus",
+      "branch": 1,
+      "seed": 20261002,
+      "effective_steps": 37,
+      "seconds": 54.26870273600798
+    }
+  ]
+}

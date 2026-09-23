@@ -1,0 +1,14 @@
+{
+  "device": "cuda",
+  "dtype": "torch.float64",
+  "orthogonal_loss_relative_error": 1.1114622668778874e-16,
+  "orthogonal_gradient_max_error": 1.7763568394002505e-15,
+  "interaction_only_common_error_penalty": 0.0,
+  "paired_plus_interaction_quadratic_relative_error": 0.0,
+  "conclusions": [
+    "Equal-weight complete orthonormal contrasts have exactly the paired squared loss and gradients in exact arithmetic.",
+    "An added squared interaction contrast is a quadratic reweighting of joint prediction errors, not new target information.",
+    "Interaction contrast alone leaves arbitrary common-mode prediction error unpenalized.",
+    "This does not refute useful inductive biases, different model parameterizations, partial-label settings, sampling changes, or nonlinear losses."
+  ]
+}

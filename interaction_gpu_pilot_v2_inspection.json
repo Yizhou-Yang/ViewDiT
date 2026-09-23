@@ -1,0 +1,46 @@
+{
+  "identity": {
+    "mse": 0.004247509149718098,
+    "changed_mse": 0.07527549127116799,
+    "effects_mse": 0.09842393859289586,
+    "keep_mse": 0.0,
+    "interaction_mse": 0.0001666703571828531,
+    "temporal_delta_mse": 0.00045740805926470786,
+    "effects_pixels": 702.725
+  },
+  "trained_head_mapping": {
+    "11": {
+      "maximum_output_difference": 2.384185791015625e-07,
+      "scope": "same backbone, linear output head, binary operations, no nonlinear branch restrictions"
+    },
+    "29": {
+      "maximum_output_difference": 2.384185791015625e-07,
+      "scope": "same backbone, linear output head, binary operations, no nonlinear branch restrictions"
+    },
+    "47": {
+      "maximum_output_difference": 2.682209014892578e-07,
+      "scope": "same backbone, linear output head, binary operations, no nonlinear branch restrictions"
+    }
+  },
+  "interaction_present_scenes": 36,
+  "interaction_subset_descriptive_only": {
+    "direct": {
+      "mse": 0.0002966117451621728,
+      "changed_mse": 0.0017406225659349864,
+      "effects_mse": 0.0006874609677685874,
+      "keep_mse": 0.0002034478461104704,
+      "interaction_mse": 0.0004502843750271023,
+      "temporal_delta_mse": 0.0001932602959574002,
+      "effects_pixels": 703.0555555555555
+    },
+    "interaction": {
+      "mse": 0.00028419203071852853,
+      "changed_mse": 0.0018182536619456692,
+      "effects_mse": 0.0007453339591544742,
+      "keep_mse": 0.00018561240260708104,
+      "interaction_mse": 0.00037027971935727963,
+      "temporal_delta_mse": 0.0001871021753080034,
+      "effects_pixels": 703.0555555555555
+    }
+  }
+}

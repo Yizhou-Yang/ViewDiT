@@ -1,0 +1,55 @@
+{
+  "complete": true,
+  "purpose": "development strength screen, no novelty or significance claim",
+  "protocol": {
+    "clip": "bus",
+    "strengths": [
+      0.35,
+      0.5
+    ],
+    "reference_strength": 0.75,
+    "seed": 20261001,
+    "steps": 50,
+    "cfg": 6,
+    "eta": 0,
+    "frames": 17,
+    "height": 480,
+    "width": 720
+  },
+  "script_sha256": "7fc19e61d0185f2c6f30fb0ea2e76a3a62f925fbefd6b2da16e161d1e45e07d5",
+  "samples": [
+    {
+      "strength": 0.35,
+      "branch": 0,
+      "effective_steps": 17,
+      "seconds": 24.468212169012986,
+      "source_mse_not_edit_success": 0.013691449537873268,
+      "finite": true
+    },
+    {
+      "strength": 0.35,
+      "branch": 1,
+      "effective_steps": 17,
+      "seconds": 24.25033547997009,
+      "source_mse_not_edit_success": 0.013535024598240852,
+      "finite": true
+    },
+    {
+      "strength": 0.5,
+      "branch": 0,
+      "effective_steps": 25,
+      "seconds": 35.67078015196603,
+      "source_mse_not_edit_success": 0.026838019490242004,
+      "finite": true
+    },
+    {
+      "strength": 0.5,
+      "branch": 1,
+      "effective_steps": 25,
+      "seconds": 35.637972213036846,
+      "source_mse_not_edit_success": 0.026459375396370888,
+      "finite": true
+    }
+  ],
+  "decode_recovery": "fresh FP32 VAE process; expandable_segments allocator; unchanged saved latents and VAE arithmetic; initial inline decoding OOM"
+}

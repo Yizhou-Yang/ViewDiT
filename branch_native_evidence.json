@@ -1,0 +1,61 @@
+{
+  "purpose": "diagnostic only; source MSE is not edit correctness",
+  "clips": {
+    "bear": {
+      "samples": 4,
+      "vae_source_mse": 0.007764567155390978,
+      "branch_source_mse": [
+        0.1447034627199173,
+        0.1392248570919037
+      ],
+      "finite": [
+        true,
+        true
+      ],
+      "shape": [
+        [
+          2,
+          3,
+          17,
+          480,
+          720
+        ],
+        [
+          2,
+          3,
+          17,
+          480,
+          720
+        ]
+      ]
+    },
+    "bus": {
+      "samples": 4,
+      "vae_source_mse": 0.002305786358192563,
+      "branch_source_mse": [
+        0.0984824001789093,
+        0.0974055677652359
+      ],
+      "finite": [
+        true,
+        true
+      ],
+      "shape": [
+        [
+          2,
+          3,
+          17,
+          480,
+          720
+        ],
+        [
+          2,
+          3,
+          17,
+          480,
+          720
+        ]
+      ]
+    }
+  }
+}
