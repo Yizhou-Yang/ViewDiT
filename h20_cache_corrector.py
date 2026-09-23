@@ -91,7 +91,10 @@ class Executor:
     def _tick(self, *_):
         self.step += 1
 
-    def configure(self, blocks=(), k=2, mode='zero', W=None, collect=None, win=(4, 26), sched=None):
+    def configure(self, blocks=(), k=2, mode='zero', W=None, collect=None, win=(4, 26), sched=None, bsched=None):
+        self.bsched = {int(b): set(v) for b, v in bsched.items()} if bsched is not None else None
+        if bsched is not None:
+            blocks = [int(b) for b in bsched]
         self.blocks = set(blocks)
         self.reuse = (set(sched) if sched is not None else reuse_steps(k, *win)) if blocks else set()
         self.mode, self.W, self.collect = mode, W, collect
@@ -126,6 +129,8 @@ class Executor:
                     self.tea_acc = 0.
                 self.tea_prev = mod
             reuse_now = self.tea_now
+        elif self.bsched is not None:
+            reuse_now = self.step in self.bsched.get(idx, ())
         else:
             reuse_now = self.step in self.reuse
         if idx not in self.blocks or not reuse_now:
@@ -331,6 +336,22 @@ def cmd_eval(a):
     if a.part == 'tea':
         for th in (0.03, 0.05, 0.08, 0.1, 0.15):
             methods.append((f'tea{th}', dict(blocks=list(range(30)), mode='tea', W=th), STEPS))
+    if a.part == 'blockalloc':
+        bs = load_bprofile(); order = sorted(bs, key=bs.get)  # least sensitive first
+        lo_b, hi_b = order[:15], order[15:]
+        dense = set(s for s in range(11, 30) if s not in (17, 24))                    # 17 reuse steps, full at <=10, 17, 24
+        sparse = set(s for s in range(11, 30) if s not in (13, 16, 19, 22, 25, 28))   # 13 reuse steps
+        assert len(dense) == 17 and len(sparse) == 13
+        methods += [('BA_sens_450', dict(mode='zero', bsched={**{b: dense for b in lo_b}, **{b: sparse for b in hi_b}}), STEPS),
+                    ('BA_rev_450', dict(mode='zero', bsched={**{b: sparse for b in lo_b}, **{b: dense for b in hi_b}}), STEPS)]
+        d2 = set(s for s in range(11, 30) if s not in (19,))                                  # 18 reuse
+        s2 = set(s for s in range(11, 30) if s not in (13, 15, 17, 19, 21, 23, 25, 27, 29))  # 10 reuse; 15*18+15*10=420 reuse -> 480 calls
+        u2 = set(s for s in range(11, 30) if s not in (14, 18, 22, 26, 29))                  # 14 reuse x 30 = 420 -> 480 calls
+        assert len(d2) == 18 and len(s2) == 10 and len(u2) == 14
+        methods += [('BA_sens_c480', dict(mode='zero', bsched={**{b: d2 for b in lo_b}, **{b: s2 for b in hi_b}}), STEPS),
+                    ('BA_rev_c480', dict(mode='zero', bsched={**{b: s2 for b in lo_b}, **{b: d2 for b in hi_b}}), STEPS),
+                    ('U_c480', dict(blocks=list(range(30)), mode='zero', sched=u2), STEPS)]
+        json.dump(dict(block_sens=bs, low=lo_b, high=hi_b), open(out / 'blockalloc_meta.json', 'w'), indent=1)
     if a.part == 'alloc':
         sens = load_profile()
         allb = list(range(30)); mid = list(range(3, 27))
@@ -352,6 +373,31 @@ def cmd_eval(a):
             torch.save(z.cpu(), d / f'{name}.pt')
             mse = float((z.float().cpu() - torch.load(fullp, weights_only=True).float()).square().mean()) if name != 'full' else 0.
             log(L, dict(prompt=i, seed=s, method=name, steps=steps, latent_mse_to_full=mse, gpu=torch.cuda.get_device_name(), **info))
+
+def cmd_bprofile(a):
+    """Per-block sensitivity on CAL: reuse ONLY block b on the L4 late schedule (steps 10-29, k=4), latent MSE vs full."""
+    out = ROOT / 'results/bprofile'; out.mkdir(parents=True, exist_ok=True)
+    R = Runner(out); L = out / f'bprofile_shard{a.shard}.jsonl'
+    done = set()
+    for f in out.glob('bprofile_shard*.jsonl'):
+        for line in open(f):
+            r = json.loads(line); done.add((r['prompt'], r['block']))
+    sch = reuse_steps(4, 10, 29)
+    for i in list(range(len(CAL)))[a.shard::a.nshards]:
+        zf = R.run(CAL[i], SEED_A)[0].float()
+        for b in range(30):
+            if (i, b) in done:
+                continue
+            z, info = R.run(CAL[i], SEED_A, blocks=[b], mode='zero', sched=sch)
+            log(L, dict(prompt=i, block=b, latent_mse_to_full=float((z.float() - zf).square().mean()), **info))
+
+def load_bprofile():
+    d = defaultdict(list)
+    for f in (ROOT / 'results/bprofile').glob('bprofile_shard*.jsonl'):
+        for line in open(f):
+            r = json.loads(line); d[r['block']].append(r['latent_mse_to_full'])
+    assert len(d) == 30 and all(len(v) == len(CAL) for v in d.values()), 'bprofile incomplete'
+    return {b: sum(v) / len(v) for b, v in d.items()}
 
 def cmd_profile(a):
     """Per-step endpoint sensitivity on CAL prompts: reuse ALL 30 blocks at exactly one step s, measure latent MSE vs full."""
@@ -458,9 +504,10 @@ if __name__ == '__main__':
     e = sp.add_parser('eval'); e.add_argument('--shard', type=int, default=0); e.add_argument('--nshards', type=int, default=1); e.add_argument('--part', default='all')
     s = sp.add_parser('score'); s.add_argument('--shard', type=int, default=0); s.add_argument('--nshards', type=int, default=1)
     q = sp.add_parser('profile'); q.add_argument('--shard', type=int, default=0); q.add_argument('--nshards', type=int, default=1)
+    q2 = sp.add_parser('bprofile'); q2.add_argument('--shard', type=int, default=0); q2.add_argument('--nshards', type=int, default=1)
     a = p.parse_args()
     meta = ROOT / 'results/run_meta.jsonl'; meta.parent.mkdir(parents=True, exist_ok=True)
     with open(meta, 'a') as fh:
         fh.write(json.dumps(dict(cmd=a.cmd, args=vars(a), script_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
                                  cuda_visible=os.environ.get('CUDA_VISIBLE_DEVICES'), start=time.strftime('%F %T'))) + '\n')
-    dict(embed=cmd_embed, fit=cmd_fit, eval=cmd_eval, score=cmd_score, profile=cmd_profile)[a.cmd](a)
+    dict(embed=cmd_embed, fit=cmd_fit, eval=cmd_eval, score=cmd_score, profile=cmd_profile, bprofile=cmd_bprofile)[a.cmd](a)
