@@ -1,0 +1,36 @@
+{"budget": "B2", "prompt": "A golden retriever runs across", "mode": "zero", "lam": null, "latent_mse": 0.06213904544711113}
+{"budget": "B2", "prompt": "A golden retriever runs across", "mode": "oracle_dh", "lam": 1.0, "latent_mse": 0.04529634118080139}
+{"budget": "B2", "prompt": "A golden retriever runs across", "mode": "oracle_de", "lam": 1.0, "latent_mse": 0.061925724148750305}
+{"budget": "B2", "prompt": "A golden retriever runs across", "mode": "oracle_both", "lam": 0.6, "latent_mse": 0.06851602345705032}
+{"budget": "B2", "prompt": "A golden retriever runs across", "mode": "oracle_dh", "lam": 0.6, "latent_mse": 0.06886225193738937}
+{"budget": "B2", "prompt": "A golden retriever runs across", "mode": "oracle_both", "lam": 0.3, "latent_mse": 0.06121651083230972}
+{"budget": "B2", "prompt": "A hot air balloon floats slowl", "mode": "zero", "lam": null, "latent_mse": 0.0031126118265092373}
+{"budget": "B2", "prompt": "A hot air balloon floats slowl", "mode": "oracle_dh", "lam": 1.0, "latent_mse": 0.00021118724544066936}
+{"budget": "B2", "prompt": "A hot air balloon floats slowl", "mode": "oracle_de", "lam": 1.0, "latent_mse": 0.0031222207471728325}
+{"budget": "B2", "prompt": "A hot air balloon floats slowl", "mode": "oracle_both", "lam": 0.6, "latent_mse": 0.0024760314263403416}
+{"budget": "B2", "prompt": "A hot air balloon floats slowl", "mode": "oracle_dh", "lam": 0.6, "latent_mse": 0.0026112268678843975}
+{"budget": "B2", "prompt": "A hot air balloon floats slowl", "mode": "oracle_both", "lam": 0.3, "latent_mse": 0.0030180946923792362}
+{"budget": "B2", "prompt": "A sailboat glides across a spa", "mode": "zero", "lam": null, "latent_mse": 0.005323193036019802}
+{"budget": "B2", "prompt": "A sailboat glides across a spa", "mode": "oracle_dh", "lam": 1.0, "latent_mse": 0.0041609033942222595}
+{"budget": "B2", "prompt": "A sailboat glides across a spa", "mode": "oracle_de", "lam": 1.0, "latent_mse": 0.005327858030796051}
+{"budget": "B2", "prompt": "A sailboat glides across a spa", "mode": "oracle_both", "lam": 0.6, "latent_mse": 0.004020871594548225}
+{"budget": "B2", "prompt": "A sailboat glides across a spa", "mode": "oracle_dh", "lam": 0.6, "latent_mse": 0.004065768327564001}
+{"budget": "B2", "prompt": "A sailboat glides across a spa", "mode": "oracle_both", "lam": 0.3, "latent_mse": 0.005006236024200916}
+{"budget": "B1", "prompt": "A golden retriever runs across", "mode": "zero", "lam": null, "latent_mse": 0.06891356408596039}
+{"budget": "B1", "prompt": "A golden retriever runs across", "mode": "oracle_dh", "lam": 1.0, "latent_mse": 0.014540931209921837}
+{"budget": "B1", "prompt": "A golden retriever runs across", "mode": "oracle_de", "lam": 1.0, "latent_mse": 0.06847041845321655}
+{"budget": "B1", "prompt": "A golden retriever runs across", "mode": "oracle_both", "lam": 0.6, "latent_mse": 0.060729265213012695}
+{"budget": "B1", "prompt": "A golden retriever runs across", "mode": "oracle_dh", "lam": 0.6, "latent_mse": 0.06862638145685196}
+{"budget": "B1", "prompt": "A golden retriever runs across", "mode": "oracle_both", "lam": 0.3, "latent_mse": 0.07158729434013367}
+{"budget": "B1", "prompt": "A hot air balloon floats slowl", "mode": "zero", "lam": null, "latent_mse": 0.0026225608307868242}
+{"budget": "B1", "prompt": "A hot air balloon floats slowl", "mode": "oracle_dh", "lam": 1.0, "latent_mse": 0.0006100014434196055}
+{"budget": "B1", "prompt": "A hot air balloon floats slowl", "mode": "oracle_de", "lam": 1.0, "latent_mse": 0.0025334663223475218}
+{"budget": "B1", "prompt": "A hot air balloon floats slowl", "mode": "oracle_both", "lam": 0.6, "latent_mse": 0.0016665442381054163}
+{"budget": "B1", "prompt": "A hot air balloon floats slowl", "mode": "oracle_dh", "lam": 0.6, "latent_mse": 0.0019991672597825527}
+{"budget": "B1", "prompt": "A hot air balloon floats slowl", "mode": "oracle_both", "lam": 0.3, "latent_mse": 0.0023629851639270782}
+{"budget": "B1", "prompt": "A sailboat glides across a spa", "mode": "zero", "lam": null, "latent_mse": 0.006037986371666193}
+{"budget": "B1", "prompt": "A sailboat glides across a spa", "mode": "oracle_dh", "lam": 1.0, "latent_mse": 0.0023649828508496284}
+{"budget": "B1", "prompt": "A sailboat glides across a spa", "mode": "oracle_de", "lam": 1.0, "latent_mse": 0.006025880575180054}
+{"budget": "B1", "prompt": "A sailboat glides across a spa", "mode": "oracle_both", "lam": 0.6, "latent_mse": 0.016614340245723724}
+{"budget": "B1", "prompt": "A sailboat glides across a spa", "mode": "oracle_dh", "lam": 0.6, "latent_mse": 0.01870656944811344}
+{"budget": "B1", "prompt": "A sailboat glides across a spa", "mode": "oracle_both", "lam": 0.3, "latent_mse": 0.00956067256629467}

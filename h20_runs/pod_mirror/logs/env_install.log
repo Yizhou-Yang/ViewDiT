@@ -1,0 +1,204 @@
++ python3 -m venv /data/viewdit/env/py
++ /data/viewdit/env/py/bin/pip install -U pip -i https://mirrors.tencent.com/pypi/simple/
+Looking in indexes: https://mirrors.tencent.com/pypi/simple/
+Collecting pip
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/de/f0/c81e05b613866b76d2d1066490adf1a3dbc4ee9d9c839961c3fc8a6997af/pip-26.0.1-py3-none-any.whl (1.8 MB)
+Installing collected packages: pip
+  Attempting uninstall: pip
+    Found existing installation: pip 20.2.4
+    Uninstalling pip-20.2.4:
+      Successfully uninstalled pip-20.2.4
+Successfully installed pip-26.0.1
++ /data/viewdit/env/py/bin/pip install torch==2.6.0 --index-url https://download.pytorch.org/whl/cu124
+Looking in indexes: https://download.pytorch.org/whl/cu124
+Collecting torch==2.6.0
+  Downloading https://download-r2.pytorch.org/whl/cu124/torch-2.6.0%2Bcu124-cp39-cp39-linux_x86_64.whl.metadata (28 kB)
+Collecting filelock (from torch==2.6.0)
+  Downloading filelock-3.19.1-py3-none-any.whl.metadata (2.1 kB)
+Collecting typing-extensions>=4.10.0 (from torch==2.6.0)
+  Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+Collecting networkx (from torch==2.6.0)
+  Downloading networkx-3.2.1-py3-none-any.whl.metadata (5.2 kB)
+Collecting jinja2 (from torch==2.6.0)
+  Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl.metadata (2.9 kB)
+Collecting fsspec (from torch==2.6.0)
+  Downloading fsspec-2025.10.0-py3-none-any.whl.metadata (10 kB)
+Collecting nvidia-cuda-nvrtc-cu12==12.4.127 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-cuda-nvrtc-cu12/nvidia_cuda_nvrtc_cu12-12.4.127-py3-none-manylinux2014_x86_64.whl (24.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 24.6/24.6 MB 12.5 MB/s  0:00:02
+Collecting nvidia-cuda-runtime-cu12==12.4.127 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-cuda-runtime-cu12/nvidia_cuda_runtime_cu12-12.4.127-py3-none-manylinux2014_x86_64.whl (883 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 883.7/883.7 kB 35.8 MB/s  0:00:00
+Collecting nvidia-cuda-cupti-cu12==12.4.127 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-cuda-cupti-cu12/nvidia_cuda_cupti_cu12-12.4.127-py3-none-manylinux2014_x86_64.whl (13.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 13.8/13.8 MB 17.7 MB/s  0:00:00
+Collecting nvidia-cudnn-cu12==9.1.0.70 (from torch==2.6.0)
+  Downloading https://download.pytorch.org/whl/cu124/nvidia_cudnn_cu12-9.1.0.70-py3-none-manylinux2014_x86_64.whl (664.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 664.8/664.8 MB 9.9 MB/s  0:01:08
+Collecting nvidia-cublas-cu12==12.4.5.8 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-cublas-cu12/nvidia_cublas_cu12-12.4.5.8-py3-none-manylinux2014_x86_64.whl (363.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 363.4/363.4 MB 10.0 MB/s  0:00:36
+Collecting nvidia-cufft-cu12==11.2.1.3 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-cufft-cu12/nvidia_cufft_cu12-11.2.1.3-py3-none-manylinux2014_x86_64.whl (211.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 211.5/211.5 MB 10.1 MB/s  0:00:20
+Collecting nvidia-curand-cu12==10.3.5.147 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-curand-cu12/nvidia_curand_cu12-10.3.5.147-py3-none-manylinux2014_x86_64.whl (56.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 56.3/56.3 MB 10.8 MB/s  0:00:05
+Collecting nvidia-cusolver-cu12==11.6.1.9 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-cusolver-cu12/nvidia_cusolver_cu12-11.6.1.9-py3-none-manylinux2014_x86_64.whl (127.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 127.9/127.9 MB 10.5 MB/s  0:00:12
+Collecting nvidia-cusparse-cu12==12.3.1.170 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-cusparse-cu12/nvidia_cusparse_cu12-12.3.1.170-py3-none-manylinux2014_x86_64.whl (207.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 207.5/207.5 MB 10.3 MB/s  0:00:20
+Collecting nvidia-cusparselt-cu12==0.6.2 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-cusparselt-cu12/nvidia_cusparselt_cu12-0.6.2-py3-none-manylinux2014_x86_64.whl (150.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 150.1/150.1 MB 9.9 MB/s  0:00:15
+Collecting nvidia-nccl-cu12==2.21.5 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-nccl-cu12/nvidia_nccl_cu12-2.21.5-py3-none-manylinux2014_x86_64.whl (188.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 188.7/188.7 MB 10.4 MB/s  0:00:18
+Collecting nvidia-nvtx-cu12==12.4.127 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-nvtx-cu12/nvidia_nvtx_cu12-12.4.127-py3-none-manylinux2014_x86_64.whl (99 kB)
+Collecting nvidia-nvjitlink-cu12==12.4.127 (from torch==2.6.0)
+  Downloading https://pypi.nvidia.com/nvidia-nvjitlink-cu12/nvidia_nvjitlink_cu12-12.4.127-py3-none-manylinux2014_x86_64.whl (21.1 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 21.1/21.1 MB 10.0 MB/s  0:00:02
+Collecting triton==3.2.0 (from torch==2.6.0)
+  Downloading https://download-r2.pytorch.org/whl/triton-3.2.0-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (1.4 kB)
+Collecting sympy==1.13.1 (from torch==2.6.0)
+  Downloading sympy-1.13.1-py3-none-any.whl.metadata (12 kB)
+Collecting mpmath<1.4,>=1.1.0 (from sympy==1.13.1->torch==2.6.0)
+  Downloading mpmath-1.3.0-py3-none-any.whl.metadata (8.6 kB)
+Collecting MarkupSafe>=2.0 (from jinja2->torch==2.6.0)
+  Downloading https://download.pytorch.org/whl/MarkupSafe-3.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (4.0 kB)
+Downloading https://download-r2.pytorch.org/whl/cu124/torch-2.6.0%2Bcu124-cp39-cp39-linux_x86_64.whl (768.4 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 768.4/768.4 MB 9.9 MB/s  0:01:17
+Downloading sympy-1.13.1-py3-none-any.whl (6.2 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.2/6.2 MB 25.7 MB/s  0:00:00
+Downloading https://download-r2.pytorch.org/whl/triton-3.2.0-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (166.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 166.6/166.6 MB 10.1 MB/s  0:00:16
+Downloading mpmath-1.3.0-py3-none-any.whl (536 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 536.2/536.2 kB 152.1 MB/s  0:00:00
+Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+Downloading filelock-3.19.1-py3-none-any.whl (15 kB)
+Downloading fsspec-2025.10.0-py3-none-any.whl (200 kB)
+Downloading https://download.pytorch.org/whl/jinja2-3.1.6-py3-none-any.whl (134 kB)
+Downloading https://download.pytorch.org/whl/MarkupSafe-3.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (20 kB)
+Downloading networkx-3.2.1-py3-none-any.whl (1.6 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 179.1 MB/s  0:00:00
+Installing collected packages: triton, nvidia-cusparselt-cu12, mpmath, typing-extensions, sympy, nvidia-nvtx-cu12, nvidia-nvjitlink-cu12, nvidia-nccl-cu12, nvidia-curand-cu12, nvidia-cufft-cu12, nvidia-cuda-runtime-cu12, nvidia-cuda-nvrtc-cu12, nvidia-cuda-cupti-cu12, nvidia-cublas-cu12, networkx, MarkupSafe, fsspec, filelock, nvidia-cusparse-cu12, nvidia-cudnn-cu12, jinja2, nvidia-cusolver-cu12, torch
+
+Successfully installed MarkupSafe-3.0.2 filelock-3.19.1 fsspec-2025.10.0 jinja2-3.1.6 mpmath-1.3.0 networkx-3.2.1 nvidia-cublas-cu12-12.4.5.8 nvidia-cuda-cupti-cu12-12.4.127 nvidia-cuda-nvrtc-cu12-12.4.127 nvidia-cuda-runtime-cu12-12.4.127 nvidia-cudnn-cu12-9.1.0.70 nvidia-cufft-cu12-11.2.1.3 nvidia-curand-cu12-10.3.5.147 nvidia-cusolver-cu12-11.6.1.9 nvidia-cusparse-cu12-12.3.1.170 nvidia-cusparselt-cu12-0.6.2 nvidia-nccl-cu12-2.21.5 nvidia-nvjitlink-cu12-12.4.127 nvidia-nvtx-cu12-12.4.127 sympy-1.13.1 torch-2.6.0+cu124 triton-3.2.0 typing-extensions-4.16.0
++ /data/viewdit/env/py/bin/pip install -i https://mirrors.tencent.com/pypi/simple/ diffusers==0.31.0 transformers==4.45.2 accelerate sentencepiece safetensors huggingface_hub==0.25.2 imageio imageio-ffmpeg pillow numpy scipy peft==0.13.2 open_clip_torch
+Looking in indexes: https://mirrors.tencent.com/pypi/simple/
+Collecting diffusers==0.31.0
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/07/7f/53828ff41b86c3274099327627ff5cb7581a2cc9db3bcb39e5212c4140b7/diffusers-0.31.0-py3-none-any.whl (2.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.9/2.9 MB 26.4 MB/s  0:00:00
+Collecting transformers==4.45.2
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/f9/9d/030cc1b3e88172967e22ee1d012e0d5e0384eb70d2a098d1669d549aea29/transformers-4.45.2-py3-none-any.whl (9.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 9.9/9.9 MB 108.3 MB/s  0:00:00
+Collecting accelerate
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/5f/a0/d9ef19f780f319c21ee90ecfef4431cbeeca95bec7f14071785c17b6029b/accelerate-1.10.1-py3-none-any.whl (374 kB)
+Collecting sentencepiece
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/b0/76/03a877d65162256080759374c0c839c81a908198ef28af8d56c7dc5634da/sentencepiece-0.2.2-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (1.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 50.7 MB/s  0:00:00
+Collecting safetensors
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a0/60/429e9b1cb3fc651937727befe258ea24122d9663e4d5709a48c9cbfceecb/safetensors-0.7.0-cp38-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (507 kB)
+Collecting huggingface_hub==0.25.2
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/64/09/a535946bf2dc88e61341f39dc507530411bb3ea4eac493e5ec833e8f35bd/huggingface_hub-0.25.2-py3-none-any.whl (436 kB)
+Collecting imageio
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/fb/fe/301e0936b79bcab4cacc7548bf2853fc28dced0a578bab1f7ef53c9aa75b/imageio-2.37.2-py3-none-any.whl (317 kB)
+Collecting imageio-ffmpeg
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a0/2d/43c8522a2038e9d0e7dbdf3a61195ecc31ca576fb1527a528c877e87d973/imageio_ffmpeg-0.6.0-py3-none-manylinux2014_x86_64.whl (29.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 29.5/29.5 MB 276.3 MB/s  0:00:00
+Collecting pillow
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a5/a0/98a3630f0b57f77bae67716562513d3032ae70414fcaf02750279c389a9e/pillow-11.3.0-cp39-cp39-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (6.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.6/6.6 MB 314.9 MB/s  0:00:00
+Collecting numpy
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/b9/14/78635daab4b07c0930c919d451b8bf8c164774e6a3413aed04a6d95758ce/numpy-2.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (19.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 19.5/19.5 MB 297.9 MB/s  0:00:00
+Collecting scipy
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/35/f5/d0ad1a96f80962ba65e2ce1de6a1e59edecd1f0a7b55990ed208848012e0/scipy-1.13.1-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (38.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 38.6/38.6 MB 114.0 MB/s  0:00:00
+Collecting peft==0.13.2
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/78/9d/5f95bfb298c8d3b4e3a107701f9a4e7774a0d4d1f8eb0c9d5420b80f7c9d/peft-0.13.2-py3-none-any.whl (320 kB)
+Collecting open_clip_torch
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/37/b5/41c315ccd94ca332ead3e832e83eee343ab245005c3e43d9d3e75eae34eb/open_clip_torch-3.3.0-py3-none-any.whl (1.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.5/1.5 MB 63.5 MB/s  0:00:00
+Collecting importlib-metadata (from diffusers==0.31.0)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/fa/5e/f8e9a1d23b9c20a551a8a02ea3637b4642e22c2626e3a13a9a29cdea99eb/importlib_metadata-8.7.1-py3-none-any.whl (27 kB)
+Requirement already satisfied: filelock in ./env/py/lib/python3.9/site-packages (from diffusers==0.31.0) (3.19.1)
+Collecting regex!=2019.12.17 (from diffusers==0.31.0)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/e7/74/1eb46bde30899825ed9fdf645eba16b7b97c49d12d300f5177989b9a09a4/regex-2026.1.15-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (791 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 791.3/791.3 kB 223.6 MB/s  0:00:00
+Collecting requests (from diffusers==0.31.0)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl (64 kB)
+Collecting packaging>=20.0 (from transformers==4.45.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl (129 kB)
+Collecting pyyaml>=5.1 (from transformers==4.45.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/73/b9/793686b2d54b531203c160ef12bec60228a0109c79bae6c1277961026770/pyyaml-6.0.3-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (750 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 750.8/750.8 kB 223.5 MB/s  0:00:00
+Collecting tokenizers<0.21,>=0.20 (from transformers==4.45.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/29/9e/c95f8821d6bc93eba7c5db95e6299c009db523d1c646da8563b42ad892c4/tokenizers-0.20.3-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.0/3.0 MB 29.6 MB/s  0:00:00
+Collecting tqdm>=4.27 (from transformers==4.45.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a7/03/921a3d3c75785aca9ebfbfcabfbc3a1be12e2ab5265deb026d55a5a3f83e/tqdm-4.70.1-py3-none-any.whl (80 kB)
+Requirement already satisfied: fsspec>=2023.5.0 in ./env/py/lib/python3.9/site-packages (from huggingface_hub==0.25.2) (2025.10.0)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in ./env/py/lib/python3.9/site-packages (from huggingface_hub==0.25.2) (4.16.0)
+Collecting psutil (from peft==0.13.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/b5/70/5d8df3b09e25bce090399cf48e452d25c935ab72dad19406c77f4e828045/psutil-7.2.2-cp36-abi3-manylinux2010_x86_64.manylinux_2_12_x86_64.manylinux_2_28_x86_64.whl (155 kB)
+Requirement already satisfied: torch>=1.13.0 in ./env/py/lib/python3.9/site-packages (from peft==0.13.2) (2.6.0+cu124)
+Collecting torchvision (from open_clip_torch)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/5d/06/09b6a917b3759ef000428af0aa2597f983e20d9fbbcfeb826750f778fe6d/torchvision-0.23.0-cp39-cp39-manylinux_2_28_x86_64.whl (8.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.6/8.6 MB 45.4 MB/s  0:00:00
+Collecting ftfy (from open_clip_torch)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/ab/6e/81d47999aebc1b155f81eca4477a616a70f238a2549848c38983f3c22a82/ftfy-6.3.1-py3-none-any.whl (44 kB)
+Collecting timm>=1.0.17 (from open_clip_torch)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/f5/85/b897716d0fa016af23b11e6526f5ef76d2013e8bc36b9c7ce15d9200e456/timm-1.0.30-py3-none-any.whl (2.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.7/2.7 MB 342.5 MB/s  0:00:00
+Requirement already satisfied: networkx in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (3.2.1)
+Requirement already satisfied: jinja2 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (3.1.6)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.4.127 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (12.4.127)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.4.127 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (12.4.127)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.4.127 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (12.4.127)
+Requirement already satisfied: nvidia-cudnn-cu12==9.1.0.70 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (9.1.0.70)
+Requirement already satisfied: nvidia-cublas-cu12==12.4.5.8 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (12.4.5.8)
+Requirement already satisfied: nvidia-cufft-cu12==11.2.1.3 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (11.2.1.3)
+Requirement already satisfied: nvidia-curand-cu12==10.3.5.147 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (10.3.5.147)
+Requirement already satisfied: nvidia-cusolver-cu12==11.6.1.9 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (11.6.1.9)
+Requirement already satisfied: nvidia-cusparse-cu12==12.3.1.170 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (12.3.1.170)
+Requirement already satisfied: nvidia-cusparselt-cu12==0.6.2 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (0.6.2)
+Requirement already satisfied: nvidia-nccl-cu12==2.21.5 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (2.21.5)
+Requirement already satisfied: nvidia-nvtx-cu12==12.4.127 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (12.4.127)
+Requirement already satisfied: nvidia-nvjitlink-cu12==12.4.127 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (12.4.127)
+Requirement already satisfied: triton==3.2.0 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (3.2.0)
+Requirement already satisfied: sympy==1.13.1 in ./env/py/lib/python3.9/site-packages (from torch>=1.13.0->peft==0.13.2) (1.13.1)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in ./env/py/lib/python3.9/site-packages (from sympy==1.13.1->torch>=1.13.0->peft==0.13.2) (1.3.0)
+Collecting wcwidth (from ftfy->open_clip_torch)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/39/cc/9c0adc5861020de426ec71716b6c1bef8d90694b7d6d0a16202cdb1647f5/wcwidth-0.8.4-py3-none-any.whl (299 kB)
+Collecting zipp>=3.20 (from importlib-metadata->diffusers==0.31.0)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/08/8a/0861bec20485572fbddf3dfba2910e38fe249796cb73ecdeb74e07eeb8d3/zipp-3.23.1-py3-none-any.whl (10 kB)
+Requirement already satisfied: MarkupSafe>=2.0 in ./env/py/lib/python3.9/site-packages (from jinja2->torch>=1.13.0->peft==0.13.2) (3.0.2)
+Collecting charset_normalizer<4,>=2 (from requests->diffusers==0.31.0)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/9f/cf/7568d8c1c9100b7c8bab9035215a6b36b32b39bb50cabaee9389c4606887/charset_normalizer-3.5.1-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (262 kB)
+Collecting idna<4,>=2.5 (from requests->diffusers==0.31.0)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/58/a2/bb081bab032533a855d44de1d56f8e8426114ff1ba5d1f07a438a0a654f8/idna-3.20-py3-none-any.whl (69 kB)
+Collecting urllib3<3,>=1.21.1 (from requests->diffusers==0.31.0)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/39/08/aaaad47bc4e9dc8c725e68f9d04865dbcb2052843ff09c97b08904852d84/urllib3-2.6.3-py3-none-any.whl (131 kB)
+Collecting certifi>=2017.4.17 (from requests->diffusers==0.31.0)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl (136 kB)
+Collecting torch>=1.13.0 (from peft==0.13.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/fd/dd/1630cb51b10d3d2e97db95e5a84c32def81fc26b005bce6fc880b0e6db81/torch-2.8.0-cp39-cp39-manylinux_2_28_x86_64.whl (888.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 888.0/888.0 MB 27.9 MB/s  0:00:27
+Collecting sympy>=1.13.3 (from torch>=1.13.0->peft==0.13.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a2/09/77d55d46fd61b4a135c444fc97158ef34a095e5681d0a6c10b75bf356191/sympy-1.14.0-py3-none-any.whl (6.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.3/6.3 MB 336.1 MB/s  0:00:00
+Collecting nvidia-cuda-nvrtc-cu12==12.8.93 (from torch>=1.13.0->peft==0.13.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/05/6b/32f747947df2da6994e999492ab306a903659555dddc0fbdeb9d71f75e52/nvidia_cuda_nvrtc_cu12-12.8.93-py3-none-manylinux2010_x86_64.manylinux_2_12_x86_64.whl (88.0 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 88.0/88.0 MB 48.9 MB/s  0:00:01
+Collecting nvidia-cuda-runtime-cu12==12.8.90 (from torch>=1.13.0->peft==0.13.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/0d/9b/a997b638fcd068ad6e4d53b8551a7d30fe8b404d6f1804abf1df69838932/nvidia_cuda_runtime_cu12-12.8.90-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (954 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 954.8/954.8 kB 273.6 MB/s  0:00:00
+Collecting nvidia-cuda-cupti-cu12==12.8.90 (from torch>=1.13.0->peft==0.13.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/f8/02/2adcaa145158bf1a8295d83591d22e4103dbfd821bcaf6f3f53151ca4ffa/nvidia_cuda_cupti_cu12-12.8.90-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (10.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.2/10.2 MB 341.6 MB/s  0:00:00
+Collecting nvidia-cudnn-cu12==9.10.2.21 (from torch>=1.13.0->peft==0.13.2)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/ba/51/e123d997aa098c61d029f76663dedbfb9bc8dcf8c60cbd6adbe42f76d049/nvidia_cudnn_cu12-9.10.2.21-py3-none-manylinux_2_27_x86_64.whl (706.8 MB)

@@ -1,0 +1,11 @@
++ export HF_ENDPOINT=https://hf-mirror.com
++ HF_ENDPOINT=https://hf-mirror.com
++ python3 -m pip install --user -q -i https://mirrors.tencent.com/pypi/simple/ huggingface_hub==0.25.2 hf_transfer
+WARNING: Running pip install with root privileges is generally not a good idea. Try `python3 -m pip install --user` instead.
+  WARNING: The script huggingface-cli is installed in '/root/.local/bin' which is not on PATH.
+  Consider adding this directory to PATH or, if you prefer to suppress this warning, use --no-warn-script-location.
++ python3 -c 'from huggingface_hub import snapshot_download; p=snapshot_download("THUDM/CogVideoX-2b", local_dir="/data/viewdit/weights/CogVideoX-2b", max_workers=16); print(p)'
+Fetching 19 files:   0%|          | 0/19 [00:00<?, ?it/s]Fetching 19 files:   5%|▌         | 1/19 [00:03<00:58,  3.26s/it]Fetching 19 files:  47%|████▋     | 9/19 [08:23<09:38, 57.81s/it]Fetching 19 files: 100%|██████████| 19/19 [08:23<00:00, 26.52s/it]
+/data/viewdit/weights/CogVideoX-2b
++ echo WEIGHT_DONE
+WEIGHT_DONE
