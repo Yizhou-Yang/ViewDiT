@@ -95,6 +95,7 @@ class Executor:
         self.blocks = set(blocks)
         self.reuse = (set(sched) if sched is not None else reuse_steps(k, *win)) if blocks else set()
         self.mode, self.W, self.collect = mode, W, collect
+        self.tea_prev, self.tea_acc, self.tea_now = None, 0., False
         self.mem = {}
         self.step = -1
         self.full_calls = self.reused_calls = 0
@@ -113,7 +114,21 @@ class Executor:
         return x
 
     def _forward(self, idx, h, e, temb, rope):
-        if idx not in self.blocks or self.step not in self.reuse:
+        if self.mode == 'tea':
+            if idx == 0:
+                mod = self.model.transformer_blocks[0].norm1(h, e, temb)[0].float()
+                prev = getattr(self, 'tea_prev', None)
+                ready = len(self.mem) == len(self.blocks)
+                if prev is not None and ready:
+                    self.tea_acc += float((mod - prev).abs().mean() / prev.abs().mean())
+                self.tea_now = bool(prev is not None and ready and self.tea_acc < float(self.W))
+                if not self.tea_now:
+                    self.tea_acc = 0.
+                self.tea_prev = mod
+            reuse_now = self.tea_now
+        else:
+            reuse_now = self.step in self.reuse
+        if idx not in self.blocks or not reuse_now:
             out = self.orig[idx](h, e, temb, rope)
             self.full_calls += 1
             if idx in self.blocks:
@@ -313,6 +328,9 @@ def cmd_eval(a):
                     ('L3_all_w7_k4', dict(blocks=allb, k=4, mode='zero', win=(7, 29)), STEPS),
                     ('L4_all_w10_k4', dict(blocks=allb, k=4, mode='zero', win=(10, 29)), STEPS),
                     ('steps16', {}, 16), ('steps15', {}, 15), ('steps13', {}, 13)]
+    if a.part == 'tea':
+        for th in (0.03, 0.05, 0.08, 0.1, 0.15):
+            methods.append((f'tea{th}', dict(blocks=list(range(30)), mode='tea', W=th), STEPS))
     if a.part == 'alloc':
         sens = load_profile()
         allb = list(range(30)); mid = list(range(3, 27))
