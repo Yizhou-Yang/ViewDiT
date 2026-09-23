@@ -305,6 +305,13 @@ def cmd_eval(a):
                 if Wp.exists():
                     W = {kk: v.float().cuda() for kk, v in torch.load(Wp, weights_only=True).items()}
                     methods.append((f'{b}_{arm}', dict(blocks=blocks, k=k, mode='ridge', W=W), STEPS))
+    if a.part == 'late':
+        allb = list(range(30)); mid = list(range(3, 27))
+        methods += [('L1_mid_w7_k4', dict(blocks=mid, k=4, mode='zero', win=(7, 29)), STEPS),
+                    ('L2_all_w7_k3', dict(blocks=allb, k=3, mode='zero', win=(7, 29)), STEPS),
+                    ('L3_all_w7_k4', dict(blocks=allb, k=4, mode='zero', win=(7, 29)), STEPS),
+                    ('L4_all_w10_k4', dict(blocks=allb, k=4, mode='zero', win=(10, 29)), STEPS),
+                    ('steps16', {}, 16), ('steps15', {}, 15), ('steps13', {}, 13)]
     seen = set(); methods = [m for m in methods if not (m[0] in seen or seen.add(m[0]))]
     jobs = [(i, s) for i in range(len(TEST)) for s in TEST_SEEDS]
     jobs = jobs[a.shard::a.nshards]
