@@ -1,16 +1,43 @@
 method                         n    sec   spd calls  lat_mse   psnr   clip  dclip
-B1_linear                     30  19.34  1.15   768   0.0774   0.00   0.00   0.00
-B1_zero                       31  19.35  1.15   768   0.0673   0.00   0.00   0.00
-B2_linear                     30  16.66  1.33   636   0.0816   0.00   0.00   0.00
-B2_zero                       30  16.60  1.34   636   0.0689   0.00   0.00   0.00
-B3_linear                     30  14.57  1.52   540   0.1415   0.00   0.00   0.00
-B3_zero                       30  14.56  1.53   540   0.0992   0.00   0.00   0.00
-full                          31  22.22  1.00   900   0.0000   0.00   0.00   0.00
-full_perturb1e-2              31  22.14  1.00   900   0.0245   0.00   0.00   0.00
-full_perturb1e-3              31  22.15  1.00   900   0.0041   0.00   0.00   0.00
-steps18                       30  13.30  1.67   540   0.3344   0.00   0.00   0.00
-steps21                       30  15.48  1.43   630   0.2527   0.00   0.00   0.00
-steps26                       31  19.21  1.16   780   0.1280   0.00   0.00   0.00
-B1_zero vs B1_linear [latent_mse]                       mean=+0.0599 ci=[-0.0932,+0.2035] win=0.70 n=30
-B2_zero vs B2_linear [latent_mse]                       mean=+0.0581 ci=[-0.1334,+0.2343] win=0.77 n=30
-B3_zero vs B3_linear [latent_mse]                       mean=+0.2544 ci=[+0.1474,+0.3596] win=0.83 n=30
+B1_linear                     32  19.35  1.15   768   0.0790  30.68  29.69   0.64
+B1_ridge_dagger               12  23.07  0.96   768   0.0592  32.00  29.56   0.52
+B1_ridge_dagger2              12  22.57  0.98   768   0.0596  32.02  29.61   0.56
+B1_ridge_off                  12  23.39  0.95   768   0.0593  31.99  29.56   0.52
+B1_ridge_off2x                12  23.49  0.94   768   0.0593  31.74  29.47   0.42
+B1_zero                       32  19.35  1.15   768   0.0681  31.33  29.56   0.52
+B2_linear                     32  16.66  1.33   636   0.0832  29.46  29.98   0.94
+B2_ridge_dagger               11  19.26  1.15   636   0.0605   0.00   0.00   0.00
+B2_ridge_dagger2              11  19.14  1.16   636   0.0605   0.00   0.00   0.00
+B2_ridge_off                  12  20.52  1.08   636   0.0639   0.00   0.00   0.00
+B2_ridge_off2x                12  20.50  1.08   636   0.0636   0.00   0.00   0.00
+B2_zero                       32  16.61  1.34   636   0.0701  30.82  29.61   0.56
+B3_linear                     32  14.57  1.52   540   0.1418  21.60  29.88   0.83
+B3_ridge_dagger               10  18.77  1.18   540   0.1034   0.00   0.00   0.00
+B3_ridge_dagger2              10  18.61  1.19   540   0.1049   0.00   0.00   0.00
+B3_ridge_off                  11  17.74  1.25   540   0.1050   0.00   0.00   0.00
+B3_ridge_off2x                11  18.09  1.23   540   0.1061   0.00   0.00   0.00
+B3_zero                       32  14.55  1.53   540   0.0998  25.32  29.81   0.77
+full                          32  22.22  1.00   900   0.0000   0.00  29.05   0.00
+full_perturb1e-2              32  22.15  1.00   900   0.0241  43.89  29.05   0.00
+full_perturb1e-3              32  22.16  1.00   900   0.0041  54.28  29.03  -0.02
+steps18                       32  13.29  1.67   540   0.3254  12.12  31.16   2.11
+steps21                       32  15.49  1.43   630   0.2446  14.13  30.77   1.72
+steps26                       32  19.21  1.16   780   0.1250  19.79  29.64   0.59
+B1_ridge_dagger vs B1_ridge_off2x [latent_mse]          mean=-0.0297 ci=[-0.0794,+0.0141] win=0.42 n=12
+B1_ridge_dagger vs B1_ridge_off [latent_mse]            mean=-0.0122 ci=[-0.0484,+0.0164] win=0.50 n=12
+B1_ridge_off vs B1_zero [latent_mse]                    mean=+0.0325 ci=[-0.0126,+0.0694] win=0.83 n=12
+B1_ridge_dagger vs B1_zero [latent_mse]                 mean=+0.0222 ci=[-0.0106,+0.0517] win=0.75 n=12
+B1_ridge_dagger2 vs B1_ridge_off2x [latent_mse]         mean=-0.0292 ci=[-0.0778,+0.0127] win=0.33 n=12
+B1_zero vs B1_linear [latent_mse]                       mean=+0.0670 ci=[-0.0761,+0.1998] win=0.72 n=32
+B2_ridge_dagger vs B2_ridge_off2x [latent_mse]          mean=+0.0537 ci=[+0.0206,+0.0915] win=0.73 n=11
+B2_ridge_dagger vs B2_ridge_off [latent_mse]            mean=+0.0470 ci=[+0.0029,+0.0923] win=0.73 n=11
+B2_ridge_off vs B2_zero [latent_mse]                    mean=-0.0934 ci=[-0.2185,+0.0001] win=0.42 n=12
+B2_ridge_dagger vs B2_zero [latent_mse]                 mean=-0.0206 ci=[-0.0655,+0.0218] win=0.64 n=11
+B2_ridge_dagger2 vs B2_ridge_off2x [latent_mse]         mean=+0.0669 ci=[+0.0239,+0.1082] win=0.64 n=11
+B2_zero vs B2_linear [latent_mse]                       mean=+0.0647 ci=[-0.1097,+0.2241] win=0.78 n=32
+B3_ridge_dagger vs B3_ridge_off2x [latent_mse]          mean=-0.0060 ci=[-0.0944,+0.0742] win=0.70 n=10
+B3_ridge_dagger vs B3_ridge_off [latent_mse]            mean=-0.0055 ci=[-0.1115,+0.0904] win=0.70 n=10
+B3_ridge_off vs B3_zero [latent_mse]                    mean=+0.0244 ci=[-0.0276,+0.0925] win=0.45 n=11
+B3_ridge_dagger vs B3_zero [latent_mse]                 mean=+0.0382 ci=[-0.0114,+0.0999] win=0.60 n=10
+B3_ridge_dagger2 vs B3_ridge_off2x [latent_mse]         mean=-0.0221 ci=[-0.1229,+0.0786] win=0.60 n=10
+B3_zero vs B3_linear [latent_mse]                       mean=+0.2537 ci=[+0.1567,+0.3516] win=0.84 n=32
