@@ -52,7 +52,8 @@ for m in methods:
 comparisons = {}
 for b in ['B1', 'B2', 'B3']:
     for a, base in [('ridge_dagger', 'ridge_off2x'), ('ridge_dagger', 'ridge_off'), ('ridge_off', 'zero'), ('ridge_dagger', 'zero'),
-                    ('ridge_dagger2', 'ridge_off2x'), ('zero', 'linear')]:
+                    ('ridge_dagger2', 'ridge_off2x'), ('zero', 'linear'),
+                    ('freqhi0.15', 'zero'), ('damped0.5', 'zero'), ('freqlo0.15', 'zero'), ('freqhi0.15', 'freqlo0.15')]:
         A, B = f'{b}_{a}', f'{b}_{base}'
         if A not in T or B not in T:
             continue
