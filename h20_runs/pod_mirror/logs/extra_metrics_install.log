@@ -1,0 +1,257 @@
++ export HF_ENDPOINT=https://hf-mirror.com
++ HF_ENDPOINT=https://hf-mirror.com
++ /data/viewdit/env/py/bin/python -c 'from huggingface_hub import snapshot_download; snapshot_download("facebook/dinov2-base", local_dir="/data/viewdit/weights/dinov2-base", allow_patterns=["*.json","model.safetensors"])'
+Fetching 3 files:   0%|          | 0/3 [00:00<?, ?it/s]Fetching 3 files:  33%|███▎      | 1/3 [00:01<00:02,  1.12s/it]Fetching 3 files:  67%|██████▋   | 2/3 [00:01<00:00,  1.40it/s]Fetching 3 files: 100%|██████████| 3/3 [00:37<00:00, 12.38s/it]Fetching 3 files: 100%|██████████| 3/3 [00:37<00:00, 12.38s/it]
++ /data/viewdit/env/py/bin/pip install -c /data/viewdit/env/constraints.txt --extra-index-url https://download.pytorch.org/whl/cu124 -i https://mirrors.tencent.com/pypi/simple/ pyiqa==0.1.13
+Looking in indexes: https://mirrors.tencent.com/pypi/simple/, https://download.pytorch.org/whl/cu124
+Collecting pyiqa==0.1.13
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/86/a6/6d4c1594f3ab2384d1bba948743def6150b430af682e940a7685cf31a9ef/pyiqa-0.1.13-py3-none-any.whl (261 kB)
+Requirement already satisfied: accelerate in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (1.0.1)
+Collecting addict (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/6a/00/b08f23b7d7e1e14ce01419a467b583edbb93c6cdb8654e54a9cc579cd61f/addict-2.4.0-py3-none-any.whl (3.8 kB)
+Collecting bitsandbytes (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/3b/72/f6934097c94e023967bf7eb24e50987aca8a40f4cabf4e0282957f6258c2/bitsandbytes-0.48.2-py3-none-manylinux_2_24_x86_64.whl (59.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.4/59.4 MB 78.5 MB/s  0:00:00
+Collecting einops (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/2a/09/f8d8f8f31e4483c10a906437b4ce31bdf3d6d417b73fe33f1a8b59e34228/einops-0.8.2-py3-none-any.whl (65 kB)
+Collecting facexlib (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/36/7b/2147339dafe1c4800514c9c21ee4444f8b419ce51dfc7695220a8e0069a6/facexlib-0.3.0-py3-none-any.whl (59 kB)
+Collecting future (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/da/71/ae30dadffc90b9006d77af76b393cb9dfbfc9629f339fc1574a1c52e6806/future-1.0.0-py3-none-any.whl (491 kB)
+Collecting icecream (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/7a/82/9707c7b0336bca53b75f52fc350956a93da66eb6be632b370bc933216fb4/icecream-2.2.0-py3-none-any.whl (16 kB)
+Collecting lmdb (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/de/21/519932dd6c1ba5428840a611db0b550ceb2e9c7627b2b2a423d22cf4752a/lmdb-2.3.0-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (333 kB)
+Requirement already satisfied: numpy in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (1.26.4)
+Collecting openai-clip (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/3f/81/26d701ef9fface424b4ca808a5c5674df645ac46447720a540143d11c41e/openai-clip-1.0.1.tar.gz (1.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.4/1.4 MB 16.9 MB/s  0:00:00
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting opencv-python-headless (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/9b/21/f6ef335f6e65724aa78b8d792b48d40a48c381715f1e62f5a5049e09d07e/opencv_python_headless-5.0.0.93-cp37-abi3-manylinux_2_28_x86_64.whl (61.2 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 61.2/61.2 MB 66.0 MB/s  0:00:00
+Collecting pandas (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/1f/18/aae8c0aa69a386a3255940e9317f793808ea79d0a525a97a903366bb2569/pandas-2.3.3-cp39-cp39-manylinux_2_24_x86_64.manylinux_2_28_x86_64.whl (12.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.8/12.8 MB 98.0 MB/s  0:00:00
+Requirement already satisfied: Pillow in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (11.3.0)
+Collecting pre-commit (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/5b/a5/987a405322d78a73b66e39e4a90e4ef156fd7141bf71df987e50717c321b/pre_commit-4.3.0-py2.py3-none-any.whl (220 kB)
+Collecting pytest (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a8/a4/20da314d277121d6534b3a980b29035dcd51e6744bd79075a6ce8fa4eb8d/pytest-8.4.2-py3-none-any.whl (365 kB)
+Requirement already satisfied: pyyaml in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (6.0.3)
+Requirement already satisfied: requests in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (2.32.5)
+Collecting scikit-image (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/f0/cc/1a58efefb9b17c60d15626b33416728003028d5d51f0521482151a222560/scikit_image-0.24.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (14.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 14.9/14.9 MB 61.9 MB/s  0:00:00
+Requirement already satisfied: scipy in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (1.13.1)
+Requirement already satisfied: sentencepiece in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (0.2.2)
+Collecting tensorboard (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/37/4b/cd2eec9642781a8f5b2fb9994e3933a7b259ab18e9d49aeede9b5acf6311/tensorboard-2.21.0-py3-none-any.whl (5.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.5/5.5 MB 126.4 MB/s  0:00:00
+Collecting timm>=0.8 (from pyiqa==0.1.13)
+  Using cached https://mirrors.tencent.com/yun/pypi/packages/f5/85/b897716d0fa016af23b11e6526f5ef76d2013e8bc36b9c7ce15d9200e456/timm-1.0.30-py3-none-any.whl (2.7 MB)
+Requirement already satisfied: torch>=1.12 in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (2.6.0+cu124)
+Collecting torchvision>=0.13 (from pyiqa==0.1.13)
+  Using cached https://mirrors.tencent.com/yun/pypi/packages/5d/06/09b6a917b3759ef000428af0aa2597f983e20d9fbbcfeb826750f778fe6d/torchvision-0.23.0-cp39-cp39-manylinux_2_28_x86_64.whl (8.6 MB)
+Requirement already satisfied: tqdm in /data/viewdit/env/py/lib/python3.9/site-packages (from pyiqa==0.1.13) (4.70.1)
+Collecting transformers==4.37.2 (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/85/f6/c5065913119c41ecad148c34e3a861f719e16b89a522287213698da911fc/transformers-4.37.2-py3-none-any.whl (8.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.4/8.4 MB 116.6 MB/s  0:00:00
+Collecting yapf (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/37/81/6acd6601f61e31cfb8729d3da6d5df966f80f374b78eff83760714487338/yapf-0.43.0-py3-none-any.whl (256 kB)
+Requirement already satisfied: filelock in /data/viewdit/env/py/lib/python3.9/site-packages (from transformers==4.37.2->pyiqa==0.1.13) (3.19.1)
+Requirement already satisfied: huggingface-hub<1.0,>=0.19.3 in /data/viewdit/env/py/lib/python3.9/site-packages (from transformers==4.37.2->pyiqa==0.1.13) (0.25.2)
+Requirement already satisfied: packaging>=20.0 in /data/viewdit/env/py/lib/python3.9/site-packages (from transformers==4.37.2->pyiqa==0.1.13) (26.3)
+Requirement already satisfied: regex!=2019.12.17 in /data/viewdit/env/py/lib/python3.9/site-packages (from transformers==4.37.2->pyiqa==0.1.13) (2026.1.15)
+Collecting tokenizers<0.19,>=0.14 (from transformers==4.37.2->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a5/bc/ec39dae3b0ea00724c0fea287091d62b0ccaa45c7a947004714e882d193d/tokenizers-0.15.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (3.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.6/3.6 MB 31.7 MB/s  0:00:00
+Requirement already satisfied: safetensors>=0.4.1 in /data/viewdit/env/py/lib/python3.9/site-packages (from transformers==4.37.2->pyiqa==0.1.13) (0.7.0)
+Requirement already satisfied: fsspec>=2023.5.0 in /data/viewdit/env/py/lib/python3.9/site-packages (from huggingface-hub<1.0,>=0.19.3->transformers==4.37.2->pyiqa==0.1.13) (2025.10.0)
+Requirement already satisfied: typing-extensions>=3.7.4.3 in /data/viewdit/env/py/lib/python3.9/site-packages (from huggingface-hub<1.0,>=0.19.3->transformers==4.37.2->pyiqa==0.1.13) (4.16.0)
+Requirement already satisfied: networkx in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (3.2.1)
+Requirement already satisfied: jinja2 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (3.1.6)
+Requirement already satisfied: nvidia-cuda-nvrtc-cu12==12.4.127 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (12.4.127)
+Requirement already satisfied: nvidia-cuda-runtime-cu12==12.4.127 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (12.4.127)
+Requirement already satisfied: nvidia-cuda-cupti-cu12==12.4.127 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (12.4.127)
+Requirement already satisfied: nvidia-cudnn-cu12==9.1.0.70 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (9.1.0.70)
+Requirement already satisfied: nvidia-cublas-cu12==12.4.5.8 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (12.4.5.8)
+Requirement already satisfied: nvidia-cufft-cu12==11.2.1.3 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (11.2.1.3)
+Requirement already satisfied: nvidia-curand-cu12==10.3.5.147 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (10.3.5.147)
+Requirement already satisfied: nvidia-cusolver-cu12==11.6.1.9 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (11.6.1.9)
+Requirement already satisfied: nvidia-cusparse-cu12==12.3.1.170 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (12.3.1.170)
+Requirement already satisfied: nvidia-cusparselt-cu12==0.6.2 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (0.6.2)
+Requirement already satisfied: nvidia-nccl-cu12==2.21.5 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (2.21.5)
+Requirement already satisfied: nvidia-nvtx-cu12==12.4.127 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (12.4.127)
+Requirement already satisfied: nvidia-nvjitlink-cu12==12.4.127 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (12.4.127)
+Requirement already satisfied: triton==3.2.0 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (3.2.0)
+Requirement already satisfied: sympy==1.13.1 in /data/viewdit/env/py/lib/python3.9/site-packages (from torch>=1.12->pyiqa==0.1.13) (1.13.1)
+Requirement already satisfied: mpmath<1.4,>=1.1.0 in /data/viewdit/env/py/lib/python3.9/site-packages (from sympy==1.13.1->torch>=1.12->pyiqa==0.1.13) (1.3.0)
+INFO: pip is looking at multiple versions of torchvision to determine which version is compatible with other requirements. This could take a while.
+Collecting torchvision>=0.13 (from pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/be/b0/ac3158206bff9e3ceadace60a753e4e21ce499daf0e6716184e9265a2855/torchvision-0.22.1-cp39-cp39-manylinux_2_28_x86_64.whl (7.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.5/7.5 MB 44.5 MB/s  0:00:00
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/89/82/a3e39390ac1b3a15d1322b81059216adca5148e54bd071823b9af40f1d39/torchvision-0.22.0-cp39-cp39-manylinux_2_28_x86_64.whl (7.4 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.4/7.4 MB 53.9 MB/s  0:00:00
+  Downloading https://download-r2.pytorch.org/whl/cu124/torchvision-0.21.0%2Bcu124-cp39-cp39-linux_x86_64.whl.metadata (6.1 kB)
+Requirement already satisfied: psutil in /data/viewdit/env/py/lib/python3.9/site-packages (from accelerate->pyiqa==0.1.13) (7.2.2)
+Collecting filterpy (from facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/f6/1d/ac8914360460fafa1990890259b7fa5ef7ba4cd59014e782e4ab3ab144d8/filterpy-1.4.5.zip (177 kB)
+  Installing build dependencies: started
+  Installing build dependencies: finished with status 'done'
+  Getting requirements to build wheel: started
+  Getting requirements to build wheel: finished with status 'done'
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Collecting numba (from facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/54/9b/cd73d3f6617ddc8398a63ef97d8dc9139a9879b9ca8a7ca4b8789056ea46/numba-0.60.0-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (3.7 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 3.7/3.7 MB 100.4 MB/s  0:00:00
+Collecting opencv-python (from facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/cf/4c/c73f828fdbcd37eaf21d08fa852544a3ca7c2dbb3ea76873d64f2ea413d1/opencv_python-5.0.0.93-cp37-abi3-manylinux_2_28_x86_64.whl (73.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.8/73.8 MB 38.0 MB/s  0:00:01
+Collecting matplotlib (from filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/5d/a7/bb01188fb4013d34d274caf44a2f8091255b0497438e8b6c0a7c1710c692/matplotlib-3.9.4-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (8.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.3/8.3 MB 89.3 MB/s  0:00:00
+Collecting colorama>=0.3.9 (from icecream->pyiqa==0.1.13)
+  Downloading https://download.pytorch.org/whl/colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Collecting pygments>=2.2.0 (from icecream->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/71/46/17f022dd3e953bf20a04a028a21ec746d942f8d2af30fa0f124fa0e6a684/pygments-2.21.0-py3-none-any.whl (1.3 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 172.0 MB/s  0:00:00
+Collecting executing>=2.1.0 (from icecream->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/c1/ea/53f2148663b321f21b5a606bd5f191517cf40b7072c0497d3c92c4a13b1e/executing-2.2.1-py2.py3-none-any.whl (28 kB)
+Collecting asttokens>=2.0.1 (from icecream->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/d4/2b/04b8a15f3a1c77bc79ddf5c73875327f34b4fa75982df2b76e45e402d364/asttokens-3.0.2-py3-none-any.whl (28 kB)
+Requirement already satisfied: MarkupSafe>=2.0 in /data/viewdit/env/py/lib/python3.9/site-packages (from jinja2->torch>=1.12->pyiqa==0.1.13) (3.0.2)
+Collecting contourpy>=1.0.1 (from matplotlib->filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/05/11/57335544a3027e9b96a05948c32e566328e3a2f84b7b99a325b7a06d2b06/contourpy-1.3.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (321 kB)
+Collecting cycler>=0.10 (from matplotlib->filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/e7/05/c19819d5e3d95294a6f5947fb9b9629efb316b96de511b418c53d245aae6/cycler-0.12.1-py3-none-any.whl (8.3 kB)
+Collecting fonttools>=4.22.0 (from matplotlib->filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/45/bb/363364f052a893cebd3d449588b21244a9d873620fda03ad92702d2e1bc7/fonttools-4.60.2-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (4.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 4.8/4.8 MB 115.1 MB/s  0:00:00
+Collecting kiwisolver>=1.3.1 (from matplotlib->filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/21/b1/40655f6c3fa11ce740e8a964fa8e4c0479c87d6a7944b95af799c7a55dfe/kiwisolver-1.4.7-cp39-cp39-manylinux_2_12_x86_64.manylinux2010_x86_64.whl (1.6 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.6/1.6 MB 209.1 MB/s  0:00:00
+Collecting pyparsing>=2.3.1 (from matplotlib->filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/38/bb/d215ee7c73b61497b28a5503f9f53523f294fcc936762b7caf90e0c1c2b5/pyparsing-3.3.3-py3-none-any.whl (126 kB)
+Collecting python-dateutil>=2.7 (from matplotlib->filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/ec/57/56b9bcc3c9c6a792fcbaf139543cee77261f3651ca9da0c93f5c1221264b/python_dateutil-2.9.0.post0-py2.py3-none-any.whl (229 kB)
+Collecting importlib-resources>=3.2.0 (from matplotlib->filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a4/ed/1f1afb2e9e7f38a545d628f864d562a5ae64fe6f7a10e28ffb9b185b4e89/importlib_resources-6.5.2-py3-none-any.whl (37 kB)
+Requirement already satisfied: zipp>=3.1.0 in /data/viewdit/env/py/lib/python3.9/site-packages (from importlib-resources>=3.2.0->matplotlib->filterpy->facexlib->pyiqa==0.1.13) (3.23.1)
+Collecting six>=1.5 (from python-dateutil>=2.7->matplotlib->filterpy->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/b7/ce/149a00dd41f10bc29e5921b496af8b574d8413afcd5e30dfa0ed46c2cc5e/six-1.17.0-py2.py3-none-any.whl (11 kB)
+Collecting llvmlite<0.44,>=0.43.0dev0 (from numba->facexlib->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/e0/d0/889e9705107db7b1ec0767b03f15d7b95b4c4f9fdf91928ab1c7e9ffacf6/llvmlite-0.43.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (43.9 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 43.9/43.9 MB 60.7 MB/s  0:00:00
+Collecting ftfy (from openai-clip->pyiqa==0.1.13)
+  Using cached https://mirrors.tencent.com/yun/pypi/packages/ab/6e/81d47999aebc1b155f81eca4477a616a70f238a2549848c38983f3c22a82/ftfy-6.3.1-py3-none-any.whl (44 kB)
+Collecting wcwidth (from ftfy->openai-clip->pyiqa==0.1.13)
+  Using cached https://mirrors.tencent.com/yun/pypi/packages/39/cc/9c0adc5861020de426ec71716b6c1bef8d90694b7d6d0a16202cdb1647f5/wcwidth-0.8.4-py3-none-any.whl (299 kB)
+Collecting numpy (from pyiqa==0.1.13)
+  Downloading numpy-2.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (60 kB)
+Collecting pytz>=2020.1 (from pandas->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/0f/7b/39c34ca613b0b198cb866466651b26b045e2009864c5183c979a3b83f383/pytz-2026.3.post1-py2.py3-none-any.whl (508 kB)
+Collecting tzdata>=2022.7 (from pandas->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/f9/bc/8737e8d54cf51106118039b83f485a4783112fab49ea9d044b234978a46e/tzdata-2026.4-py2.py3-none-any.whl (347 kB)
+Collecting cfgv>=2.0.0 (from pre-commit->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/c5/55/51844dd50c4fc7a33b653bfaba4c2456f06955289ca770a5dbd5fd267374/cfgv-3.4.0-py2.py3-none-any.whl (7.2 kB)
+Collecting identify>=1.0.0 (from pre-commit->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/0f/1c/e5fd8f973d4f375adb21565739498e2e9a1e54c858a97b9a8ccfdc81da9b/identify-2.6.15-py2.py3-none-any.whl (99 kB)
+Collecting nodeenv>=0.11.1 (from pre-commit->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/88/b2/d0896bdcdc8d28a7fc5717c305f1a861c26e18c05047949fb371034d98bd/nodeenv-1.10.0-py2.py3-none-any.whl (23 kB)
+Collecting virtualenv>=20.10.0 (from pre-commit->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/a3/ba/324de21687982db37a65fa1ef9d32d4a07bbcc47081ab35291480bfd1c75/virtualenv-21.11.0-py3-none-any.whl (5.5 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 5.5/5.5 MB 125.0 MB/s  0:00:00
+Collecting distlib<1,>=0.3.7 (from virtualenv>=20.10.0->pre-commit->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/02/08/9c41fb51ab5b43eb21674aff13df270e8ba6c4b29c8624e328dc7a9482af/distlib-0.4.3-py2.py3-none-any.whl (470 kB)
+Collecting platformdirs<5,>=3.9.1 (from virtualenv>=20.10.0->pre-commit->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/40/4b/2028861e724d3bd36227adfa20d3fd24c3fc6d52032f4a93c133be5d17ce/platformdirs-4.4.0-py3-none-any.whl (18 kB)
+Collecting python-discovery>=1.6 (from virtualenv>=20.10.0->pre-commit->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/16/7d/e9ffbadfbf89c93848412d04594135c4ae8c1d37d9e053b9c3ed718fabc4/python_discovery-1.6.1-py3-none-any.whl (38 kB)
+Collecting exceptiongroup>=1 (from pytest->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/8a/0e/97c33bf5009bdbac74fd2beace167cab3f978feb69cc36f1ef79360d6c4e/exceptiongroup-1.3.1-py3-none-any.whl (16 kB)
+Collecting iniconfig>=1 (from pytest->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/2c/e1/e6716421ea10d38022b952c159d5161ca1193197fb744506875fbb87ea7b/iniconfig-2.1.0-py3-none-any.whl (6.0 kB)
+Collecting pluggy<2,>=1.5 (from pytest->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/54/20/4d324d65cc6d9205fabedc306948156824eb9f0ee1633355a8f7ec5c66bf/pluggy-1.6.0-py3-none-any.whl (20 kB)
+Collecting tomli>=1 (from pytest->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/7b/61/cceae43728b7de99d9b847560c262873a1f6c98202171fd5ed62640b494b/tomli-2.4.1-py3-none-any.whl (14 kB)
+Requirement already satisfied: charset_normalizer<4,>=2 in /data/viewdit/env/py/lib/python3.9/site-packages (from requests->pyiqa==0.1.13) (3.5.1)
+Requirement already satisfied: idna<4,>=2.5 in /data/viewdit/env/py/lib/python3.9/site-packages (from requests->pyiqa==0.1.13) (3.20)
+Requirement already satisfied: urllib3<3,>=1.21.1 in /data/viewdit/env/py/lib/python3.9/site-packages (from requests->pyiqa==0.1.13) (2.6.3)
+Requirement already satisfied: certifi>=2017.4.17 in /data/viewdit/env/py/lib/python3.9/site-packages (from requests->pyiqa==0.1.13) (2026.7.22)
+Requirement already satisfied: imageio>=2.33 in /data/viewdit/env/py/lib/python3.9/site-packages (from scikit-image->pyiqa==0.1.13) (2.37.2)
+Collecting tifffile>=2022.8.12 (from scikit-image->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/3a/4f/73714b1c1d339b1545cac28764e39f88c69468b5e10e51f327f9aa9d55b9/tifffile-2024.8.30-py3-none-any.whl (227 kB)
+Collecting lazy-loader>=0.4 (from scikit-image->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/23/93/4e45e37f26c820216704b36b8e67cc55c490a7abd287a78a26a2c0e21386/lazy_loader-0.6-py3-none-any.whl (8.8 kB)
+Collecting absl-py>=0.4 (from tensorboard->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/8f/aa/ba0014cc4659328dc818a28827be78e6d97312ab0cb98105a770924dc11e/absl_py-2.3.1-py3-none-any.whl (135 kB)
+Collecting grpcio<2.0,>=1.74.0 (from tensorboard->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/54/b1/50fdb826acafd5ac661e10df25b089721172530f2eb4aa1f36bd3c3d4254/grpcio-1.80.0-cp39-cp39-manylinux2014_x86_64.manylinux_2_17_x86_64.whl (6.8 MB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 6.8/6.8 MB 100.0 MB/s  0:00:00
+Collecting markdown>=2.6.8 (from tensorboard->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/70/ae/44c4a6a4cbb496d93c6257954260fe3a6e91b7bed2240e5dad2a717f5111/markdown-3.9-py3-none-any.whl (107 kB)
+Collecting protobuf<8.0.0,>=6.31.1 (from tensorboard->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/16/92/d1e32e3e0d894fe00b15ce28ad4944ab692713f2e7f0a99787405e43533a/protobuf-6.33.6-cp39-abi3-manylinux2014_x86_64.whl (323 kB)
+Requirement already satisfied: setuptools>=41.0.0 in /data/viewdit/env/py/lib/python3.9/site-packages (from tensorboard->pyiqa==0.1.13) (50.3.2)
+Collecting tensorboard-data-server<0.8.0,>=0.7.0 (from tensorboard->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/7a/13/e503968fefabd4c6b2650af21e110aa8466fe21432cd7c43a84577a89438/tensorboard_data_server-0.7.2-py3-none-any.whl (2.4 kB)
+Collecting werkzeug>=1.0.1 (from tensorboard->pyiqa==0.1.13)
+  Downloading https://mirrors.tencent.com/yun/pypi/packages/93/8c/2e650f2afeb7ee576912636c23ddb621c91ac6a98e66dc8d29c3c69446e1/werkzeug-3.1.8-py3-none-any.whl (226 kB)
+Requirement already satisfied: importlib-metadata>=4.4 in /data/viewdit/env/py/lib/python3.9/site-packages (from markdown>=2.6.8->tensorboard->pyiqa==0.1.13) (8.7.1)
+Downloading https://download-r2.pytorch.org/whl/cu124/torchvision-0.21.0%2Bcu124-cp39-cp39-linux_x86_64.whl (7.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.3/7.3 MB 6.8 MB/s  0:00:01
+Downloading numpy-2.0.2-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (19.5 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 19.5/19.5 MB 15.0 MB/s  0:00:01
+Building wheels for collected packages: filterpy, openai-clip
+  Building wheel for filterpy (pyproject.toml): started
+  Building wheel for filterpy (pyproject.toml): finished with status 'done'
+  Created wheel for filterpy: filename=filterpy-1.4.5-py3-none-any.whl size=110547 sha256=67ae46b1ee6d6b7829b2d758a4fffbbe98a9a5fa256a3946c19d3a236f7f1f5e
+  Stored in directory: /root/.cache/pip/wheels/85/f7/e0/026fd9563ad7ab52b2201a743bfed1c424080b0be56177b1f3
+  Building wheel for openai-clip (pyproject.toml): started
+  Building wheel for openai-clip (pyproject.toml): finished with status 'done'
+  Created wheel for openai-clip: filename=openai_clip-1.0.1-py3-none-any.whl size=1368629 sha256=1343fc41ca344bf2bbce97cbbe79562778308b22c82946c34444bb7962a13e80
+  Stored in directory: /root/.cache/pip/wheels/57/5b/77/df001954814e569dbdd810981d9233b06e09c227f1ce902b96
+Successfully built filterpy openai-clip
+Installing collected packages: pytz, distlib, addict, werkzeug, wcwidth, tzdata, tomli, tensorboard-data-server, six, python-discovery, pyparsing, pygments, protobuf, pluggy, platformdirs, numpy, nodeenv, lmdb, llvmlite, lazy-loader, kiwisolver, iniconfig, importlib-resources, identify, grpcio, future, fonttools, executing, exceptiongroup, einops, cycler, colorama, cfgv, asttokens, absl-py, yapf, virtualenv, tifffile, python-dateutil, pytest, opencv-python-headless, opencv-python, numba, markdown, icecream, ftfy, contourpy, tokenizers, tensorboard, scikit-image, pre-commit, pandas, openai-clip, matplotlib, transformers, torchvision, filterpy, bitsandbytes, timm, facexlib, pyiqa
+  Attempting uninstall: numpy
+    Found existing installation: numpy 1.26.4
+    Uninstalling numpy-1.26.4:
+      Successfully uninstalled numpy-1.26.4
+  Attempting uninstall: tokenizers
+    Found existing installation: tokenizers 0.20.3
+    Uninstalling tokenizers-0.20.3:
+      Successfully uninstalled tokenizers-0.20.3
+  Attempting uninstall: transformers
+    Found existing installation: transformers 4.45.2
+    Uninstalling transformers-4.45.2:
+      Successfully uninstalled transformers-4.45.2
+
+Successfully installed absl-py-2.3.1 addict-2.4.0 asttokens-3.0.2 bitsandbytes-0.48.2 cfgv-3.4.0 colorama-0.4.6 contourpy-1.3.0 cycler-0.12.1 distlib-0.4.3 einops-0.8.2 exceptiongroup-1.3.1 executing-2.2.1 facexlib-0.3.0 filterpy-1.4.5 fonttools-4.60.2 ftfy-6.3.1 future-1.0.0 grpcio-1.80.0 icecream-2.2.0 identify-2.6.15 importlib-resources-6.5.2 iniconfig-2.1.0 kiwisolver-1.4.7 lazy-loader-0.6 llvmlite-0.43.0 lmdb-2.3.0 markdown-3.9 matplotlib-3.9.4 nodeenv-1.10.0 numba-0.60.0 numpy-2.0.2 openai-clip-1.0.1 opencv-python-5.0.0.93 opencv-python-headless-5.0.0.93 pandas-2.3.3 platformdirs-4.4.0 pluggy-1.6.0 pre-commit-4.3.0 protobuf-6.33.6 pygments-2.21.0 pyiqa-0.1.13 pyparsing-3.3.3 pytest-8.4.2 python-dateutil-2.9.0.post0 python-discovery-1.6.1 pytz-2026.3.post1 scikit-image-0.24.0 six-1.17.0 tensorboard-2.21.0 tensorboard-data-server-0.7.2 tifffile-2024.8.30 timm-1.0.30 tokenizers-0.15.2 tomli-2.4.1 torchvision-0.21.0+cu124 transformers-4.37.2 tzdata-2026.4 virtualenv-21.11.0 wcwidth-0.8.4 werkzeug-3.1.8 yapf-0.43.0
++ /data/viewdit/env/py/bin/python -c 'import pyiqa,torch; m=pyiqa.create_metric("musiq",device="cpu"); print("MUSIQ_OK", torch.__version__)'
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "/data/viewdit/env/py/lib64/python3.9/site-packages/pyiqa/__init__.py", line 2, in <module>
+    from .api_helpers import create_metric, list_models, get_dataset_info
+  File "/data/viewdit/env/py/lib64/python3.9/site-packages/pyiqa/api_helpers.py", line 6, in <module>
+    from pyiqa.utils import get_root_logger
+  File "/data/viewdit/env/py/lib64/python3.9/site-packages/pyiqa/utils/__init__.py", line 2, in <module>
+    from .img_util import crop_border, imfrombytes, img2tensor, imwrite, tensor2img, imread2tensor, scandir_images
+  File "/data/viewdit/env/py/lib64/python3.9/site-packages/pyiqa/utils/img_util.py", line 1, in <module>
+    import cv2
+  File "/data/viewdit/env/py/lib64/python3.9/site-packages/cv2/__init__.py", line 181, in <module>
+    bootstrap()
+  File "/data/viewdit/env/py/lib64/python3.9/site-packages/cv2/__init__.py", line 153, in bootstrap
+    native_module = importlib.import_module("cv2")
+  File "/usr/lib64/python3.9/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+ImportError: libGL.so.1: cannot open shared object file: No such file or directory
++ echo EXTRA_DONE
+EXTRA_DONE
