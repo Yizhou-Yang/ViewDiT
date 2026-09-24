@@ -273,6 +273,18 @@ def PLANS(phase):
         P['S2_attnL2w5+CFodd'] = dict(B=late(5, 2), bmode='attn', C=even(6))  # C on reuse (even) steps, refresh (odd) stay full
         P['S2_L4+CFlate'] = dict(B=L4, C=sorted(L4))  # C only on reuse steps: tests that fixed rule is sufficient
         P['S2_OS+L4_r25'] = dict(B=OSB, O=odd(4), ford='x01', retro_w=0.25)
+    if phase == 'confirm':
+        L4 = late(10, 4)
+        P['full_perturb1e-2'] = dict(perturb=1e-2)
+        P['steps16'] = dict(steps=16); P['steps12'] = dict(steps=12)
+        P['BR_L4'] = dict(B=L4)
+        P['BR_L6_w10'] = dict(B=late(10, 6))
+        P['OP_attn_L4'] = dict(B=L4, bmode='attn')
+        P['CB_L4+GI8'] = dict(B=L4, G=list(range(22, 30)))
+        P['CB_L6+GI8'] = dict(B=late(10, 6), G=list(range(22, 30)))
+        P['CB_OSx0+L4'] = dict(B={s: set(range(30)) for s in L4 if s % 2 == 0}, O=[s for s in range(4, 30) if s % 2], ford='x01')
+        P['CB_OSx0+L4+GI'] = dict(B={s: set(range(30)) for s in L4 if s % 2 == 0}, O=[s for s in range(4, 30) if s % 2], ford='x01',
+                                  G=[s for s in range(22, 30) if s % 2 == 0])
     if phase == 'screen3':
         # push speed: stack step skip (O) + late block reuse + late guidance-off; all refresh rules respected
         allb = set(range(30))
@@ -361,7 +373,7 @@ def cmd_gen(a):
     done = done_set(L)
     json.dump({k: {kk: (sorted(vv) if isinstance(vv, (set, list)) else ({str(s): sorted(b) for s, b in vv.items()} if isinstance(vv, dict) else vv))
                     for kk, vv in v.items()} for k, v in P.items()}, open(OUT / f'plans_{a.phase}.json', 'w'), indent=0)
-    for i in range(a.nprompt):
+    for i in range(a.p0, a.p0 + a.nprompt):
         for seed in a.seeds:
             d = LAT / f'p{i:02d}_s{seed}'; d.mkdir(parents=True, exist_ok=True)
             for name, plan in P.items():
@@ -464,7 +476,7 @@ if __name__ == '__main__':
     sp.add_parser('embed'); sp.add_parser('verify')
     for n in ('gen', 'score', 'summary'):
         q = sp.add_parser(n); q.add_argument('--phase', default='screen')
-        q.add_argument('--nprompt', type=int, default=8); q.add_argument('--seeds', type=int, nargs='+', default=[3000])
+        q.add_argument('--nprompt', type=int, default=8); q.add_argument('--p0', type=int, default=0); q.add_argument('--seeds', type=int, nargs='+', default=[3000])
         q.add_argument('--only', default='')
     a = p.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)

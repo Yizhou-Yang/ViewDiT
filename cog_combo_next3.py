@@ -352,6 +352,52 @@ def PLANS(phase):
         P['S4_OSx0+L4+BUe'] = dict(B=OSB, O=odd(4), ford='x01', BU={s: allb for s in realO if s < 10 and s > 4})
         P['S4L_OS3x0'] = dict(O=[s for s in range(4, 30) if (s - 4) % 3], ford='x01')
         P['S4_OSx0_d0.75+L4+GI'] = dict(B=OSB, O=odd(4), ford='x01', odamp=0.75, G=[s for s in even(22)])
+    if phase in ('screen5', 'confirm2'):
+        # screen2 finding: redundancy is concentrated late. Stack components only after warm step w.
+        allb = set(range(30))
+        def lateplan(w=10, kr=4, ko=2, bmode=None, gi=None, od=None, blocks=allb):
+            O = [s for s in range(w + 1, 30) if (s - w) % ko]
+            real = [s for s in range(w, 30) if s not in O]
+            B = {s: blocks for n, s in enumerate(real) if n % (kr // 2 if ko == 2 else kr) != 0} if kr else {}
+            pl = dict(O=O, ford='x01', B=B)
+            if bmode: pl['bmode'] = bmode
+            if gi is not None: pl['G'] = [s for s in real if s >= gi]
+            if od: pl['odamp'] = od
+            return pl
+    if phase == 'screen5':
+        for w in (6, 8, 10, 12, 14):
+            P[f'S5_Ow{w}_L4'] = lateplan(w)
+        P['S5_Ow10_noB'] = lateplan(10, kr=0)
+        P['S5_Ow10_L6'] = lateplan(10, kr=6)
+        P['S5_Ow8_L6'] = lateplan(8, kr=6)
+        P['S5_Ow10_L4_GI22'] = lateplan(10, gi=22)
+        P['S5_Ow10_L4_GI18'] = lateplan(10, gi=18)
+        P['S5_Ow8_L4_GI22'] = lateplan(8, gi=22)
+        P['S5_Ow10_attnL4'] = lateplan(10, bmode='attn')
+        P['S5_Ow10_L4_d75'] = lateplan(10, od=0.75)
+        P['S5_Ow10_L4_mid'] = lateplan(10, blocks=set(range(2, 28)))
+        # skip 2-of-3 late
+        P['S5_O3w10_B2'] = lateplan(10, kr=2, ko=3)
+        P['S5_O3w10_noB'] = lateplan(10, kr=0, ko=3)
+        P['S5_O3w12_B2'] = lateplan(12, kr=2, ko=3)
+        P['S5_O3w10_B2_GI22'] = lateplan(10, kr=2, ko=3, gi=22)
+        # early part cheap but safe: guidance-reuse only at reuse steps is free already; add early block reuse light
+        early = {s: set(range(10, 20)) for s in (3, 5, 7, 9)}
+        b = lateplan(10); b['B'] = {**early, **b['B']}
+        P['S5_Ow10_L4+earlyMid'] = b
+        for st in (12, 14, 16):
+            P[f'steps{st}'] = dict(steps=st)
+    if phase == 'confirm2':
+        P['full_perturb1e-2'] = dict(perturb=1e-2)
+        P['steps14'] = dict(steps=14); P['steps11'] = dict(steps=11)
+        P['BR_L4'] = dict(B=late(10, 4))
+        P['S5_Ow10_L4'] = lateplan(10)
+        P['S5_Ow12_L4'] = lateplan(12)
+        P['S5_Ow8_L4'] = lateplan(8)
+        P['S5_Ow10_L4_GI22'] = lateplan(10, gi=22)
+        P['S5_O3w10_B2'] = lateplan(10, kr=2, ko=3)
+        P['S5_Ow10_L6'] = lateplan(10, kr=6)
+        P['S2_L6+OS'] = dict(B={s: allb for s in late(10, 6) if s % 2 == 0}, O=[s for s in range(4, 30) if s % 2], ford='x01')
     if phase == 'learn':
         # small-training component: per-step forecast coefficients fit on prompts 0-3 (seed 5000), tested on held-out prompts 8-15
         cf = OUT / 'calib_coef.json'
