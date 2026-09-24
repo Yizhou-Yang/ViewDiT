@@ -8,3 +8,6 @@
 {"cmd": "score", "args": {"cmd": "score", "phase": "screen2", "nprompt": 8, "seeds": [3000], "only": ""}, "sha": "600c9808fd0392bb149a1dc6d356045f681054c0a88b0e937a9b522ba787bbba", "start": "2026-09-24 14:56:14"}
 {"cmd": "summary", "args": {"cmd": "summary", "phase": "screen2", "nprompt": 8, "seeds": [3000], "only": ""}, "sha": "600c9808fd0392bb149a1dc6d356045f681054c0a88b0e937a9b522ba787bbba", "start": "2026-09-24 15:11:27"}
 {"cmd": "gen", "args": {"cmd": "gen", "phase": "screen3", "nprompt": 8, "p0": 0, "seeds": [3000], "only": ""}, "sha": "2c9f466067fe8e134fc394dd2f2172ed7b4c0f4b8e3d106a0a325bca69c213eb", "start": "2026-09-24 15:11:29"}
+{"cmd": "score", "args": {"cmd": "score", "phase": "screen3", "nprompt": 8, "p0": 0, "seeds": [3000], "only": ""}, "sha": "2c9f466067fe8e134fc394dd2f2172ed7b4c0f4b8e3d106a0a325bca69c213eb", "start": "2026-09-24 15:49:00"}
+{"cmd": "summary", "args": {"cmd": "summary", "phase": "screen3", "nprompt": 8, "p0": 0, "seeds": [3000], "only": ""}, "sha": "2c9f466067fe8e134fc394dd2f2172ed7b4c0f4b8e3d106a0a325bca69c213eb", "start": "2026-09-24 15:59:00"}
+{"cmd": "gen", "args": {"cmd": "gen", "phase": "screen5", "nprompt": 8, "p0": 0, "seeds": [3000], "only": ""}, "sha": "51617f15c36c4744659d4bd5a614190d0cce7e401ac767755429f4fd05d6877a", "start": "2026-09-24 15:59:02"}
