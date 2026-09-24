@@ -1,0 +1,20 @@
+load Latte-XL/2 /root/viewdit/weights/Latte/ffs.pt steps 50 ddim
+Using Ema!
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+seed 0 B1_T1 relL2=0.0813 lpips=0.0048 ffe=15.00
+seed 0 B0_reuse_lp relL2=0.1761 lpips=0.0171 ffe=15.00
+seed 0 C01_T2 relL2=0.1077 lpips=0.0068 ffe=15.00
+seed 0 C02_T1+R1 relL2=0.0770 lpips=0.0139 ffe=15.00
+seed 0 C03_T1+R.5 relL2=0.0559 lpips=0.0033 ffe=15.00
+seed 0 C04_T1+SC1.25 relL2=0.0792 lpips=0.0046 ffe=15.00
+seed 0 C05_T1+SC1.5 relL2=0.0879 lpips=0.0061 ffe=15.00
+seed 0 C06_T1+SC1.25+R.5 relL2=0.0549 lpips=0.0037 ffe=15.00
+seed 0 C07_T1+S(12F6S) relL2=0.0873 lpips=0.0049 ffe=15.00
+seed 0 C08_T1+S(11F8S) relL2=0.2064 lpips=0.0207 ffe=15.00
+seed 0 C09_T1+S+R.5 relL2=0.0937 lpips=0.0057 ffe=15.00
+seed 0 C10_T2+S+R.5 relL2=0.1258 lpips=0.0090 ffe=15.00
+seed 0 C11_T1+S+SC1.25+R.5 relL2=0.0771 lpips=0.0059 ffe=15.00
+seed 0 C12_T1+DR(13F14P2) relL2=0.2667 lpips=0.0287 ffe=14.00
