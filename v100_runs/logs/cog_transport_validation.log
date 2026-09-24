@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/video/cog_transport_validation.py", line 52, in <module>
+    if __name__=='__main__':main()
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/video/cog_transport_validation.py", line 21, in main
+    assert hashlib.sha256((ROOT/r['path']).read_bytes()).hexdigest()==r['sha256']
+  File "/root/miniconda3/lib/python3.10/pathlib.py", line 1126, in read_bytes
+    with self.open(mode='rb') as f:
+  File "/root/miniconda3/lib/python3.10/pathlib.py", line 1119, in open
+    return self._accessor.open(self, mode, buffering, encoding, errors,
+FileNotFoundError: [Errno 2] No such file or directory: '/root/viewdit/data/v3_validation_data/JPEGImages/car-shadow/00000.jpg'

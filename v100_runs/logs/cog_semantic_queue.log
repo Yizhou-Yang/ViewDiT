@@ -1,0 +1,25 @@
+REMOTE_VERIFIED text_encoder/model-00001-of-00002.safetensors
+REMOTE_VERIFIED text_encoder/model-00002-of-00002.safetensors
+REMOTE_VERIFIED tokenizer/spiece.model
+REMOTE_VERIFIED transformer/diffusion_pytorch_model.safetensors
+REMOTE_VERIFIED vae/diffusion_pytorch_model.safetensors
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/video/cog_semantic_noninterference.py", line 175, in <module>
+    main()
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/video/cog_semantic_noninterference.py", line 96, in main
+    embed=embeddings(clips,args.out/'embeddings.pt')
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/video/cog_semantic_noninterference.py", line 67, in embeddings
+    tokenizer=T5Tokenizer.from_pretrained(MODEL/'tokenizer',local_files_only=True)
+  File "/root/miniconda3/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 1637, in __getattribute__
+    requires_backends(cls, cls._backends)
+  File "/root/miniconda3/lib/python3.10/site-packages/transformers/utils/import_utils.py", line 1625, in requires_backends
+    raise ImportError("".join(failed))
+ImportError: 
+T5Tokenizer requires the SentencePiece library but it was not found in your environment. Checkout the instructions on the
+installation page of its repo: https://github.com/google/sentencepiece#installation and follow the ones
+that match your environment. Please note that you may need to restart your runtime after installation.
+

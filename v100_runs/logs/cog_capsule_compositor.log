@@ -1,0 +1,13 @@
+The config attributes {'invert_scale_latents': False} were passed to AutoencoderKLCogVideoX, but are not expected and will be ignored. Please verify your config.json configuration file.
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/video/cog_capsule_compositor.py", line 74, in <module>
+    if __name__=='__main__':main()
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/video/cog_capsule_compositor.py", line 56, in main
+    restored,nbytes,zbytes=lowrank(old[0],rank)
+  File "/root/viewdit/experiments/video/cog_capsule_compositor.py", line 28, in lowrank
+    return restored,left.numel()*2+right.numel()*2,len(packed(left,torch.float16))+len(packed(right,torch.float16))
+  File "/root/viewdit/experiments/video/cog_context_capsule.py", line 48, in packed
+    return zlib.compress(t.view(torch.uint8).numpy().tobytes(),level=9)
+RuntimeError: self.stride(-1) must be 1 to view Half as Byte (different element sizes), but got 960

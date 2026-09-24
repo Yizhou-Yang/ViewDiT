@@ -1,0 +1,15 @@
+load /root/viewdit/weights/Latte/ffs.pt steps 250 ddpm fp16 True
+Using Ema!
+missing 0 unexpected 0
+sample...
+samples (1, 16, 4, 32, 32) std 1.0601472854614258
+{
+  "sampler": "ddpm",
+  "steps": 250,
+  "fp16": true,
+  "latent_std": 1.0601472854614258,
+  "img_std": 0.6553136706352234,
+  "path": "/root/viewdit/results/video/official/official_ddpm250_fp161.png",
+  "missing": 0,
+  "unexpected": 0
+}

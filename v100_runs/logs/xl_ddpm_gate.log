@@ -1,0 +1,159 @@
+load Latte-XL/2 /root/viewdit/weights/Latte/ffs.pt steps 250 ddpm
+Using Ema!
+dump 0 T=250 peak_mib=2599
+dump 1 T=250 peak_mib=2599
+wrote /root/viewdit/results/video/xl_ddpm/full_ddpm250_grid.png decode_std 0.6701782941818237
+{
+  "n": 2,
+  "T": 250,
+  "F": 16,
+  "K": 75,
+  "sampler": "ddpm",
+  "model": "Latte-XL/2",
+  "V1_cos_adj_frame": -0.005061656305781654,
+  "V1_cos_same_frame_next_t": 0.9696849969557986,
+  "V2_frame_step_energy_maxmin": 1.05859375,
+  "V3_top4_frames_share_of_taylor_residual": 0.25422293526785716,
+  "V4_2d_rel_drop": -0.24593776374534168,
+  "V6_tf_vs_image_0.056": 0.5427164698135304,
+  "V7_keyframe4": 1.097464069388574,
+  "V8_rank90": 13.98,
+  "V9_shift_gain": 0.0,
+  "V20_x0_adj": 0.9297368022306953,
+  "V20_x0_adj_late": 0.8722739131007937,
+  "decode_std": 0.6701782941818237,
+  "looks_like_noise": false
+}
+- V1 adj-frame cos=-0.005  KILL frame-reuse
+- V2 max/min=1.06  KILL
+- V3 top4=0.254  KILL
+- V4 TF 1D=0.5427 2D=0.6761909447472363 drop=-0.24593776374534168  2D not a method
+- V6 TF 1D=0.5427 vs 0.056  video apply may differ
+- V7 key4=1.0975  KILL
+- V8 rank=14.0  KILL
+- V9 shift-gain=0.000  KILL
+- V20 x0 adj=0.930 late=0.872  KEEP x0-manifold
+loop vid=0 full nfe=250.0
+loop vid=0 uniform nfe=75.0
+loop vid=0 teacache nfe=250.0
+loop vid=0 taylor1 nfe=75.0
+loop vid=0 taylor2 nfe=75.0
+loop vid=0 taylor2d nfe=75.0
+loop vid=0 late_x0 nfe=75.0
+loop vid=0 key4_all nfe=62.5
+loop vid=0 stagger nfe=62.5
+loop vid=1 full nfe=250.0
+loop vid=1 uniform nfe=75.0
+loop vid=1 teacache nfe=250.0
+loop vid=1 taylor1 nfe=75.0
+loop vid=1 taylor2 nfe=75.0
+loop vid=1 taylor2d nfe=75.0
+loop vid=1 late_x0 nfe=75.0
+loop vid=1 key4_all nfe=62.5
+loop vid=1 stagger nfe=62.5
+loop vid=2 full nfe=250.0
+loop vid=2 uniform nfe=75.0
+loop vid=2 teacache nfe=250.0
+loop vid=2 taylor1 nfe=75.0
+loop vid=2 taylor2 nfe=75.0
+loop vid=2 taylor2d nfe=75.0
+loop vid=2 late_x0 nfe=75.0
+loop vid=2 key4_all nfe=62.5
+loop vid=2 stagger nfe=62.5
+loop vid=3 full nfe=250.0
+loop vid=3 uniform nfe=75.0
+loop vid=3 teacache nfe=250.0
+loop vid=3 taylor1 nfe=75.0
+loop vid=3 taylor2 nfe=75.0
+loop vid=3 taylor2d nfe=75.0
+loop vid=3 late_x0 nfe=75.0
+loop vid=3 key4_all nfe=62.5
+loop vid=3 stagger nfe=62.5
+# Latte-XL/2 gate
+
+{
+  "field": {
+    "n": 2,
+    "T": 250,
+    "F": 16,
+    "K": 75,
+    "sampler": "ddpm",
+    "model": "Latte-XL/2",
+    "V1_cos_adj_frame": -0.005061656305781654,
+    "V1_cos_same_frame_next_t": 0.9696849969557986,
+    "V2_frame_step_energy_maxmin": 1.05859375,
+    "V3_top4_frames_share_of_taylor_residual": 0.25422293526785716,
+    "V4_tf_taylor1": 0.5427164698135304,
+    "V4_tf_2d": 0.6761909447472363,
+    "V4_2d_rel_drop": -0.24593776374534168,
+    "V6_tf_vs_image_0.056": 0.5427164698135304,
+    "V7_keyframe4": 1.097464069388574,
+    "V8_rank90": 13.98,
+    "V9_shift_gain": 0.0,
+    "V20_x0_adj": 0.9297368022306953,
+    "V20_x0_adj_late": 0.8722739131007937,
+    "decode_std": 0.6701782941818237,
+    "looks_like_noise": false
+  },
+  "closed_loop": {
+    "full": {
+      "latent_relL2": 0.0,
+      "nfe": 250.0
+    },
+    "uniform": {
+      "latent_relL2": 1.0900314605540988,
+      "nfe": 75.0
+    },
+    "teacache": {
+      "latent_relL2": 1.1835541723980034,
+      "nfe": 250.0
+    },
+    "taylor1": {
+      "latent_relL2": 1.1920598526345068,
+      "nfe": 75.0
+    },
+    "taylor2": {
+      "latent_relL2": 1.0635469753001006,
+      "nfe": 75.0,
+      "rel_drop_vs_taylor1": 0.1078074033366587,
+      "keep": false
+    },
+    "taylor2d": {
+      "latent_relL2": 8.786579570357151,
+      "nfe": 75.0,
+      "rel_drop_vs_taylor1": -6.370921477590583,
+      "keep": false
+    },
+    "late_x0": {
+      "latent_relL2": 1.1069623200271645,
+      "nfe": 75.0,
+      "rel_drop_vs_taylor1": 0.07138696301135616,
+      "keep": false
+    },
+    "key4_all": {
+      "latent_relL2": 271.4479927955666,
+      "nfe": 62.5,
+      "rel_drop_vs_taylor1": -226.71339223920188,
+      "keep": false
+    },
+    "stagger": {
+      "latent_relL2": 185.2982895027858,
+      "nfe": 62.5,
+      "rel_drop_vs_taylor1": -154.44378001932378,
+      "keep": false
+    }
+  }
+}
+
+## Field gates
+
+- V1 adj-frame cos=-0.005  KILL frame-reuse
+- V2 max/min=1.06  KILL
+- V3 top4=0.254  KILL
+- V4 TF 1D=0.5427 2D=0.6761909447472363 drop=-0.24593776374534168  2D not a method
+- V6 TF 1D=0.5427 vs 0.056  video apply may differ
+- V7 key4=1.0975  KILL
+- V8 rank=14.0  KILL
+- V9 shift-gain=0.000  KILL
+- V20 x0 adj=0.930 late=0.872  KEEP x0-manifold
+

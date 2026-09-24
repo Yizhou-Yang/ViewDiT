@@ -1,0 +1,53 @@
+The config attributes {'invert_scale_latents': False} were passed to AutoencoderKLCogVideoX, but are not expected and will be ignored. Please verify your config.json configuration file.
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/video/cog_context_capsule480.py", line 92, in <module>
+    if __name__=='__main__':main()
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/video/cog_context_capsule480.py", line 62, in main
+    z=vae.encode(x).latent_dist.mode();base,rs=capture(vae,z)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/video/cog_boundary_moment_transport.py", line 76, in capture
+    video = vae.decode(z).sample
+  File "/root/miniconda3/lib/python3.10/site-packages/diffusers/utils/accelerate_utils.py", line 46, in wrapper
+    return method(self, *args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/diffusers/models/autoencoders/autoencoder_kl_cogvideox.py", line 1278, in decode
+    decoded = self._decode(z).sample
+  File "/root/miniconda3/lib/python3.10/site-packages/diffusers/models/autoencoders/autoencoder_kl_cogvideox.py", line 1249, in _decode
+    z_intermediate, conv_cache = self.decoder(z_intermediate, conv_cache=conv_cache)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/diffusers/models/autoencoders/autoencoder_kl_cogvideox.py", line 970, in forward
+    hidden_states, new_conv_cache[conv_cache_key] = up_block(
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/diffusers/models/autoencoders/autoencoder_kl_cogvideox.py", line 647, in forward
+    hidden_states, new_conv_cache[conv_cache_key] = resnet(
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/diffusers/models/autoencoders/autoencoder_kl_cogvideox.py", line 291, in forward
+    hidden_states, new_conv_cache["norm1"] = self.norm1(hidden_states, zq, conv_cache=conv_cache.get("norm1"))
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/diffusers/models/autoencoders/autoencoder_kl_cogvideox.py", line 186, in forward
+    norm_f = self.norm_layer(f)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1845, in _call_impl
+    return inner()
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1793, in inner
+    result = forward_call(*args, **kwargs)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/modules/normalization.py", line 313, in forward
+    return F.group_norm(input, self.num_groups, self.weight, self.bias, self.eps)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/nn/functional.py", line 2965, in group_norm
+    return torch.group_norm(
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.64 GiB. GPU 0 has a total capacity of 31.73 GiB of which 581.50 MiB is free. Including non-PyTorch memory, this process has 31.16 GiB memory in use. Of the allocated memory 24.11 GiB is allocated by PyTorch, and 6.70 GiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)

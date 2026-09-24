@@ -1,0 +1,13 @@
+The config attributes {'invert_scale_latents': False} were passed to AutoencoderKLCogVideoX, but are not expected and will be ignored. Please verify your config.json configuration file.
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/video/cog_transport_validation.py", line 52, in <module>
+    if __name__=='__main__':main()
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/video/cog_transport_validation.py", line 29, in main
+    x=torch.from_numpy(np.stack([np.asarray(Image.open(p).convert('RGB').resize((224,128)),dtype=np.float32)/127.5-1 for p in files])).permute(3,0,1,2).unsqueeze(0).cuda()
+  File "/root/viewdit/experiments/video/cog_transport_validation.py", line 29, in <listcomp>
+    x=torch.from_numpy(np.stack([np.asarray(Image.open(p).convert('RGB').resize((224,128)),dtype=np.float32)/127.5-1 for p in files])).permute(3,0,1,2).unsqueeze(0).cuda()
+  File "/root/miniconda3/lib/python3.10/site-packages/PIL/Image.py", line 3715, in open
+    raise UnidentifiedImageError(msg)
+PIL.UnidentifiedImageError: cannot identify image file '/root/viewdit/data/v3_validation_data/JPEGImages/car-shadow/._00000.jpg'

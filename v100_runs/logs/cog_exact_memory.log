@@ -1,0 +1,4 @@
+The config attributes {'invert_scale_latents': False} were passed to AutoencoderKLCogVideoX, but are not expected and will be ignored. Please verify your config.json configuration file.
+ROW {"height": 128, "width": 224, "frames": 17, "patched_modules": 74, "latent_max_error": 0.0, "pixel_max_error": 0.0, "original_peak_allocated_bytes": 3493680640, "patched_peak_allocated_bytes": 2940368384, "note": "patched peak includes retained base,z tensors; conservative compared to original."}
+ROW {"height": 480, "width": 720, "frames": 17, "patched_modules": 74, "latent_max_error": 0.0, "pixel_max_error": 0.0, "original_peak_allocated_bytes": 32579430912, "patched_peak_allocated_bytes": 25910042112, "note": "patched peak includes retained base,z tensors; conservative compared to original."}
+COMPLETE

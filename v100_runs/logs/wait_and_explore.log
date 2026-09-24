@@ -1,0 +1,80 @@
+===== wait_and_explore start 2026-09-20T19:39:17+08:00 =====
+2026-09-20T19:39:17+08:00 downloading 1961066496 / 2690000000
+2026-09-20T19:39:47+08:00 downloading 2059681792 / 2690000000
+2026-09-20T19:40:17+08:00 downloading 2168295424 / 2690000000
+2026-09-20T19:40:47+08:00 downloading 2271232000 / 2690000000
+2026-09-20T19:41:17+08:00 downloading 2358870016 / 2690000000
+2026-09-20T19:41:47+08:00 downloading 2450231296 / 2690000000
+2026-09-20T19:42:17+08:00 downloading 2556821504 / 2690000000
+2026-09-20T19:42:47+08:00 downloading 2663989248 / 2690000000
+2026-09-20T19:43:17+08:00 downloading 2696092281 / 2690000000
+moved /root/viewdit/weights/Latte/ffs.pt -rw-r--r-- 1 root root 2.6G Sep 20 19:42 /root/viewdit/weights/Latte/ffs.pt
+-rw-r--r-- 1 root root 2.6G Sep 20 19:42 /root/viewdit/weights/Latte/ffs.pt
+start ucf101.pt fetch
+===== xl ddim-50 gate 2026-09-20T19:43:17+08:00 =====
+load Latte-XL/2 /root/viewdit/weights/Latte/ffs.pt steps 50 ddim
+Using Ema!
+dump 0 T=50 peak_mib=2822
+dump 1 T=50 peak_mib=2822
+wrote /root/viewdit/results/video/xl_gate/full_ddim50_grid.png decode_std 0.7939249277114868
+{
+  "n": 2,
+  "T": 50,
+  "F": 16,
+  "K": 15,
+  "sampler": "ddim",
+  "model": "Latte-XL/2",
+  "V1_cos_adj_frame": 0.08073296641717838,
+  "V1_cos_same_frame_next_t": 0.9986045829704504,
+  "V2_frame_step_energy_maxmin": 1.1069879531860352,
+  "V3_top4_frames_share_of_taylor_residual": 0.2606331982782909,
+  "V4_2d_rel_drop": -4.264832471749324,
+  "V6_tf_vs_image_0.056": 0.10454505887481585,
+  "V7_keyframe4": 1.0568305227072186,
+  "V8_rank90": 14.0,
+  "V9_shift_gain": 0.0,
+  "V20_x0_adj": 0.10932441203430274,
+  "V20_x0_adj_late": 0.10456372057808166,
+  "decode_std": 0.7939249277114868,
+  "looks_like_noise": true
+}
+- V1 adj-frame cos=0.081  KILL frame-reuse
+- V2 max/min=1.11  KILL
+- V3 top4=0.261  KILL
+- V4 TF 1D=0.1045 2D=0.5504122207250753 drop=-4.264832471749324  2D not a method
+- V6 TF 1D=0.1045 vs 0.056  video apply may differ
+- V7 key4=1.0568  KILL
+- V8 rank=14.0  KILL
+- V9 shift-gain=0.000  KILL
+- V20 x0 adj=0.109 late=0.105  KILL x0
+loop vid=0 full nfe=50.0
+loop vid=0 uniform nfe=15.0
+loop vid=0 teacache nfe=36.0
+loop vid=0 taylor1 nfe=15.0
+loop vid=0 taylor2 nfe=15.0
+loop vid=0 taylor2d nfe=15.0
+loop vid=0 late_x0 nfe=15.0
+loop vid=0 key4_all nfe=12.5
+loop vid=0 stagger nfe=12.5
+loop vid=1 full nfe=50.0
+loop vid=1 uniform nfe=15.0
+loop vid=1 teacache nfe=35.0
+loop vid=1 taylor1 nfe=15.0
+loop vid=1 taylor2 nfe=15.0
+loop vid=1 taylor2d nfe=15.0
+loop vid=1 late_x0 nfe=15.0
+loop vid=1 key4_all nfe=12.5
+loop vid=1 stagger nfe=12.5
+loop vid=2 full nfe=50.0
+loop vid=2 uniform nfe=15.0
+loop vid=2 teacache nfe=36.0
+loop vid=2 taylor1 nfe=15.0
+loop vid=2 taylor2 nfe=15.0
+loop vid=2 taylor2d nfe=15.0
+loop vid=2 late_x0 nfe=15.0
+loop vid=2 key4_all nfe=12.5
+loop vid=2 stagger nfe=12.5
+/root/viewdit/experiments/video/wait_and_explore.sh: line 53: 1666576 Terminated              python "$ROOT/experiments/video/run_xl_gate.py"
+ddim gate failed 143
+no keep yet; row1 not published
+===== wait_and_explore done 2026-09-20T19:47:15+08:00 =====

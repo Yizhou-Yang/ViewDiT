@@ -1,0 +1,315 @@
+===================== round2 start 2026-09-20T20:35:48+08:00 =====================
+----- applies16 start 2026-09-20T20:35:48+08:00 -----
+load Latte-XL/2 /root/viewdit/weights/Latte/ffs.pt steps 50 ddim
+Using Ema!
+loop 0 full|0.0|1.0 50
+loop 0 taylor1|0.0|1.0 15
+loop 0 damp_g|0.0|0.5 15
+loop 0 damp_g|0.0|0.7 15
+loop 0 damp_g|0.0|0.85 15
+loop 0 damp_online|0.0|1.0 15
+loop 0 dir_taylor|0.0|1.0 15
+loop 0 dir_taylor_frame|0.0|1.0 15
+loop 0 dct_x0|0.05|1.0 15
+loop 0 dct_x0|0.2|1.0 15
+loop 0 dct_x0|1.0|1.0 15
+loop 0 dct_x0|5.0|1.0 15
+wrote /root/viewdit/results/video/audit_applies16/applies_full.png decode_std 0.49317196011543274
+loop 1 full|0.0|1.0 50
+loop 1 taylor1|0.0|1.0 15
+loop 1 damp_g|0.0|0.5 15
+loop 1 damp_g|0.0|0.7 15
+loop 1 damp_g|0.0|0.85 15
+loop 1 damp_online|0.0|1.0 15
+loop 1 dir_taylor|0.0|1.0 15
+loop 1 dir_taylor_frame|0.0|1.0 15
+loop 1 dct_x0|0.05|1.0 15
+loop 1 dct_x0|0.2|1.0 15
+loop 1 dct_x0|1.0|1.0 15
+loop 1 dct_x0|5.0|1.0 15
+loop 2 full|0.0|1.0 50
+loop 2 taylor1|0.0|1.0 15
+loop 2 damp_g|0.0|0.5 15
+loop 2 damp_g|0.0|0.7 15
+loop 2 damp_g|0.0|0.85 15
+loop 2 damp_online|0.0|1.0 15
+loop 2 dir_taylor|0.0|1.0 15
+loop 2 dir_taylor_frame|0.0|1.0 15
+loop 2 dct_x0|0.05|1.0 15
+loop 2 dct_x0|0.2|1.0 15
+loop 2 dct_x0|1.0|1.0 15
+loop 2 dct_x0|5.0|1.0 15
+loop 3 full|0.0|1.0 50
+loop 3 taylor1|0.0|1.0 15
+loop 3 damp_g|0.0|0.5 15
+loop 3 damp_g|0.0|0.7 15
+loop 3 damp_g|0.0|0.85 15
+loop 3 damp_online|0.0|1.0 15
+loop 3 dir_taylor|0.0|1.0 15
+loop 3 dir_taylor_frame|0.0|1.0 15
+loop 3 dct_x0|0.05|1.0 15
+loop 3 dct_x0|0.2|1.0 15
+loop 3 dct_x0|1.0|1.0 15
+loop 3 dct_x0|5.0|1.0 15
+loop 4 full|0.0|1.0 50
+loop 4 taylor1|0.0|1.0 15
+loop 4 damp_g|0.0|0.5 15
+loop 4 damp_g|0.0|0.7 15
+loop 4 damp_g|0.0|0.85 15
+loop 4 damp_online|0.0|1.0 15
+loop 4 dir_taylor|0.0|1.0 15
+loop 4 dir_taylor_frame|0.0|1.0 15
+loop 4 dct_x0|0.05|1.0 15
+loop 4 dct_x0|0.2|1.0 15
+loop 4 dct_x0|1.0|1.0 15
+loop 4 dct_x0|5.0|1.0 15
+loop 5 full|0.0|1.0 50
+loop 5 taylor1|0.0|1.0 15
+loop 5 damp_g|0.0|0.5 15
+loop 5 damp_g|0.0|0.7 15
+loop 5 damp_g|0.0|0.85 15
+loop 5 damp_online|0.0|1.0 15
+loop 5 dir_taylor|0.0|1.0 15
+loop 5 dir_taylor_frame|0.0|1.0 15
+loop 5 dct_x0|0.05|1.0 15
+loop 5 dct_x0|0.2|1.0 15
+loop 5 dct_x0|1.0|1.0 15
+loop 5 dct_x0|5.0|1.0 15
+loop 6 full|0.0|1.0 50
+loop 6 taylor1|0.0|1.0 15
+loop 6 damp_g|0.0|0.5 15
+loop 6 damp_g|0.0|0.7 15
+loop 6 damp_g|0.0|0.85 15
+loop 6 damp_online|0.0|1.0 15
+loop 6 dir_taylor|0.0|1.0 15
+loop 6 dir_taylor_frame|0.0|1.0 15
+loop 6 dct_x0|0.05|1.0 15
+loop 6 dct_x0|0.2|1.0 15
+loop 6 dct_x0|1.0|1.0 15
+loop 6 dct_x0|5.0|1.0 15
+loop 7 full|0.0|1.0 50
+loop 7 taylor1|0.0|1.0 15
+loop 7 damp_g|0.0|0.5 15
+loop 7 damp_g|0.0|0.7 15
+loop 7 damp_g|0.0|0.85 15
+loop 7 damp_online|0.0|1.0 15
+loop 7 dir_taylor|0.0|1.0 15
+loop 7 dir_taylor_frame|0.0|1.0 15
+loop 7 dct_x0|0.05|1.0 15
+loop 7 dct_x0|0.2|1.0 15
+loop 7 dct_x0|1.0|1.0 15
+loop 7 dct_x0|5.0|1.0 15
+loop 8 full|0.0|1.0 50
+loop 8 taylor1|0.0|1.0 15
+loop 8 damp_g|0.0|0.5 15
+loop 8 damp_g|0.0|0.7 15
+loop 8 damp_g|0.0|0.85 15
+loop 8 damp_online|0.0|1.0 15
+loop 8 dir_taylor|0.0|1.0 15
+loop 8 dir_taylor_frame|0.0|1.0 15
+loop 8 dct_x0|0.05|1.0 15
+loop 8 dct_x0|0.2|1.0 15
+loop 8 dct_x0|1.0|1.0 15
+loop 8 dct_x0|5.0|1.0 15
+loop 9 full|0.0|1.0 50
+loop 9 taylor1|0.0|1.0 15
+loop 9 damp_g|0.0|0.5 15
+loop 9 damp_g|0.0|0.7 15
+loop 9 damp_g|0.0|0.85 15
+loop 9 damp_online|0.0|1.0 15
+loop 9 dir_taylor|0.0|1.0 15
+loop 9 dir_taylor_frame|0.0|1.0 15
+loop 9 dct_x0|0.05|1.0 15
+loop 9 dct_x0|0.2|1.0 15
+loop 9 dct_x0|1.0|1.0 15
+loop 9 dct_x0|5.0|1.0 15
+loop 10 full|0.0|1.0 50
+loop 10 taylor1|0.0|1.0 15
+loop 10 damp_g|0.0|0.5 15
+loop 10 damp_g|0.0|0.7 15
+loop 10 damp_g|0.0|0.85 15
+loop 10 damp_online|0.0|1.0 15
+loop 10 dir_taylor|0.0|1.0 15
+loop 10 dir_taylor_frame|0.0|1.0 15
+loop 10 dct_x0|0.05|1.0 15
+loop 10 dct_x0|0.2|1.0 15
+loop 10 dct_x0|1.0|1.0 15
+loop 10 dct_x0|5.0|1.0 15
+loop 11 full|0.0|1.0 50
+loop 11 taylor1|0.0|1.0 15
+loop 11 damp_g|0.0|0.5 15
+loop 11 damp_g|0.0|0.7 15
+loop 11 damp_g|0.0|0.85 15
+loop 11 damp_online|0.0|1.0 15
+loop 11 dir_taylor|0.0|1.0 15
+loop 11 dir_taylor_frame|0.0|1.0 15
+loop 11 dct_x0|0.05|1.0 15
+loop 11 dct_x0|0.2|1.0 15
+loop 11 dct_x0|1.0|1.0 15
+loop 11 dct_x0|5.0|1.0 15
+loop 12 full|0.0|1.0 50
+loop 12 taylor1|0.0|1.0 15
+loop 12 damp_g|0.0|0.5 15
+loop 12 damp_g|0.0|0.7 15
+loop 12 damp_g|0.0|0.85 15
+loop 12 damp_online|0.0|1.0 15
+loop 12 dir_taylor|0.0|1.0 15
+loop 12 dir_taylor_frame|0.0|1.0 15
+loop 12 dct_x0|0.05|1.0 15
+loop 12 dct_x0|0.2|1.0 15
+loop 12 dct_x0|1.0|1.0 15
+loop 12 dct_x0|5.0|1.0 15
+loop 13 full|0.0|1.0 50
+loop 13 taylor1|0.0|1.0 15
+loop 13 damp_g|0.0|0.5 15
+loop 13 damp_g|0.0|0.7 15
+loop 13 damp_g|0.0|0.85 15
+loop 13 damp_online|0.0|1.0 15
+loop 13 dir_taylor|0.0|1.0 15
+loop 13 dir_taylor_frame|0.0|1.0 15
+loop 13 dct_x0|0.05|1.0 15
+loop 13 dct_x0|0.2|1.0 15
+loop 13 dct_x0|1.0|1.0 15
+loop 13 dct_x0|5.0|1.0 15
+loop 14 full|0.0|1.0 50
+loop 14 taylor1|0.0|1.0 15
+loop 14 damp_g|0.0|0.5 15
+loop 14 damp_g|0.0|0.7 15
+loop 14 damp_g|0.0|0.85 15
+loop 14 damp_online|0.0|1.0 15
+loop 14 dir_taylor|0.0|1.0 15
+loop 14 dir_taylor_frame|0.0|1.0 15
+loop 14 dct_x0|0.05|1.0 15
+loop 14 dct_x0|0.2|1.0 15
+loop 14 dct_x0|1.0|1.0 15
+loop 14 dct_x0|5.0|1.0 15
+loop 15 full|0.0|1.0 50
+loop 15 taylor1|0.0|1.0 15
+loop 15 damp_g|0.0|0.5 15
+loop 15 damp_g|0.0|0.7 15
+loop 15 damp_g|0.0|0.85 15
+loop 15 damp_online|0.0|1.0 15
+loop 15 dir_taylor|0.0|1.0 15
+loop 15 dir_taylor_frame|0.0|1.0 15
+loop 15 dct_x0|0.05|1.0 15
+loop 15 dct_x0|0.2|1.0 15
+loop 15 dct_x0|1.0|1.0 15
+loop 15 dct_x0|5.0|1.0 15
+# Sampler-native direction + DCT proximal x0 vs damped baselines
+
+DDIM-50, K=15, 16 seeds, paired per-seed comparison.
+Strongest cheap baseline: `taylor1|0.0|1.0`.
+
+| apply | relL2 med | vs Taylor-1 (med) | vs best (med) | win rate | 2*SEM | baseline | keep |
+|---|---|---|---|---|---|---|---|
+| `taylor1|0.0|1.0` | 0.1460 | +0.000 | +0.000 | 0.00 | 0.000 | True | False |
+| `damp_g|0.0|0.5` | 0.2627 | -0.462 | -0.462 | 0.31 | 0.426 | True | False |
+| `damp_g|0.0|0.7` | 0.2175 | -0.149 | -0.149 | 0.31 | 0.280 | True | False |
+| `damp_g|0.0|0.85` | 0.1563 | -0.005 | -0.005 | 0.50 | 0.119 | True | False |
+| `damp_online|0.0|1.0` | 0.2163 | -0.347 | -0.347 | 0.25 | 0.273 | True | False |
+| `dir_taylor|0.0|1.0` | 0.6847 | -3.796 | -3.796 | 0.00 | 1.432 | False | False |
+| `dir_taylor_frame|0.0|1.0` | 0.6840 | -3.794 | -3.794 | 0.00 | 1.431 | False | False |
+| `dct_x0|0.05|1.0` | 0.1713 | -0.110 | -0.110 | 0.31 | 0.112 | False | False |
+| `dct_x0|0.2|1.0` | 0.2625 | -0.772 | -0.772 | 0.12 | 0.400 | False | False |
+| `dct_x0|1.0|1.0` | 0.3962 | -1.696 | -1.696 | 0.06 | 0.732 | False | False |
+| `dct_x0|5.0|1.0` | 0.4683 | -2.199 | -2.199 | 0.00 | 0.898 | False | False |
+
+keeps = []
+
+A keep needs median paired drop >= 25%, win rate >= 0.75, and the mean
+effect above 2*SEM. Mean-over-seeds verdicts are not trustworthy here:
+gamma=0.85 looked +17% on one 8-seed block and -11% on another.
+----- applies16 exit=0 2026-09-20T20:40:54+08:00 -----
+----- cfg start 2026-09-20T20:40:54+08:00 -----
+load ucf101.pt
+Using Ema!
+loop 0 full fwd 100
+loop 0 taylor1_guided fwd 30
+loop 0 cond_only_uncond_taylor fwd 65
+loop 1 full fwd 100
+loop 1 taylor1_guided fwd 30
+loop 1 cond_only_uncond_taylor fwd 65
+loop 2 full fwd 100
+loop 2 taylor1_guided fwd 30
+loop 2 cond_only_uncond_taylor fwd 65
+loop 3 full fwd 100
+loop 3 taylor1_guided fwd 30
+loop 3 cond_only_uncond_taylor fwd 65
+loop 4 full fwd 100
+loop 4 taylor1_guided fwd 30
+loop 4 cond_only_uncond_taylor fwd 65
+loop 5 full fwd 100
+loop 5 taylor1_guided fwd 30
+loop 5 cond_only_uncond_taylor fwd 65
+loop 6 full fwd 100
+loop 6 taylor1_guided fwd 30
+loop 6 cond_only_uncond_taylor fwd 65
+loop 7 full fwd 100
+loop 7 taylor1_guided fwd 30
+loop 7 cond_only_uncond_taylor fwd 65
+{
+  "cfg_scale": 7.0,
+  "K": 15,
+  "field": {
+    "cos_cond_uncond_mean": 0.9992958743870258,
+    "cos_cond_uncond_min": 0.9903222918510437,
+    "uncond_over_cond_norm": 1.0004152705905918
+  },
+  "closed_loop": {
+    "full": {
+      "relL2_median": 0.0,
+      "relL2_mean": 0.0,
+      "per_seed": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "forwards": 100.0
+    },
+    "taylor1_guided": {
+      "relL2_median": 0.8731477531111453,
+      "relL2_mean": 0.9136506362773911,
+      "per_seed": [
+        1.2636,
+        0.6085,
+        1.2875,
+        0.7347,
+        0.9376,
+        0.8087,
+        0.6138,
+        1.0549
+      ],
+      "forwards": 30.0,
+      "paired_vs_taylor1_guided_median": 0.0,
+      "paired_vs_taylor1_guided_mean": 0.0,
+      "win_rate": 0.0
+    },
+    "cond_only_uncond_taylor": {
+      "relL2_median": 0.7563837600921233,
+      "relL2_mean": 0.7168051584243682,
+      "per_seed": [
+        0.7759,
+        0.7368,
+        0.6105,
+        0.8933,
+        0.5497,
+        0.9865,
+        0.8526,
+        0.3289
+      ],
+      "forwards": 65.0,
+      "paired_vs_taylor1_guided_median": 0.08753302769290522,
+      "paired_vs_taylor1_guided_mean": 0.12222614928497387,
+      "win_rate": 0.5,
+      "same_or_fewer_forwards": false,
+      "keep": false
+    }
+  }
+}
+----- cfg exit=0 2026-09-20T20:43:09+08:00 -----
+===================== round2 done 2026-09-20T20:43:09+08:00 =====================

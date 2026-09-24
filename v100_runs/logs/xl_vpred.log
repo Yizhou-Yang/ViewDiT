@@ -1,0 +1,87 @@
+load Latte-XL/2 /root/viewdit/weights/Latte/ffs.pt steps 50 ddim
+Using Ema!
+dump 0
+dump 1
+wrote /root/viewdit/results/video/xl_vpred/vpred_full.png decode_std 0.3813233971595764
+field {
+  "eps_adj": -0.007204617129372667,
+  "x0_adj": 0.8985930983341384,
+  "v_adj": 0.6609231525134085,
+  "eps_next_t": 0.9977707960935454,
+  "x0_next_t": 0.9977966839796867,
+  "v_next_t": 0.99501898135637,
+  "tf_taylor_eps": 0.04059074976052189,
+  "tf_taylor_x0": 0.11843123996163027,
+  "tf_taylor_v": 0.16525896177397464
+}
+vid 0 full 50.0
+vid 0 taylor1 15.0
+vid 0 v_taylor 15
+vid 0 x0lam0.15 15
+vid 0 x0lam0.35 15
+vid 0 x0lam0.6 15
+vid 1 full 50.0
+vid 1 taylor1 15.0
+vid 1 v_taylor 15
+vid 1 x0lam0.15 15
+vid 1 x0lam0.35 15
+vid 1 x0lam0.6 15
+vid 2 full 50.0
+vid 2 taylor1 15.0
+vid 2 v_taylor 15
+vid 2 x0lam0.15 15
+vid 2 x0lam0.35 15
+vid 2 x0lam0.6 15
+vid 3 full 50.0
+vid 3 taylor1 15.0
+vid 3 v_taylor 15
+vid 3 x0lam0.15 15
+vid 3 x0lam0.35 15
+vid 3 x0lam0.6 15
+{
+  "field": {
+    "eps_adj": -0.007204617129372667,
+    "x0_adj": 0.8985930983341384,
+    "v_adj": 0.6609231525134085,
+    "eps_next_t": 0.9977707960935454,
+    "x0_next_t": 0.9977966839796867,
+    "v_next_t": 0.99501898135637,
+    "tf_taylor_eps": 0.04059074976052189,
+    "tf_taylor_x0": 0.11843123996163027,
+    "tf_taylor_v": 0.16525896177397464
+  },
+  "closed_loop": {
+    "full": {
+      "latent_relL2": 0.0,
+      "nfe": 50.0
+    },
+    "taylor1": {
+      "latent_relL2": 0.13289168234790205,
+      "nfe": 15.0
+    },
+    "v_taylor": {
+      "latent_relL2": 0.1327823262737229,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": 0.0008228963035688919,
+      "keep": false
+    },
+    "x0lam0.15": {
+      "latent_relL2": 0.150640844350641,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.13356112052425353,
+      "keep": false
+    },
+    "x0lam0.35": {
+      "latent_relL2": 0.19723958255409482,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.48421315066005427,
+      "keep": false
+    },
+    "x0lam0.6": {
+      "latent_relL2": 0.25121865075674704,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.8904016136922132,
+      "keep": false
+    }
+  }
+}

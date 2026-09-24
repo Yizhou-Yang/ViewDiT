@@ -1,0 +1,78 @@
+wrote /root/viewdit/results/video/explore/full_s50_grid.png
+dump 0 T=50
+dump 1 T=50
+field {'steps': 50, 'K': 15, 'eps_adj_frame': 0.03623975358034322, 'eps_next_t': 0.9982687328922832, 'x0_adj_frame': 0.045688900616109446, 'x0_next_t': 0.9995151188773362}
+vid 0 full nfe=50
+vid 0 uniform nfe=15
+vid 0 taylor1 nfe=15
+vid 0 x0_smooth nfe=15
+vid 0 x0_motion nfe=15
+vid 0 x0_smooth_only nfe=15
+vid 1 full nfe=50
+vid 1 uniform nfe=15
+vid 1 taylor1 nfe=15
+vid 1 x0_smooth nfe=15
+vid 1 x0_motion nfe=15
+vid 1 x0_smooth_only nfe=15
+vid 2 full nfe=50
+vid 2 uniform nfe=15
+vid 2 taylor1 nfe=15
+vid 2 x0_smooth nfe=15
+vid 2 x0_motion nfe=15
+vid 2 x0_smooth_only nfe=15
+vid 3 full nfe=50
+vid 3 uniform nfe=15
+vid 3 taylor1 nfe=15
+vid 3 x0_smooth nfe=15
+vid 3 x0_motion nfe=15
+vid 3 x0_smooth_only nfe=15
+# Explore v3
+
+{
+  "field": {
+    "steps": 50,
+    "K": 15,
+    "eps_adj_frame": 0.03623975358034322,
+    "eps_next_t": 0.9982687328922832,
+    "x0_adj_frame": 0.045688900616109446,
+    "x0_next_t": 0.9995151188773362
+  },
+  "closed_loop": {
+    "full": {
+      "latent_relL2": 0.0,
+      "nfe": 50.0
+    },
+    "uniform": {
+      "latent_relL2": 0.17999522706363263,
+      "nfe": 15.0
+    },
+    "taylor1": {
+      "latent_relL2": 0.07144039453905801,
+      "nfe": 15.0
+    },
+    "x0_smooth": {
+      "latent_relL2": 0.6555931270160592,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -8.176784804255696,
+      "keep": false
+    },
+    "x0_motion": {
+      "latent_relL2": 0.12176565650621751,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.7044370666184604,
+      "keep": false
+    },
+    "x0_smooth_only": {
+      "latent_relL2": 0.6482745055485838,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -8.074341060562846,
+      "keep": false
+    }
+  }
+}
+
+- x0 adj-frame cos=0.046 (eps was 0.036)  KILL x0 also uncorrelated
+- x0_smooth relL2=0.6556 drop=-8.176784804255696 kill as apply
+- x0_motion relL2=0.1218 drop=-0.7044370666184604 kill as apply
+- x0_smooth_only relL2=0.6483 drop=-8.074341060562846 kill as apply
+

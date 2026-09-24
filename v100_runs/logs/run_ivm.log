@@ -1,0 +1,919 @@
+===== ivm start 2026-09-20T14:42:11+08:00 =====
+loading stack
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Loading model from: /root/miniconda3/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+fit=16 eval_tr=16 eval_he=16 T=50
+fit W from Full ε
+fit-dump:   0%|          | 0/4 [00:00<?, ?it/s]fit-dump:  25%|██▌       | 1/4 [00:08<00:25,  8.51s/it]fit-dump:  50%|█████     | 2/4 [00:16<00:16,  8.34s/it]fit-dump:  75%|███████▌  | 3/4 [00:24<00:08,  8.30s/it]fit-dump: 100%|██████████| 4/4 [00:33<00:00,  8.29s/it]fit-dump: 100%|██████████| 4/4 [00:33<00:00,  8.31s/it]
+W tensor([[ 0.9119, -0.2413,  0.0117,  0.1592],
+        [-0.2511,  0.8722,  0.1716,  0.0642],
+        [ 0.0286,  0.1523,  1.0245,  0.0219],
+        [ 0.0858,  0.0160,  0.0326,  1.1363]]) 
+W_res tensor([[ 0.4024, -0.0592,  0.0276,  0.0484],
+        [-0.0771,  0.3492,  0.0675,  0.0300],
+        [ 0.0400,  0.0710,  0.4522, -0.0101],
+        [ 0.0039,  0.0098, -0.0090,  0.5340]])
+hard_steps [0, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49]
+===== direction taylor1 =====
+train-taylor1-K15:   0%|          | 0/2 [00:00<?, ?it/s]  taylor1 K=15 c207s0 lpips=0.0279 Phi=15
+  taylor1 K=15 c207s1 lpips=0.0265 Phi=15
+  taylor1 K=15 c207s2 lpips=0.0264 Phi=15
+  taylor1 K=15 c207s3 lpips=0.0255 Phi=15
+  taylor1 K=15 c360s0 lpips=0.0299 Phi=15
+  taylor1 K=15 c360s1 lpips=0.0275 Phi=15
+  taylor1 K=15 c360s2 lpips=0.0595 Phi=15
+  taylor1 K=15 c360s3 lpips=0.0248 Phi=15
+train-taylor1-K15:  50%|█████     | 1/2 [00:05<00:05,  5.25s/it]  taylor1 K=15 c387s0 lpips=0.0230 Phi=15
+  taylor1 K=15 c387s1 lpips=0.0253 Phi=15
+  taylor1 K=15 c387s2 lpips=0.0581 Phi=15
+  taylor1 K=15 c387s3 lpips=0.0509 Phi=15
+  taylor1 K=15 c974s0 lpips=0.0210 Phi=15
+  taylor1 K=15 c974s1 lpips=0.0082 Phi=15
+  taylor1 K=15 c974s2 lpips=0.0113 Phi=15
+  taylor1 K=15 c974s3 lpips=0.0311 Phi=15
+train-taylor1-K15: 100%|██████████| 2/2 [00:10<00:00,  5.21s/it]train-taylor1-K15: 100%|██████████| 2/2 [00:10<00:00,  5.22s/it]
+train-taylor1-K20:   0%|          | 0/2 [00:00<?, ?it/s]  taylor1 K=20 c207s0 lpips=0.0140 Phi=20
+  taylor1 K=20 c207s1 lpips=0.0130 Phi=20
+  taylor1 K=20 c207s2 lpips=0.0217 Phi=20
+  taylor1 K=20 c207s3 lpips=0.0178 Phi=20
+  taylor1 K=20 c360s0 lpips=0.0227 Phi=20
+  taylor1 K=20 c360s1 lpips=0.0096 Phi=20
+  taylor1 K=20 c360s2 lpips=0.0220 Phi=20
+  taylor1 K=20 c360s3 lpips=0.0159 Phi=20
+train-taylor1-K20:  50%|█████     | 1/2 [00:06<00:06,  6.78s/it]  taylor1 K=20 c387s0 lpips=0.0162 Phi=20
+  taylor1 K=20 c387s1 lpips=0.0175 Phi=20
+  taylor1 K=20 c387s2 lpips=0.0521 Phi=20
+  taylor1 K=20 c387s3 lpips=0.0448 Phi=20
+  taylor1 K=20 c974s0 lpips=0.0122 Phi=20
+  taylor1 K=20 c974s1 lpips=0.0066 Phi=20
+  taylor1 K=20 c974s2 lpips=0.0097 Phi=20
+  taylor1 K=20 c974s3 lpips=0.0226 Phi=20
+train-taylor1-K20: 100%|██████████| 2/2 [00:13<00:00,  6.77s/it]train-taylor1-K20: 100%|██████████| 2/2 [00:13<00:00,  6.77s/it]
+held-taylor1-K15:   0%|          | 0/2 [00:00<?, ?it/s]  taylor1 K=15 c12s0 lpips=0.0123 Phi=15
+  taylor1 K=15 c12s1 lpips=0.0168 Phi=15
+  taylor1 K=15 c45s0 lpips=0.0347 Phi=15
+  taylor1 K=15 c45s1 lpips=0.0985 Phi=15
+  taylor1 K=15 c66s0 lpips=0.0335 Phi=15
+  taylor1 K=15 c66s1 lpips=0.0501 Phi=15
+  taylor1 K=15 c120s0 lpips=0.0363 Phi=15
+  taylor1 K=15 c120s1 lpips=0.0214 Phi=15
+held-taylor1-K15:  50%|█████     | 1/2 [00:05<00:05,  5.20s/it]  taylor1 K=15 c180s0 lpips=0.0173 Phi=15
+  taylor1 K=15 c180s1 lpips=0.0428 Phi=15
+  taylor1 K=15 c220s0 lpips=0.0104 Phi=15
+  taylor1 K=15 c220s1 lpips=0.0140 Phi=15
+  taylor1 K=15 c310s0 lpips=0.0155 Phi=15
+  taylor1 K=15 c310s1 lpips=0.0210 Phi=15
+  taylor1 K=15 c440s0 lpips=0.0286 Phi=15
+  taylor1 K=15 c440s1 lpips=0.0487 Phi=15
+held-taylor1-K15: 100%|██████████| 2/2 [00:10<00:00,  5.22s/it]held-taylor1-K15: 100%|██████████| 2/2 [00:10<00:00,  5.21s/it]
+held-taylor1-K20:   0%|          | 0/2 [00:00<?, ?it/s]  taylor1 K=20 c12s0 lpips=0.0064 Phi=20
+  taylor1 K=20 c12s1 lpips=0.0035 Phi=20
+  taylor1 K=20 c45s0 lpips=0.0254 Phi=20
+  taylor1 K=20 c45s1 lpips=0.0911 Phi=20
+  taylor1 K=20 c66s0 lpips=0.0360 Phi=20
+  taylor1 K=20 c66s1 lpips=0.0587 Phi=20
+  taylor1 K=20 c120s0 lpips=0.0304 Phi=20
+  taylor1 K=20 c120s1 lpips=0.0163 Phi=20
+held-taylor1-K20:  50%|█████     | 1/2 [00:06<00:06,  6.78s/it]  taylor1 K=20 c180s0 lpips=0.0322 Phi=20
+  taylor1 K=20 c180s1 lpips=0.0276 Phi=20
+  taylor1 K=20 c220s0 lpips=0.0083 Phi=20
+  taylor1 K=20 c220s1 lpips=0.0077 Phi=20
+  taylor1 K=20 c310s0 lpips=0.0139 Phi=20
+  taylor1 K=20 c310s1 lpips=0.0140 Phi=20
+  taylor1 K=20 c440s0 lpips=0.0544 Phi=20
+  taylor1 K=20 c440s1 lpips=0.0453 Phi=20
+held-taylor1-K20: 100%|██████████| 2/2 [00:13<00:00,  6.79s/it]held-taylor1-K20: 100%|██████████| 2/2 [00:13<00:00,  6.79s/it]
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+
+
+===== direction A_compiled =====
+train-A_compiled-K15:   0%|          | 0/2 [00:00<?, ?it/s]  A_compiled K=15 c207s0 lpips=0.2562 Phi=15
+  A_compiled K=15 c207s1 lpips=0.2918 Phi=15
+  A_compiled K=15 c207s2 lpips=0.2468 Phi=15
+  A_compiled K=15 c207s3 lpips=0.2622 Phi=15
+  A_compiled K=15 c360s0 lpips=0.3670 Phi=15
+  A_compiled K=15 c360s1 lpips=0.1118 Phi=15
+  A_compiled K=15 c360s2 lpips=0.1188 Phi=15
+  A_compiled K=15 c360s3 lpips=0.1397 Phi=15
+train-A_compiled-K15:  50%|█████     | 1/2 [00:05<00:05,  5.21s/it]  A_compiled K=15 c387s0 lpips=0.1463 Phi=15
+  A_compiled K=15 c387s1 lpips=0.1867 Phi=15
+  A_compiled K=15 c387s2 lpips=0.3294 Phi=15
+  A_compiled K=15 c387s3 lpips=0.1854 Phi=15
+  A_compiled K=15 c974s0 lpips=0.2424 Phi=15
+  A_compiled K=15 c974s1 lpips=0.1926 Phi=15
+  A_compiled K=15 c974s2 lpips=0.0683 Phi=15
+  A_compiled K=15 c974s3 lpips=0.1405 Phi=15
+train-A_compiled-K15: 100%|██████████| 2/2 [00:10<00:00,  5.21s/it]train-A_compiled-K15: 100%|██████████| 2/2 [00:10<00:00,  5.21s/it]
+train-A_compiled-K20:   0%|          | 0/2 [00:00<?, ?it/s]  A_compiled K=20 c207s0 lpips=0.1424 Phi=20
+  A_compiled K=20 c207s1 lpips=0.1044 Phi=20
+  A_compiled K=20 c207s2 lpips=0.1708 Phi=20
+  A_compiled K=20 c207s3 lpips=0.1393 Phi=20
+  A_compiled K=20 c360s0 lpips=0.1856 Phi=20
+  A_compiled K=20 c360s1 lpips=0.0605 Phi=20
+  A_compiled K=20 c360s2 lpips=0.0725 Phi=20
+  A_compiled K=20 c360s3 lpips=0.0830 Phi=20
+train-A_compiled-K20:  50%|█████     | 1/2 [00:06<00:06,  6.79s/it]  A_compiled K=20 c387s0 lpips=0.1001 Phi=20
+  A_compiled K=20 c387s1 lpips=0.1366 Phi=20
+  A_compiled K=20 c387s2 lpips=0.2549 Phi=20
+  A_compiled K=20 c387s3 lpips=0.1283 Phi=20
+  A_compiled K=20 c974s0 lpips=0.1986 Phi=20
+  A_compiled K=20 c974s1 lpips=0.0938 Phi=20
+  A_compiled K=20 c974s2 lpips=0.0372 Phi=20
+  A_compiled K=20 c974s3 lpips=0.0950 Phi=20
+train-A_compiled-K20: 100%|██████████| 2/2 [00:13<00:00,  6.79s/it]train-A_compiled-K20: 100%|██████████| 2/2 [00:13<00:00,  6.79s/it]
+held-A_compiled-K15:   0%|          | 0/2 [00:00<?, ?it/s]  A_compiled K=15 c12s0 lpips=0.3406 Phi=15
+  A_compiled K=15 c12s1 lpips=0.3143 Phi=15
+  A_compiled K=15 c45s0 lpips=0.1238 Phi=15
+  A_compiled K=15 c45s1 lpips=0.1016 Phi=15
+  A_compiled K=15 c66s0 lpips=0.1838 Phi=15
+  A_compiled K=15 c66s1 lpips=0.2595 Phi=15
+  A_compiled K=15 c120s0 lpips=0.1897 Phi=15
+  A_compiled K=15 c120s1 lpips=0.1089 Phi=15
+held-A_compiled-K15:  50%|█████     | 1/2 [00:05<00:05,  5.21s/it]  A_compiled K=15 c180s0 lpips=0.2428 Phi=15
+  A_compiled K=15 c180s1 lpips=0.1762 Phi=15
+  A_compiled K=15 c220s0 lpips=0.2160 Phi=15
+  A_compiled K=15 c220s1 lpips=0.2335 Phi=15
+  A_compiled K=15 c310s0 lpips=0.2791 Phi=15
+  A_compiled K=15 c310s1 lpips=0.2717 Phi=15
+  A_compiled K=15 c440s0 lpips=0.2355 Phi=15
+  A_compiled K=15 c440s1 lpips=0.2873 Phi=15
+held-A_compiled-K15: 100%|██████████| 2/2 [00:10<00:00,  5.21s/it]held-A_compiled-K15: 100%|██████████| 2/2 [00:10<00:00,  5.21s/it]
+held-A_compiled-K20:   0%|          | 0/2 [00:00<?, ?it/s]  A_compiled K=20 c12s0 lpips=0.0935 Phi=20
+  A_compiled K=20 c12s1 lpips=0.2491 Phi=20
+  A_compiled K=20 c45s0 lpips=0.0741 Phi=20
+  A_compiled K=20 c45s1 lpips=0.0819 Phi=20
+  A_compiled K=20 c66s0 lpips=0.1147 Phi=20
+  A_compiled K=20 c66s1 lpips=0.2263 Phi=20
+  A_compiled K=20 c120s0 lpips=0.1202 Phi=20
+  A_compiled K=20 c120s1 lpips=0.0600 Phi=20
+held-A_compiled-K20:  50%|█████     | 1/2 [00:06<00:06,  6.79s/it]  A_compiled K=20 c180s0 lpips=0.1837 Phi=20
+  A_compiled K=20 c180s1 lpips=0.1374 Phi=20
+  A_compiled K=20 c220s0 lpips=0.1374 Phi=20
+  A_compiled K=20 c220s1 lpips=0.1760 Phi=20
+  A_compiled K=20 c310s0 lpips=0.2345 Phi=20
+  A_compiled K=20 c310s1 lpips=0.1506 Phi=20
+  A_compiled K=20 c440s0 lpips=0.2013 Phi=20
+  A_compiled K=20 c440s1 lpips=0.2441 Phi=20
+held-A_compiled-K20: 100%|██████████| 2/2 [00:13<00:00,  6.79s/it]held-A_compiled-K20: 100%|██████████| 2/2 [00:13<00:00,  6.79s/it]
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | A_compiled | 15 | 16 | 15.0 | 0.2228 |
+| held | A_compiled | 20 | 16 | 20.0 | 0.1553 |
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | A_compiled | 15 | 16 | 15.0 | 0.2054 |
+| train | A_compiled | 20 | 16 | 20.0 | 0.1252 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+- train K=15 A_compiled vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 A_compiled vs Taylor-1 rel_drop=-5.289 FAIL
+
+- VERDICT A_compiled: FAIL
+
+===== direction B_online_j =====
+train-B_online_j-K15:   0%|          | 0/2 [00:00<?, ?it/s]  B_online_j K=15 c207s0 lpips=0.0687 Phi=15
+  B_online_j K=15 c207s1 lpips=0.0953 Phi=15
+  B_online_j K=15 c207s2 lpips=0.1187 Phi=15
+  B_online_j K=15 c207s3 lpips=0.1161 Phi=15
+  B_online_j K=15 c360s0 lpips=0.1264 Phi=15
+  B_online_j K=15 c360s1 lpips=0.0748 Phi=15
+  B_online_j K=15 c360s2 lpips=0.1155 Phi=15
+  B_online_j K=15 c360s3 lpips=0.0945 Phi=15
+train-B_online_j-K15:  50%|█████     | 1/2 [00:05<00:05,  5.28s/it]  B_online_j K=15 c387s0 lpips=0.0998 Phi=15
+  B_online_j K=15 c387s1 lpips=0.1073 Phi=15
+  B_online_j K=15 c387s2 lpips=0.1179 Phi=15
+  B_online_j K=15 c387s3 lpips=0.1560 Phi=15
+  B_online_j K=15 c974s0 lpips=0.0780 Phi=15
+  B_online_j K=15 c974s1 lpips=0.0419 Phi=15
+  B_online_j K=15 c974s2 lpips=0.0451 Phi=15
+  B_online_j K=15 c974s3 lpips=0.1988 Phi=15
+train-B_online_j-K15: 100%|██████████| 2/2 [00:10<00:00,  5.26s/it]train-B_online_j-K15: 100%|██████████| 2/2 [00:10<00:00,  5.26s/it]
+train-B_online_j-K20:   0%|          | 0/2 [00:00<?, ?it/s]  B_online_j K=20 c207s0 lpips=0.0353 Phi=20
+  B_online_j K=20 c207s1 lpips=0.0575 Phi=20
+  B_online_j K=20 c207s2 lpips=0.1020 Phi=20
+  B_online_j K=20 c207s3 lpips=0.0562 Phi=20
+  B_online_j K=20 c360s0 lpips=0.0705 Phi=20
+  B_online_j K=20 c360s1 lpips=0.0476 Phi=20
+  B_online_j K=20 c360s2 lpips=0.0684 Phi=20
+  B_online_j K=20 c360s3 lpips=0.0526 Phi=20
+train-B_online_j-K20:  50%|█████     | 1/2 [00:06<00:06,  6.85s/it]  B_online_j K=20 c387s0 lpips=0.0556 Phi=20
+  B_online_j K=20 c387s1 lpips=0.0714 Phi=20
+  B_online_j K=20 c387s2 lpips=0.0613 Phi=20
+  B_online_j K=20 c387s3 lpips=0.1061 Phi=20
+  B_online_j K=20 c974s0 lpips=0.0413 Phi=20
+  B_online_j K=20 c974s1 lpips=0.0210 Phi=20
+  B_online_j K=20 c974s2 lpips=0.0275 Phi=20
+  B_online_j K=20 c974s3 lpips=0.2269 Phi=20
+train-B_online_j-K20: 100%|██████████| 2/2 [00:13<00:00,  6.85s/it]train-B_online_j-K20: 100%|██████████| 2/2 [00:13<00:00,  6.85s/it]
+held-B_online_j-K15:   0%|          | 0/2 [00:00<?, ?it/s]  B_online_j K=15 c12s0 lpips=0.0579 Phi=15
+  B_online_j K=15 c12s1 lpips=0.0326 Phi=15
+  B_online_j K=15 c45s0 lpips=0.1332 Phi=15
+  B_online_j K=15 c45s1 lpips=0.1397 Phi=15
+  B_online_j K=15 c66s0 lpips=0.1634 Phi=15
+  B_online_j K=15 c66s1 lpips=0.1361 Phi=15
+  B_online_j K=15 c120s0 lpips=0.0533 Phi=15
+  B_online_j K=15 c120s1 lpips=0.1112 Phi=15
+held-B_online_j-K15:  50%|█████     | 1/2 [00:05<00:05,  5.25s/it]  B_online_j K=15 c180s0 lpips=0.1360 Phi=15
+  B_online_j K=15 c180s1 lpips=0.1599 Phi=15
+  B_online_j K=15 c220s0 lpips=0.0741 Phi=15
+  B_online_j K=15 c220s1 lpips=0.0964 Phi=15
+  B_online_j K=15 c310s0 lpips=0.1139 Phi=15
+  B_online_j K=15 c310s1 lpips=0.1246 Phi=15
+  B_online_j K=15 c440s0 lpips=0.1481 Phi=15
+  B_online_j K=15 c440s1 lpips=0.1503 Phi=15
+held-B_online_j-K15: 100%|██████████| 2/2 [00:10<00:00,  5.25s/it]held-B_online_j-K15: 100%|██████████| 2/2 [00:10<00:00,  5.25s/it]
+held-B_online_j-K20:   0%|          | 0/2 [00:00<?, ?it/s]  B_online_j K=20 c12s0 lpips=0.0372 Phi=20
+  B_online_j K=20 c12s1 lpips=0.0252 Phi=20
+  B_online_j K=20 c45s0 lpips=0.0753 Phi=20
+  B_online_j K=20 c45s1 lpips=0.0954 Phi=20
+  B_online_j K=20 c66s0 lpips=0.0814 Phi=20
+  B_online_j K=20 c66s1 lpips=0.0805 Phi=20
+  B_online_j K=20 c120s0 lpips=0.0247 Phi=20
+  B_online_j K=20 c120s1 lpips=0.0586 Phi=20
+held-B_online_j-K20:  50%|█████     | 1/2 [00:06<00:06,  6.86s/it]  B_online_j K=20 c180s0 lpips=0.0457 Phi=20
+  B_online_j K=20 c180s1 lpips=0.1389 Phi=20
+  B_online_j K=20 c220s0 lpips=0.0397 Phi=20
+  B_online_j K=20 c220s1 lpips=0.0516 Phi=20
+  B_online_j K=20 c310s0 lpips=0.0619 Phi=20
+  B_online_j K=20 c310s1 lpips=0.0602 Phi=20
+  B_online_j K=20 c440s0 lpips=0.0987 Phi=20
+  B_online_j K=20 c440s1 lpips=0.1037 Phi=20
+held-B_online_j-K20: 100%|██████████| 2/2 [00:13<00:00,  6.85s/it]held-B_online_j-K20: 100%|██████████| 2/2 [00:13<00:00,  6.85s/it]
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | A_compiled | 15 | 16 | 15.0 | 0.2228 |
+| held | A_compiled | 20 | 16 | 20.0 | 0.1553 |
+| held | B_online_j | 15 | 16 | 15.0 | 0.1144 |
+| held | B_online_j | 20 | 16 | 20.0 | 0.0674 |
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | A_compiled | 15 | 16 | 15.0 | 0.2054 |
+| train | A_compiled | 20 | 16 | 20.0 | 0.1252 |
+| train | B_online_j | 15 | 16 | 15.0 | 0.1034 |
+| train | B_online_j | 20 | 16 | 20.0 | 0.0688 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+- train K=15 A_compiled vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 A_compiled vs Taylor-1 rel_drop=-5.289 FAIL
+- train K=15 B_online_j vs Taylor-1 rel_drop=-2.469 FAIL
+- train K=20 B_online_j vs Taylor-1 rel_drop=-2.457 FAIL
+
+- VERDICT A_compiled: FAIL
+- VERDICT B_online_j: FAIL
+
+===== direction C_snapshot =====
+train-C_snapshot-K15:   0%|          | 0/2 [00:00<?, ?it/s]  C_snapshot K=15 c207s0 lpips=0.0323 Phi=15
+  C_snapshot K=15 c207s1 lpips=0.0285 Phi=15
+  C_snapshot K=15 c207s2 lpips=0.0177 Phi=15
+  C_snapshot K=15 c207s3 lpips=0.0308 Phi=15
+  C_snapshot K=15 c360s0 lpips=0.0351 Phi=15
+  C_snapshot K=15 c360s1 lpips=0.0220 Phi=15
+  C_snapshot K=15 c360s2 lpips=0.0384 Phi=15
+  C_snapshot K=15 c360s3 lpips=0.0275 Phi=15
+train-C_snapshot-K15:  50%|█████     | 1/2 [00:05<00:05,  5.22s/it]  C_snapshot K=15 c387s0 lpips=0.0268 Phi=15
+  C_snapshot K=15 c387s1 lpips=0.0198 Phi=15
+  C_snapshot K=15 c387s2 lpips=0.0260 Phi=15
+  C_snapshot K=15 c387s3 lpips=0.0837 Phi=15
+  C_snapshot K=15 c974s0 lpips=0.0280 Phi=15
+  C_snapshot K=15 c974s1 lpips=0.0137 Phi=15
+  C_snapshot K=15 c974s2 lpips=0.0178 Phi=15
+  C_snapshot K=15 c974s3 lpips=0.0258 Phi=15
+train-C_snapshot-K15: 100%|██████████| 2/2 [00:10<00:00,  5.22s/it]train-C_snapshot-K15: 100%|██████████| 2/2 [00:10<00:00,  5.22s/it]
+train-C_snapshot-K20:   0%|          | 0/2 [00:00<?, ?it/s]  C_snapshot K=20 c207s0 lpips=0.0140 Phi=20
+  C_snapshot K=20 c207s1 lpips=0.0133 Phi=20
+  C_snapshot K=20 c207s2 lpips=0.0077 Phi=20
+  C_snapshot K=20 c207s3 lpips=0.0148 Phi=20
+  C_snapshot K=20 c360s0 lpips=0.0148 Phi=20
+  C_snapshot K=20 c360s1 lpips=0.0117 Phi=20
+  C_snapshot K=20 c360s2 lpips=0.0159 Phi=20
+  C_snapshot K=20 c360s3 lpips=0.0127 Phi=20
+train-C_snapshot-K20:  50%|█████     | 1/2 [00:06<00:06,  6.80s/it]  C_snapshot K=20 c387s0 lpips=0.0117 Phi=20
+  C_snapshot K=20 c387s1 lpips=0.0088 Phi=20
+  C_snapshot K=20 c387s2 lpips=0.0121 Phi=20
+  C_snapshot K=20 c387s3 lpips=0.0454 Phi=20
+  C_snapshot K=20 c974s0 lpips=0.0129 Phi=20
+  C_snapshot K=20 c974s1 lpips=0.0054 Phi=20
+  C_snapshot K=20 c974s2 lpips=0.0104 Phi=20
+  C_snapshot K=20 c974s3 lpips=0.0134 Phi=20
+train-C_snapshot-K20: 100%|██████████| 2/2 [00:13<00:00,  6.80s/it]train-C_snapshot-K20: 100%|██████████| 2/2 [00:13<00:00,  6.80s/it]
+held-C_snapshot-K15:   0%|          | 0/2 [00:00<?, ?it/s]  C_snapshot K=15 c12s0 lpips=0.0097 Phi=15
+  C_snapshot K=15 c12s1 lpips=0.0224 Phi=15
+  C_snapshot K=15 c45s0 lpips=0.0423 Phi=15
+  C_snapshot K=15 c45s1 lpips=0.0779 Phi=15
+  C_snapshot K=15 c66s0 lpips=0.0312 Phi=15
+  C_snapshot K=15 c66s1 lpips=0.0594 Phi=15
+  C_snapshot K=15 c120s0 lpips=0.0123 Phi=15
+  C_snapshot K=15 c120s1 lpips=0.0343 Phi=15
+held-C_snapshot-K15:  50%|█████     | 1/2 [00:05<00:05,  5.22s/it]  C_snapshot K=15 c180s0 lpips=0.0327 Phi=15
+  C_snapshot K=15 c180s1 lpips=0.0567 Phi=15
+  C_snapshot K=15 c220s0 lpips=0.0190 Phi=15
+  C_snapshot K=15 c220s1 lpips=0.0299 Phi=15
+  C_snapshot K=15 c310s0 lpips=0.0349 Phi=15
+  C_snapshot K=15 c310s1 lpips=0.0310 Phi=15
+  C_snapshot K=15 c440s0 lpips=0.0623 Phi=15
+  C_snapshot K=15 c440s1 lpips=0.0811 Phi=15
+held-C_snapshot-K15: 100%|██████████| 2/2 [00:10<00:00,  5.22s/it]held-C_snapshot-K15: 100%|██████████| 2/2 [00:10<00:00,  5.22s/it]
+held-C_snapshot-K20:   0%|          | 0/2 [00:00<?, ?it/s]  C_snapshot K=20 c12s0 lpips=0.0040 Phi=20
+  C_snapshot K=20 c12s1 lpips=0.0159 Phi=20
+  C_snapshot K=20 c45s0 lpips=0.0203 Phi=20
+  C_snapshot K=20 c45s1 lpips=0.0499 Phi=20
+  C_snapshot K=20 c66s0 lpips=0.0137 Phi=20
+  C_snapshot K=20 c66s1 lpips=0.0384 Phi=20
+  C_snapshot K=20 c120s0 lpips=0.0065 Phi=20
+  C_snapshot K=20 c120s1 lpips=0.0152 Phi=20
+held-C_snapshot-K20:  50%|█████     | 1/2 [00:06<00:06,  6.83s/it]  C_snapshot K=20 c180s0 lpips=0.0124 Phi=20
+  C_snapshot K=20 c180s1 lpips=0.0202 Phi=20
+  C_snapshot K=20 c220s0 lpips=0.0099 Phi=20
+  C_snapshot K=20 c220s1 lpips=0.0095 Phi=20
+  C_snapshot K=20 c310s0 lpips=0.0158 Phi=20
+  C_snapshot K=20 c310s1 lpips=0.0147 Phi=20
+  C_snapshot K=20 c440s0 lpips=0.0098 Phi=20
+  C_snapshot K=20 c440s1 lpips=0.0459 Phi=20
+held-C_snapshot-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]held-C_snapshot-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | A_compiled | 15 | 16 | 15.0 | 0.2228 |
+| held | A_compiled | 20 | 16 | 20.0 | 0.1553 |
+| held | B_online_j | 15 | 16 | 15.0 | 0.1144 |
+| held | B_online_j | 20 | 16 | 20.0 | 0.0674 |
+| held | C_snapshot | 15 | 16 | 15.0 | 0.0398 |
+| held | C_snapshot | 20 | 16 | 20.0 | 0.0189 |
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | A_compiled | 15 | 16 | 15.0 | 0.2054 |
+| train | A_compiled | 20 | 16 | 20.0 | 0.1252 |
+| train | B_online_j | 15 | 16 | 15.0 | 0.1034 |
+| train | B_online_j | 20 | 16 | 20.0 | 0.0688 |
+| train | C_snapshot | 15 | 16 | 15.0 | 0.0296 |
+| train | C_snapshot | 20 | 16 | 20.0 | 0.0141 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+- train K=15 A_compiled vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 A_compiled vs Taylor-1 rel_drop=-5.289 FAIL
+- train K=15 B_online_j vs Taylor-1 rel_drop=-2.469 FAIL
+- train K=20 B_online_j vs Taylor-1 rel_drop=-2.457 FAIL
+- train K=15 C_snapshot vs Taylor-1 rel_drop=0.007 FAIL
+- train K=20 C_snapshot vs Taylor-1 rel_drop=0.294 PASS
+
+- VERDICT A_compiled: FAIL
+- VERDICT B_online_j: FAIL
+- VERDICT C_snapshot: FAIL
+
+===== direction D_repair =====
+train-D_repair-K15:   0%|          | 0/2 [00:00<?, ?it/s]  D_repair K=15 c207s0 lpips=0.3302 Phi=15
+  D_repair K=15 c207s1 lpips=0.5371 Phi=15
+  D_repair K=15 c207s2 lpips=0.3513 Phi=15
+  D_repair K=15 c207s3 lpips=0.3893 Phi=15
+  D_repair K=15 c360s0 lpips=0.4610 Phi=15
+  D_repair K=15 c360s1 lpips=0.2796 Phi=15
+  D_repair K=15 c360s2 lpips=0.2975 Phi=15
+  D_repair K=15 c360s3 lpips=0.2771 Phi=15
+train-D_repair-K15:  50%|█████     | 1/2 [00:05<00:05,  5.43s/it]  D_repair K=15 c387s0 lpips=0.3970 Phi=15
+  D_repair K=15 c387s1 lpips=0.3437 Phi=15
+  D_repair K=15 c387s2 lpips=0.4534 Phi=15
+  D_repair K=15 c387s3 lpips=0.3750 Phi=15
+  D_repair K=15 c974s0 lpips=0.3734 Phi=15
+  D_repair K=15 c974s1 lpips=0.1158 Phi=15
+  D_repair K=15 c974s2 lpips=0.1411 Phi=15
+  D_repair K=15 c974s3 lpips=0.3492 Phi=15
+train-D_repair-K15: 100%|██████████| 2/2 [00:10<00:00,  5.41s/it]train-D_repair-K15: 100%|██████████| 2/2 [00:10<00:00,  5.42s/it]
+train-D_repair-K20:   0%|          | 0/2 [00:00<?, ?it/s]  D_repair K=20 c207s0 lpips=0.2679 Phi=20
+  D_repair K=20 c207s1 lpips=0.4886 Phi=20
+  D_repair K=20 c207s2 lpips=0.3171 Phi=20
+  D_repair K=20 c207s3 lpips=0.2792 Phi=20
+  D_repair K=20 c360s0 lpips=0.4401 Phi=20
+  D_repair K=20 c360s1 lpips=0.2088 Phi=20
+  D_repair K=20 c360s2 lpips=0.2429 Phi=20
+  D_repair K=20 c360s3 lpips=0.1555 Phi=20
+train-D_repair-K20:  50%|█████     | 1/2 [00:06<00:06,  7.00s/it]  D_repair K=20 c387s0 lpips=0.1401 Phi=20
+  D_repair K=20 c387s1 lpips=0.1775 Phi=20
+  D_repair K=20 c387s2 lpips=0.3481 Phi=20
+  D_repair K=20 c387s3 lpips=0.2671 Phi=20
+  D_repair K=20 c974s0 lpips=0.1064 Phi=20
+  D_repair K=20 c974s1 lpips=0.0851 Phi=20
+  D_repair K=20 c974s2 lpips=0.1178 Phi=20
+  D_repair K=20 c974s3 lpips=0.2723 Phi=20
+train-D_repair-K20: 100%|██████████| 2/2 [00:13<00:00,  7.00s/it]train-D_repair-K20: 100%|██████████| 2/2 [00:13<00:00,  7.00s/it]
+held-D_repair-K15:   0%|          | 0/2 [00:00<?, ?it/s]  D_repair K=15 c12s0 lpips=0.3673 Phi=15
+  D_repair K=15 c12s1 lpips=0.4330 Phi=15
+  D_repair K=15 c45s0 lpips=0.4951 Phi=15
+  D_repair K=15 c45s1 lpips=0.3876 Phi=15
+  D_repair K=15 c66s0 lpips=0.4094 Phi=15
+  D_repair K=15 c66s1 lpips=0.2966 Phi=15
+  D_repair K=15 c120s0 lpips=0.5615 Phi=15
+  D_repair K=15 c120s1 lpips=0.3331 Phi=15
+held-D_repair-K15:  50%|█████     | 1/2 [00:05<00:05,  5.40s/it]  D_repair K=15 c180s0 lpips=0.3999 Phi=15
+  D_repair K=15 c180s1 lpips=0.3346 Phi=15
+  D_repair K=15 c220s0 lpips=0.3580 Phi=15
+  D_repair K=15 c220s1 lpips=0.3905 Phi=15
+  D_repair K=15 c310s0 lpips=0.3242 Phi=15
+  D_repair K=15 c310s1 lpips=0.5547 Phi=15
+  D_repair K=15 c440s0 lpips=0.3788 Phi=15
+  D_repair K=15 c440s1 lpips=0.4400 Phi=15
+held-D_repair-K15: 100%|██████████| 2/2 [00:10<00:00,  5.41s/it]held-D_repair-K15: 100%|██████████| 2/2 [00:10<00:00,  5.41s/it]
+held-D_repair-K20:   0%|          | 0/2 [00:00<?, ?it/s]  D_repair K=20 c12s0 lpips=0.3563 Phi=20
+  D_repair K=20 c12s1 lpips=0.3946 Phi=20
+  D_repair K=20 c45s0 lpips=0.2843 Phi=20
+  D_repair K=20 c45s1 lpips=0.2984 Phi=20
+  D_repair K=20 c66s0 lpips=0.3203 Phi=20
+  D_repair K=20 c66s1 lpips=0.1819 Phi=20
+  D_repair K=20 c120s0 lpips=0.3878 Phi=20
+  D_repair K=20 c120s1 lpips=0.1154 Phi=20
+held-D_repair-K20:  50%|█████     | 1/2 [00:07<00:07,  7.01s/it]  D_repair K=20 c180s0 lpips=0.2402 Phi=20
+  D_repair K=20 c180s1 lpips=0.2165 Phi=20
+  D_repair K=20 c220s0 lpips=0.2401 Phi=20
+  D_repair K=20 c220s1 lpips=0.3249 Phi=20
+  D_repair K=20 c310s0 lpips=0.2305 Phi=20
+  D_repair K=20 c310s1 lpips=0.2903 Phi=20
+  D_repair K=20 c440s0 lpips=0.2787 Phi=20
+  D_repair K=20 c440s1 lpips=0.3617 Phi=20
+held-D_repair-K20: 100%|██████████| 2/2 [00:14<00:00,  7.00s/it]held-D_repair-K20: 100%|██████████| 2/2 [00:14<00:00,  7.01s/it]
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | A_compiled | 15 | 16 | 15.0 | 0.2228 |
+| held | A_compiled | 20 | 16 | 20.0 | 0.1553 |
+| held | B_online_j | 15 | 16 | 15.0 | 0.1144 |
+| held | B_online_j | 20 | 16 | 20.0 | 0.0674 |
+| held | C_snapshot | 15 | 16 | 15.0 | 0.0398 |
+| held | C_snapshot | 20 | 16 | 20.0 | 0.0189 |
+| held | D_repair | 15 | 16 | 15.0 | 0.4040 |
+| held | D_repair | 20 | 16 | 20.0 | 0.2826 |
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | A_compiled | 15 | 16 | 15.0 | 0.2054 |
+| train | A_compiled | 20 | 16 | 20.0 | 0.1252 |
+| train | B_online_j | 15 | 16 | 15.0 | 0.1034 |
+| train | B_online_j | 20 | 16 | 20.0 | 0.0688 |
+| train | C_snapshot | 15 | 16 | 15.0 | 0.0296 |
+| train | C_snapshot | 20 | 16 | 20.0 | 0.0141 |
+| train | D_repair | 15 | 16 | 15.0 | 0.3420 |
+| train | D_repair | 20 | 16 | 20.0 | 0.2447 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+- train K=15 A_compiled vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 A_compiled vs Taylor-1 rel_drop=-5.289 FAIL
+- train K=15 B_online_j vs Taylor-1 rel_drop=-2.469 FAIL
+- train K=20 B_online_j vs Taylor-1 rel_drop=-2.457 FAIL
+- train K=15 C_snapshot vs Taylor-1 rel_drop=0.007 FAIL
+- train K=20 C_snapshot vs Taylor-1 rel_drop=0.294 PASS
+- train K=15 D_repair vs Taylor-1 rel_drop=-10.472 FAIL
+- train K=20 D_repair vs Taylor-1 rel_drop=-11.290 FAIL
+
+- VERDICT A_compiled: FAIL
+- VERDICT B_online_j: FAIL
+- VERDICT C_snapshot: FAIL
+- VERDICT D_repair: FAIL
+
+===== direction E_part_t =====
+train-E_part_t-K15:   0%|          | 0/2 [00:00<?, ?it/s]  E_part_t K=15 c207s0 lpips=0.4762 Phi=15
+  E_part_t K=15 c207s1 lpips=0.6273 Phi=15
+  E_part_t K=15 c207s2 lpips=0.6200 Phi=15
+  E_part_t K=15 c207s3 lpips=0.6379 Phi=15
+  E_part_t K=15 c360s0 lpips=0.5858 Phi=15
+  E_part_t K=15 c360s1 lpips=0.6582 Phi=15
+  E_part_t K=15 c360s2 lpips=0.4320 Phi=15
+  E_part_t K=15 c360s3 lpips=0.5139 Phi=15
+train-E_part_t-K15:  50%|█████     | 1/2 [00:05<00:05,  5.23s/it]  E_part_t K=15 c387s0 lpips=0.3973 Phi=15
+  E_part_t K=15 c387s1 lpips=0.5046 Phi=15
+  E_part_t K=15 c387s2 lpips=0.5237 Phi=15
+  E_part_t K=15 c387s3 lpips=0.5099 Phi=15
+  E_part_t K=15 c974s0 lpips=0.7460 Phi=15
+  E_part_t K=15 c974s1 lpips=0.6614 Phi=15
+  E_part_t K=15 c974s2 lpips=0.6500 Phi=15
+  E_part_t K=15 c974s3 lpips=0.6563 Phi=15
+train-E_part_t-K15: 100%|██████████| 2/2 [00:10<00:00,  5.23s/it]train-E_part_t-K15: 100%|██████████| 2/2 [00:10<00:00,  5.23s/it]
+train-E_part_t-K20:   0%|          | 0/2 [00:00<?, ?it/s]  E_part_t K=20 c207s0 lpips=0.3425 Phi=20
+  E_part_t K=20 c207s1 lpips=0.4736 Phi=20
+  E_part_t K=20 c207s2 lpips=0.3605 Phi=20
+  E_part_t K=20 c207s3 lpips=0.3858 Phi=20
+  E_part_t K=20 c360s0 lpips=0.4381 Phi=20
+  E_part_t K=20 c360s1 lpips=0.2364 Phi=20
+  E_part_t K=20 c360s2 lpips=0.1739 Phi=20
+  E_part_t K=20 c360s3 lpips=0.2239 Phi=20
+train-E_part_t-K20:  50%|█████     | 1/2 [00:06<00:06,  6.82s/it]  E_part_t K=20 c387s0 lpips=0.1851 Phi=20
+  E_part_t K=20 c387s1 lpips=0.2546 Phi=20
+  E_part_t K=20 c387s2 lpips=0.3967 Phi=20
+  E_part_t K=20 c387s3 lpips=0.2578 Phi=20
+  E_part_t K=20 c974s0 lpips=0.3770 Phi=20
+  E_part_t K=20 c974s1 lpips=0.3622 Phi=20
+  E_part_t K=20 c974s2 lpips=0.1415 Phi=20
+  E_part_t K=20 c974s3 lpips=0.2454 Phi=20
+train-E_part_t-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]train-E_part_t-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]
+held-E_part_t-K15:   0%|          | 0/2 [00:00<?, ?it/s]  E_part_t K=15 c12s0 lpips=0.6423 Phi=15
+  E_part_t K=15 c12s1 lpips=0.6843 Phi=15
+  E_part_t K=15 c45s0 lpips=0.4751 Phi=15
+  E_part_t K=15 c45s1 lpips=0.6048 Phi=15
+  E_part_t K=15 c66s0 lpips=0.5450 Phi=15
+  E_part_t K=15 c66s1 lpips=0.6470 Phi=15
+  E_part_t K=15 c120s0 lpips=0.6420 Phi=15
+  E_part_t K=15 c120s1 lpips=0.4908 Phi=15
+held-E_part_t-K15:  50%|█████     | 1/2 [00:05<00:05,  5.23s/it]  E_part_t K=15 c180s0 lpips=0.5688 Phi=15
+  E_part_t K=15 c180s1 lpips=0.5458 Phi=15
+  E_part_t K=15 c220s0 lpips=0.6846 Phi=15
+  E_part_t K=15 c220s1 lpips=0.6572 Phi=15
+  E_part_t K=15 c310s0 lpips=0.5724 Phi=15
+  E_part_t K=15 c310s1 lpips=0.5622 Phi=15
+  E_part_t K=15 c440s0 lpips=0.5335 Phi=15
+  E_part_t K=15 c440s1 lpips=0.5053 Phi=15
+held-E_part_t-K15: 100%|██████████| 2/2 [00:10<00:00,  5.24s/it]held-E_part_t-K15: 100%|██████████| 2/2 [00:10<00:00,  5.24s/it]
+held-E_part_t-K20:   0%|          | 0/2 [00:00<?, ?it/s]  E_part_t K=20 c12s0 lpips=0.4501 Phi=20
+  E_part_t K=20 c12s1 lpips=0.4701 Phi=20
+  E_part_t K=20 c45s0 lpips=0.1880 Phi=20
+  E_part_t K=20 c45s1 lpips=0.1881 Phi=20
+  E_part_t K=20 c66s0 lpips=0.3158 Phi=20
+  E_part_t K=20 c66s1 lpips=0.3701 Phi=20
+  E_part_t K=20 c120s0 lpips=0.3786 Phi=20
+  E_part_t K=20 c120s1 lpips=0.1644 Phi=20
+held-E_part_t-K20:  50%|█████     | 1/2 [00:06<00:06,  6.82s/it]  E_part_t K=20 c180s0 lpips=0.2869 Phi=20
+  E_part_t K=20 c180s1 lpips=0.2660 Phi=20
+  E_part_t K=20 c220s0 lpips=0.3189 Phi=20
+  E_part_t K=20 c220s1 lpips=0.3474 Phi=20
+  E_part_t K=20 c310s0 lpips=0.3674 Phi=20
+  E_part_t K=20 c310s1 lpips=0.3906 Phi=20
+  E_part_t K=20 c440s0 lpips=0.3034 Phi=20
+  E_part_t K=20 c440s1 lpips=0.3258 Phi=20
+held-E_part_t-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]held-E_part_t-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | A_compiled | 15 | 16 | 15.0 | 0.2228 |
+| held | A_compiled | 20 | 16 | 20.0 | 0.1553 |
+| held | B_online_j | 15 | 16 | 15.0 | 0.1144 |
+| held | B_online_j | 20 | 16 | 20.0 | 0.0674 |
+| held | C_snapshot | 15 | 16 | 15.0 | 0.0398 |
+| held | C_snapshot | 20 | 16 | 20.0 | 0.0189 |
+| held | D_repair | 15 | 16 | 15.0 | 0.4040 |
+| held | D_repair | 20 | 16 | 20.0 | 0.2826 |
+| held | E_part_t | 15 | 16 | 15.0 | 0.5851 |
+| held | E_part_t | 20 | 16 | 20.0 | 0.3207 |
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | A_compiled | 15 | 16 | 15.0 | 0.2054 |
+| train | A_compiled | 20 | 16 | 20.0 | 0.1252 |
+| train | B_online_j | 15 | 16 | 15.0 | 0.1034 |
+| train | B_online_j | 20 | 16 | 20.0 | 0.0688 |
+| train | C_snapshot | 15 | 16 | 15.0 | 0.0296 |
+| train | C_snapshot | 20 | 16 | 20.0 | 0.0141 |
+| train | D_repair | 15 | 16 | 15.0 | 0.3420 |
+| train | D_repair | 20 | 16 | 20.0 | 0.2447 |
+| train | E_part_t | 15 | 16 | 15.0 | 0.5750 |
+| train | E_part_t | 20 | 16 | 20.0 | 0.3034 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+- train K=15 A_compiled vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 A_compiled vs Taylor-1 rel_drop=-5.289 FAIL
+- train K=15 B_online_j vs Taylor-1 rel_drop=-2.469 FAIL
+- train K=20 B_online_j vs Taylor-1 rel_drop=-2.457 FAIL
+- train K=15 C_snapshot vs Taylor-1 rel_drop=0.007 FAIL
+- train K=20 C_snapshot vs Taylor-1 rel_drop=0.294 PASS
+- train K=15 D_repair vs Taylor-1 rel_drop=-10.472 FAIL
+- train K=20 D_repair vs Taylor-1 rel_drop=-11.290 FAIL
+- train K=15 E_part_t vs Taylor-1 rel_drop=-18.291 FAIL
+- train K=20 E_part_t vs Taylor-1 rel_drop=-14.244 FAIL
+
+- VERDICT A_compiled: FAIL
+- VERDICT B_online_j: FAIL
+- VERDICT C_snapshot: FAIL
+- VERDICT D_repair: FAIL
+- VERDICT E_part_t: FAIL
+
+===== direction F_hybrid =====
+train-F_hybrid-K15:   0%|          | 0/2 [00:00<?, ?it/s]  F_hybrid K=15 c207s0 lpips=0.7859 Phi=15
+  F_hybrid K=15 c207s1 lpips=0.8795 Phi=15
+  F_hybrid K=15 c207s2 lpips=0.9002 Phi=15
+  F_hybrid K=15 c207s3 lpips=0.9705 Phi=15
+  F_hybrid K=15 c360s0 lpips=0.8367 Phi=15
+  F_hybrid K=15 c360s1 lpips=0.8882 Phi=15
+  F_hybrid K=15 c360s2 lpips=0.8446 Phi=15
+  F_hybrid K=15 c360s3 lpips=0.7766 Phi=15
+train-F_hybrid-K15:  50%|█████     | 1/2 [00:05<00:05,  5.23s/it]  F_hybrid K=15 c387s0 lpips=0.7419 Phi=15
+  F_hybrid K=15 c387s1 lpips=0.7391 Phi=15
+  F_hybrid K=15 c387s2 lpips=0.8545 Phi=15
+  F_hybrid K=15 c387s3 lpips=0.7709 Phi=15
+  F_hybrid K=15 c974s0 lpips=1.0079 Phi=15
+  F_hybrid K=15 c974s1 lpips=0.9575 Phi=15
+  F_hybrid K=15 c974s2 lpips=0.9190 Phi=15
+  F_hybrid K=15 c974s3 lpips=1.0148 Phi=15
+train-F_hybrid-K15: 100%|██████████| 2/2 [00:10<00:00,  5.24s/it]train-F_hybrid-K15: 100%|██████████| 2/2 [00:10<00:00,  5.24s/it]
+train-F_hybrid-K20:   0%|          | 0/2 [00:00<?, ?it/s]  F_hybrid K=20 c207s0 lpips=0.7027 Phi=20
+  F_hybrid K=20 c207s1 lpips=0.8241 Phi=20
+  F_hybrid K=20 c207s2 lpips=0.8500 Phi=20
+  F_hybrid K=20 c207s3 lpips=0.9018 Phi=20
+  F_hybrid K=20 c360s0 lpips=0.7533 Phi=20
+  F_hybrid K=20 c360s1 lpips=0.8172 Phi=20
+  F_hybrid K=20 c360s2 lpips=0.8200 Phi=20
+  F_hybrid K=20 c360s3 lpips=0.7139 Phi=20
+train-F_hybrid-K20:  50%|█████     | 1/2 [00:06<00:06,  6.83s/it]  F_hybrid K=20 c387s0 lpips=0.7254 Phi=20
+  F_hybrid K=20 c387s1 lpips=0.7168 Phi=20
+  F_hybrid K=20 c387s2 lpips=0.8554 Phi=20
+  F_hybrid K=20 c387s3 lpips=0.6979 Phi=20
+  F_hybrid K=20 c974s0 lpips=0.9357 Phi=20
+  F_hybrid K=20 c974s1 lpips=0.8277 Phi=20
+  F_hybrid K=20 c974s2 lpips=0.8105 Phi=20
+  F_hybrid K=20 c974s3 lpips=0.9545 Phi=20
+train-F_hybrid-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]train-F_hybrid-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]
+held-F_hybrid-K15:   0%|          | 0/2 [00:00<?, ?it/s]  F_hybrid K=15 c12s0 lpips=0.8474 Phi=15
+  F_hybrid K=15 c12s1 lpips=0.9185 Phi=15
+  F_hybrid K=15 c45s0 lpips=0.8857 Phi=15
+  F_hybrid K=15 c45s1 lpips=1.1590 Phi=15
+  F_hybrid K=15 c66s0 lpips=0.8013 Phi=15
+  F_hybrid K=15 c66s1 lpips=1.0144 Phi=15
+  F_hybrid K=15 c120s0 lpips=0.9020 Phi=15
+  F_hybrid K=15 c120s1 lpips=0.8464 Phi=15
+held-F_hybrid-K15:  50%|█████     | 1/2 [00:05<00:05,  5.24s/it]  F_hybrid K=15 c180s0 lpips=0.8338 Phi=15
+  F_hybrid K=15 c180s1 lpips=0.9788 Phi=15
+  F_hybrid K=15 c220s0 lpips=0.7732 Phi=15
+  F_hybrid K=15 c220s1 lpips=0.7758 Phi=15
+  F_hybrid K=15 c310s0 lpips=0.8353 Phi=15
+  F_hybrid K=15 c310s1 lpips=0.8813 Phi=15
+  F_hybrid K=15 c440s0 lpips=0.8100 Phi=15
+  F_hybrid K=15 c440s1 lpips=0.8014 Phi=15
+held-F_hybrid-K15: 100%|██████████| 2/2 [00:10<00:00,  5.24s/it]held-F_hybrid-K15: 100%|██████████| 2/2 [00:10<00:00,  5.24s/it]
+held-F_hybrid-K20:   0%|          | 0/2 [00:00<?, ?it/s]  F_hybrid K=20 c12s0 lpips=0.7760 Phi=20
+  F_hybrid K=20 c12s1 lpips=0.8961 Phi=20
+  F_hybrid K=20 c45s0 lpips=0.8079 Phi=20
+  F_hybrid K=20 c45s1 lpips=1.1169 Phi=20
+  F_hybrid K=20 c66s0 lpips=0.7268 Phi=20
+  F_hybrid K=20 c66s1 lpips=0.9755 Phi=20
+  F_hybrid K=20 c120s0 lpips=0.8144 Phi=20
+  F_hybrid K=20 c120s1 lpips=0.7886 Phi=20
+held-F_hybrid-K20:  50%|█████     | 1/2 [00:06<00:06,  6.83s/it]  F_hybrid K=20 c180s0 lpips=0.8029 Phi=20
+  F_hybrid K=20 c180s1 lpips=0.8945 Phi=20
+  F_hybrid K=20 c220s0 lpips=0.6342 Phi=20
+  F_hybrid K=20 c220s1 lpips=0.6905 Phi=20
+  F_hybrid K=20 c310s0 lpips=0.7493 Phi=20
+  F_hybrid K=20 c310s1 lpips=0.8003 Phi=20
+  F_hybrid K=20 c440s0 lpips=0.7513 Phi=20
+  F_hybrid K=20 c440s1 lpips=0.7159 Phi=20
+held-F_hybrid-K20: 100%|██████████| 2/2 [00:13<00:00,  6.83s/it]held-F_hybrid-K20: 100%|██████████| 2/2 [00:13<00:00,  6.83s/it]
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | A_compiled | 15 | 16 | 15.0 | 0.2228 |
+| held | A_compiled | 20 | 16 | 20.0 | 0.1553 |
+| held | B_online_j | 15 | 16 | 15.0 | 0.1144 |
+| held | B_online_j | 20 | 16 | 20.0 | 0.0674 |
+| held | C_snapshot | 15 | 16 | 15.0 | 0.0398 |
+| held | C_snapshot | 20 | 16 | 20.0 | 0.0189 |
+| held | D_repair | 15 | 16 | 15.0 | 0.4040 |
+| held | D_repair | 20 | 16 | 20.0 | 0.2826 |
+| held | E_part_t | 15 | 16 | 15.0 | 0.5851 |
+| held | E_part_t | 20 | 16 | 20.0 | 0.3207 |
+| held | F_hybrid | 15 | 16 | 15.0 | 0.8790 |
+| held | F_hybrid | 20 | 16 | 20.0 | 0.8088 |
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | A_compiled | 15 | 16 | 15.0 | 0.2054 |
+| train | A_compiled | 20 | 16 | 20.0 | 0.1252 |
+| train | B_online_j | 15 | 16 | 15.0 | 0.1034 |
+| train | B_online_j | 20 | 16 | 20.0 | 0.0688 |
+| train | C_snapshot | 15 | 16 | 15.0 | 0.0296 |
+| train | C_snapshot | 20 | 16 | 20.0 | 0.0141 |
+| train | D_repair | 15 | 16 | 15.0 | 0.3420 |
+| train | D_repair | 20 | 16 | 20.0 | 0.2447 |
+| train | E_part_t | 15 | 16 | 15.0 | 0.5750 |
+| train | E_part_t | 20 | 16 | 20.0 | 0.3034 |
+| train | F_hybrid | 15 | 16 | 15.0 | 0.8680 |
+| train | F_hybrid | 20 | 16 | 20.0 | 0.8067 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+- train K=15 A_compiled vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 A_compiled vs Taylor-1 rel_drop=-5.289 FAIL
+- train K=15 B_online_j vs Taylor-1 rel_drop=-2.469 FAIL
+- train K=20 B_online_j vs Taylor-1 rel_drop=-2.457 FAIL
+- train K=15 C_snapshot vs Taylor-1 rel_drop=0.007 FAIL
+- train K=20 C_snapshot vs Taylor-1 rel_drop=0.294 PASS
+- train K=15 D_repair vs Taylor-1 rel_drop=-10.472 FAIL
+- train K=20 D_repair vs Taylor-1 rel_drop=-11.290 FAIL
+- train K=15 E_part_t vs Taylor-1 rel_drop=-18.291 FAIL
+- train K=20 E_part_t vs Taylor-1 rel_drop=-14.244 FAIL
+- train K=15 F_hybrid vs Taylor-1 rel_drop=-28.119 FAIL
+- train K=20 F_hybrid vs Taylor-1 rel_drop=-39.524 FAIL
+
+- VERDICT A_compiled: FAIL
+- VERDICT B_online_j: FAIL
+- VERDICT C_snapshot: FAIL
+- VERDICT D_repair: FAIL
+- VERDICT E_part_t: FAIL
+- VERDICT F_hybrid: FAIL
+
+===== direction G_union =====
+train-G_union-K15:   0%|          | 0/2 [00:00<?, ?it/s]  G_union K=15 c207s0 lpips=0.2562 Phi=15
+  G_union K=15 c207s1 lpips=0.2918 Phi=15
+  G_union K=15 c207s2 lpips=0.2468 Phi=15
+  G_union K=15 c207s3 lpips=0.2622 Phi=15
+  G_union K=15 c360s0 lpips=0.3670 Phi=15
+  G_union K=15 c360s1 lpips=0.1118 Phi=15
+  G_union K=15 c360s2 lpips=0.1188 Phi=15
+  G_union K=15 c360s3 lpips=0.1397 Phi=15
+train-G_union-K15:  50%|█████     | 1/2 [00:05<00:05,  5.26s/it]  G_union K=15 c387s0 lpips=0.1463 Phi=15
+  G_union K=15 c387s1 lpips=0.1867 Phi=15
+  G_union K=15 c387s2 lpips=0.3294 Phi=15
+  G_union K=15 c387s3 lpips=0.1854 Phi=15
+  G_union K=15 c974s0 lpips=0.2424 Phi=15
+  G_union K=15 c974s1 lpips=0.1926 Phi=15
+  G_union K=15 c974s2 lpips=0.0683 Phi=15
+  G_union K=15 c974s3 lpips=0.1405 Phi=15
+train-G_union-K15: 100%|██████████| 2/2 [00:10<00:00,  5.26s/it]train-G_union-K15: 100%|██████████| 2/2 [00:10<00:00,  5.26s/it]
+train-G_union-K20:   0%|          | 0/2 [00:00<?, ?it/s]  G_union K=20 c207s0 lpips=0.1424 Phi=20
+  G_union K=20 c207s1 lpips=0.1044 Phi=20
+  G_union K=20 c207s2 lpips=0.1708 Phi=20
+  G_union K=20 c207s3 lpips=0.1393 Phi=20
+  G_union K=20 c360s0 lpips=0.1856 Phi=20
+  G_union K=20 c360s1 lpips=0.0605 Phi=20
+  G_union K=20 c360s2 lpips=0.0725 Phi=20
+  G_union K=20 c360s3 lpips=0.0830 Phi=20
+train-G_union-K20:  50%|█████     | 1/2 [00:06<00:06,  6.84s/it]  G_union K=20 c387s0 lpips=0.1001 Phi=20
+  G_union K=20 c387s1 lpips=0.1366 Phi=20
+  G_union K=20 c387s2 lpips=0.2549 Phi=20
+  G_union K=20 c387s3 lpips=0.1283 Phi=20
+  G_union K=20 c974s0 lpips=0.1986 Phi=20
+  G_union K=20 c974s1 lpips=0.0938 Phi=20
+  G_union K=20 c974s2 lpips=0.0372 Phi=20
+  G_union K=20 c974s3 lpips=0.0950 Phi=20
+train-G_union-K20: 100%|██████████| 2/2 [00:13<00:00,  6.84s/it]train-G_union-K20: 100%|██████████| 2/2 [00:13<00:00,  6.84s/it]
+held-G_union-K15:   0%|          | 0/2 [00:00<?, ?it/s]  G_union K=15 c12s0 lpips=0.3406 Phi=15
+  G_union K=15 c12s1 lpips=0.3143 Phi=15
+  G_union K=15 c45s0 lpips=0.1238 Phi=15
+  G_union K=15 c45s1 lpips=0.1016 Phi=15
+  G_union K=15 c66s0 lpips=0.1838 Phi=15
+  G_union K=15 c66s1 lpips=0.2595 Phi=15
+  G_union K=15 c120s0 lpips=0.1897 Phi=15
+  G_union K=15 c120s1 lpips=0.1089 Phi=15
+held-G_union-K15:  50%|█████     | 1/2 [00:05<00:05,  5.25s/it]  G_union K=15 c180s0 lpips=0.2428 Phi=15
+  G_union K=15 c180s1 lpips=0.1762 Phi=15
+  G_union K=15 c220s0 lpips=0.2160 Phi=15
+  G_union K=15 c220s1 lpips=0.2335 Phi=15
+  G_union K=15 c310s0 lpips=0.2791 Phi=15
+  G_union K=15 c310s1 lpips=0.2717 Phi=15
+  G_union K=15 c440s0 lpips=0.2355 Phi=15
+  G_union K=15 c440s1 lpips=0.2873 Phi=15
+held-G_union-K15: 100%|██████████| 2/2 [00:10<00:00,  5.24s/it]held-G_union-K15: 100%|██████████| 2/2 [00:10<00:00,  5.24s/it]
+held-G_union-K20:   0%|          | 0/2 [00:00<?, ?it/s]  G_union K=20 c12s0 lpips=0.0935 Phi=20
+  G_union K=20 c12s1 lpips=0.2491 Phi=20
+  G_union K=20 c45s0 lpips=0.0741 Phi=20
+  G_union K=20 c45s1 lpips=0.0819 Phi=20
+  G_union K=20 c66s0 lpips=0.1147 Phi=20
+  G_union K=20 c66s1 lpips=0.2263 Phi=20
+  G_union K=20 c120s0 lpips=0.1202 Phi=20
+  G_union K=20 c120s1 lpips=0.0600 Phi=20
+held-G_union-K20:  50%|█████     | 1/2 [00:06<00:06,  6.83s/it]  G_union K=20 c180s0 lpips=0.1837 Phi=20
+  G_union K=20 c180s1 lpips=0.1374 Phi=20
+  G_union K=20 c220s0 lpips=0.1374 Phi=20
+  G_union K=20 c220s1 lpips=0.1760 Phi=20
+  G_union K=20 c310s0 lpips=0.2345 Phi=20
+  G_union K=20 c310s1 lpips=0.1506 Phi=20
+  G_union K=20 c440s0 lpips=0.2013 Phi=20
+  G_union K=20 c440s1 lpips=0.2441 Phi=20
+held-G_union-K20: 100%|██████████| 2/2 [00:13<00:00,  6.83s/it]held-G_union-K20: 100%|██████████| 2/2 [00:13<00:00,  6.83s/it]
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | A_compiled | 15 | 16 | 15.0 | 0.2228 |
+| held | A_compiled | 20 | 16 | 20.0 | 0.1553 |
+| held | B_online_j | 15 | 16 | 15.0 | 0.1144 |
+| held | B_online_j | 20 | 16 | 20.0 | 0.0674 |
+| held | C_snapshot | 15 | 16 | 15.0 | 0.0398 |
+| held | C_snapshot | 20 | 16 | 20.0 | 0.0189 |
+| held | D_repair | 15 | 16 | 15.0 | 0.4040 |
+| held | D_repair | 20 | 16 | 20.0 | 0.2826 |
+| held | E_part_t | 15 | 16 | 15.0 | 0.5851 |
+| held | E_part_t | 20 | 16 | 20.0 | 0.3207 |
+| held | F_hybrid | 15 | 16 | 15.0 | 0.8790 |
+| held | F_hybrid | 20 | 16 | 20.0 | 0.8088 |
+| held | G_union | 15 | 16 | 15.0 | 0.2228 |
+| held | G_union | 20 | 16 | 20.0 | 0.1553 |
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | A_compiled | 15 | 16 | 15.0 | 0.2054 |
+| train | A_compiled | 20 | 16 | 20.0 | 0.1252 |
+| train | B_online_j | 15 | 16 | 15.0 | 0.1034 |
+| train | B_online_j | 20 | 16 | 20.0 | 0.0688 |
+| train | C_snapshot | 15 | 16 | 15.0 | 0.0296 |
+| train | C_snapshot | 20 | 16 | 20.0 | 0.0141 |
+| train | D_repair | 15 | 16 | 15.0 | 0.3420 |
+| train | D_repair | 20 | 16 | 20.0 | 0.2447 |
+| train | E_part_t | 15 | 16 | 15.0 | 0.5750 |
+| train | E_part_t | 20 | 16 | 20.0 | 0.3034 |
+| train | F_hybrid | 15 | 16 | 15.0 | 0.8680 |
+| train | F_hybrid | 20 | 16 | 20.0 | 0.8067 |
+| train | G_union | 15 | 16 | 15.0 | 0.2054 |
+| train | G_union | 20 | 16 | 20.0 | 0.1252 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+- train K=15 A_compiled vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 A_compiled vs Taylor-1 rel_drop=-5.289 FAIL
+- train K=15 B_online_j vs Taylor-1 rel_drop=-2.469 FAIL
+- train K=20 B_online_j vs Taylor-1 rel_drop=-2.457 FAIL
+- train K=15 C_snapshot vs Taylor-1 rel_drop=0.007 FAIL
+- train K=20 C_snapshot vs Taylor-1 rel_drop=0.294 PASS
+- train K=15 D_repair vs Taylor-1 rel_drop=-10.472 FAIL
+- train K=20 D_repair vs Taylor-1 rel_drop=-11.290 FAIL
+- train K=15 E_part_t vs Taylor-1 rel_drop=-18.291 FAIL
+- train K=20 E_part_t vs Taylor-1 rel_drop=-14.244 FAIL
+- train K=15 F_hybrid vs Taylor-1 rel_drop=-28.119 FAIL
+- train K=20 F_hybrid vs Taylor-1 rel_drop=-39.524 FAIL
+- train K=15 G_union vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 G_union vs Taylor-1 rel_drop=-5.289 FAIL
+
+- VERDICT A_compiled: FAIL
+- VERDICT B_online_j: FAIL
+- VERDICT C_snapshot: FAIL
+- VERDICT D_repair: FAIL
+- VERDICT E_part_t: FAIL
+- VERDICT F_hybrid: FAIL
+- VERDICT G_union: FAIL
+
+# IVM directions vs uniform Taylor-1
+
+| split | policy | K | N | Φ | LPIPS |
+|---|---|---|---|---|---|
+| held | A_compiled | 15 | 16 | 15.0 | 0.2228 |
+| held | A_compiled | 20 | 16 | 20.0 | 0.1553 |
+| held | B_online_j | 15 | 16 | 15.0 | 0.1144 |
+| held | B_online_j | 20 | 16 | 20.0 | 0.0674 |
+| held | C_snapshot | 15 | 16 | 15.0 | 0.0398 |
+| held | C_snapshot | 20 | 16 | 20.0 | 0.0189 |
+| held | D_repair | 15 | 16 | 15.0 | 0.4040 |
+| held | D_repair | 20 | 16 | 20.0 | 0.2826 |
+| held | E_part_t | 15 | 16 | 15.0 | 0.5851 |
+| held | E_part_t | 20 | 16 | 20.0 | 0.3207 |
+| held | F_hybrid | 15 | 16 | 15.0 | 0.8790 |
+| held | F_hybrid | 20 | 16 | 20.0 | 0.8088 |
+| held | G_union | 15 | 16 | 15.0 | 0.2228 |
+| held | G_union | 20 | 16 | 20.0 | 0.1553 |
+| held | taylor1 | 15 | 16 | 15.0 | 0.0314 |
+| held | taylor1 | 20 | 16 | 20.0 | 0.0294 |
+| train | A_compiled | 15 | 16 | 15.0 | 0.2054 |
+| train | A_compiled | 20 | 16 | 20.0 | 0.1252 |
+| train | B_online_j | 15 | 16 | 15.0 | 0.1034 |
+| train | B_online_j | 20 | 16 | 20.0 | 0.0688 |
+| train | C_snapshot | 15 | 16 | 15.0 | 0.0296 |
+| train | C_snapshot | 20 | 16 | 20.0 | 0.0141 |
+| train | D_repair | 15 | 16 | 15.0 | 0.3420 |
+| train | D_repair | 20 | 16 | 20.0 | 0.2447 |
+| train | E_part_t | 15 | 16 | 15.0 | 0.5750 |
+| train | E_part_t | 20 | 16 | 20.0 | 0.3034 |
+| train | F_hybrid | 15 | 16 | 15.0 | 0.8680 |
+| train | F_hybrid | 20 | 16 | 20.0 | 0.8067 |
+| train | G_union | 15 | 16 | 15.0 | 0.2054 |
+| train | G_union | 20 | 16 | 20.0 | 0.1252 |
+| train | taylor1 | 15 | 16 | 15.0 | 0.0298 |
+| train | taylor1 | 20 | 16 | 20.0 | 0.0199 |
+
+- train K=15 A_compiled vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 A_compiled vs Taylor-1 rel_drop=-5.289 FAIL
+- train K=15 B_online_j vs Taylor-1 rel_drop=-2.469 FAIL
+- train K=20 B_online_j vs Taylor-1 rel_drop=-2.457 FAIL
+- train K=15 C_snapshot vs Taylor-1 rel_drop=0.007 FAIL
+- train K=20 C_snapshot vs Taylor-1 rel_drop=0.294 PASS
+- train K=15 D_repair vs Taylor-1 rel_drop=-10.472 FAIL
+- train K=20 D_repair vs Taylor-1 rel_drop=-11.290 FAIL
+- train K=15 E_part_t vs Taylor-1 rel_drop=-18.291 FAIL
+- train K=20 E_part_t vs Taylor-1 rel_drop=-14.244 FAIL
+- train K=15 F_hybrid vs Taylor-1 rel_drop=-28.119 FAIL
+- train K=20 F_hybrid vs Taylor-1 rel_drop=-39.524 FAIL
+- train K=15 G_union vs Taylor-1 rel_drop=-5.889 FAIL
+- train K=20 G_union vs Taylor-1 rel_drop=-5.289 FAIL
+
+- VERDICT A_compiled: FAIL
+- VERDICT B_online_j: FAIL
+- VERDICT C_snapshot: FAIL
+- VERDICT D_repair: FAIL
+- VERDICT E_part_t: FAIL
+- VERDICT F_hybrid: FAIL
+- VERDICT G_union: FAIL
+
+winners []
+done /root/viewdit/results/gate/ivm/SUMMARY.md
+===== ivm done 2026-09-20T14:49:34+08:00 =====

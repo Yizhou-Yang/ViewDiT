@@ -1,0 +1,122 @@
+===== explore start 2026-09-20T11:21:32+08:00 =====
+loading stack
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Loading model from: /root/miniconda3/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+offline latent SVD
+hook dump
+op-reuse_eps-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K15:  50%|█████     | 1/2 [00:05<00:05,  5.23s/it]op-reuse_eps-K15: 100%|██████████| 2/2 [00:10<00:00,  5.21s/it]op-reuse_eps-K15: 100%|██████████| 2/2 [00:10<00:00,  5.21s/it]
+op-reuse_eps-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K20:  50%|█████     | 1/2 [00:06<00:06,  6.78s/it]op-reuse_eps-K20: 100%|██████████| 2/2 [00:13<00:00,  6.80s/it]op-reuse_eps-K20: 100%|██████████| 2/2 [00:13<00:00,  6.79s/it]
+op-reuse_eps-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K25:  50%|█████     | 1/2 [00:08<00:08,  8.40s/it]op-reuse_eps-K25: 100%|██████████| 2/2 [00:16<00:00,  8.40s/it]op-reuse_eps-K25: 100%|██████████| 2/2 [00:16<00:00,  8.40s/it]
+op-taylor1-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K15:  50%|█████     | 1/2 [00:05<00:05,  5.23s/it]op-taylor1-K15: 100%|██████████| 2/2 [00:10<00:00,  5.23s/it]op-taylor1-K15: 100%|██████████| 2/2 [00:10<00:00,  5.23s/it]
+op-taylor1-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K20:  50%|█████     | 1/2 [00:06<00:06,  6.82s/it]op-taylor1-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]op-taylor1-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]
+op-taylor1-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K25:  50%|█████     | 1/2 [00:08<00:08,  8.42s/it]op-taylor1-K25: 100%|██████████| 2/2 [00:16<00:00,  8.41s/it]op-taylor1-K25: 100%|██████████| 2/2 [00:16<00:00,  8.41s/it]
+op-taylor2-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K15:  50%|█████     | 1/2 [00:05<00:05,  5.24s/it]op-taylor2-K15: 100%|██████████| 2/2 [00:10<00:00,  5.23s/it]op-taylor2-K15: 100%|██████████| 2/2 [00:10<00:00,  5.23s/it]
+op-taylor2-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K20:  50%|█████     | 1/2 [00:06<00:06,  6.82s/it]op-taylor2-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]op-taylor2-K20: 100%|██████████| 2/2 [00:13<00:00,  6.82s/it]
+op-taylor2-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K25:  50%|█████     | 1/2 [00:08<00:08,  8.41s/it]op-taylor2-K25: 100%|██████████| 2/2 [00:16<00:00,  8.41s/it]op-taylor2-K25: 100%|██████████| 2/2 [00:16<00:00,  8.41s/it]
+op-residual-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K15:  50%|█████     | 1/2 [00:05<00:05,  5.30s/it]op-residual-K15: 100%|██████████| 2/2 [00:10<00:00,  5.30s/it]op-residual-K15: 100%|██████████| 2/2 [00:10<00:00,  5.30s/it]
+op-teacache-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K15:  50%|█████     | 1/2 [00:05<00:05,  5.16s/it]op-teacache-K15: 100%|██████████| 2/2 [00:10<00:00,  5.20s/it]op-teacache-K15: 100%|██████████| 2/2 [00:10<00:00,  5.19s/it]
+op-residual-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K20:  50%|█████     | 1/2 [00:06<00:06,  6.87s/it]op-residual-K20: 100%|██████████| 2/2 [00:13<00:00,  6.88s/it]op-residual-K20: 100%|██████████| 2/2 [00:13<00:00,  6.88s/it]
+op-teacache-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K20:  50%|█████     | 1/2 [00:07<00:07,  7.27s/it]op-teacache-K20: 100%|██████████| 2/2 [00:14<00:00,  7.29s/it]op-teacache-K20: 100%|██████████| 2/2 [00:14<00:00,  7.29s/it]
+op-residual-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K25:  50%|█████     | 1/2 [00:08<00:08,  8.46s/it]op-residual-K25: 100%|██████████| 2/2 [00:16<00:00,  8.45s/it]op-residual-K25: 100%|██████████| 2/2 [00:16<00:00,  8.45s/it]
+op-teacache-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K25:  50%|█████     | 1/2 [00:08<00:08,  8.39s/it]op-teacache-K25: 100%|██████████| 2/2 [00:16<00:00,  8.32s/it]op-teacache-K25: 100%|██████████| 2/2 [00:16<00:00,  8.33s/it]
+ind-dx-K15:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K15:  50%|█████     | 1/2 [00:04<00:04,  4.41s/it]ind-dx-K15: 100%|██████████| 2/2 [00:09<00:00,  4.56s/it]ind-dx-K15: 100%|██████████| 2/2 [00:09<00:00,  4.54s/it]
+ind-entropy-K15:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K15:  50%|█████     | 1/2 [00:01<00:01,  1.39s/it]ind-entropy-K15: 100%|██████████| 2/2 [00:02<00:00,  1.39s/it]ind-entropy-K15: 100%|██████████| 2/2 [00:02<00:00,  1.39s/it]
+ind-dx-K20:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K20:  50%|█████     | 1/2 [00:05<00:05,  5.87s/it]ind-dx-K20: 100%|██████████| 2/2 [00:12<00:00,  6.29s/it]ind-dx-K20: 100%|██████████| 2/2 [00:12<00:00,  6.22s/it]
+ind-entropy-K20:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K20:  50%|█████     | 1/2 [00:01<00:01,  1.41s/it]ind-entropy-K20: 100%|██████████| 2/2 [00:02<00:00,  1.40s/it]ind-entropy-K20: 100%|██████████| 2/2 [00:02<00:00,  1.40s/it]
+ind-dx-K25:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K25:  50%|█████     | 1/2 [00:07<00:07,  7.27s/it]ind-dx-K25: 100%|██████████| 2/2 [00:14<00:00,  7.47s/it]ind-dx-K25: 100%|██████████| 2/2 [00:14<00:00,  7.44s/it]
+ind-entropy-K25:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K25:  50%|█████     | 1/2 [00:01<00:01,  1.40s/it]ind-entropy-K25: 100%|██████████| 2/2 [00:02<00:00,  1.40s/it]ind-entropy-K25: 100%|██████████| 2/2 [00:02<00:00,  1.40s/it]
+deep_c14_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c14_e2:  50%|█████     | 1/2 [00:12<00:12, 12.37s/it]deep_c14_e2: 100%|██████████| 2/2 [00:24<00:00, 12.37s/it]deep_c14_e2: 100%|██████████| 2/2 [00:24<00:00, 12.37s/it]
+deep_c14_e3:   0%|          | 0/2 [00:00<?, ?it/s]deep_c14_e3:  50%|█████     | 1/2 [00:11<00:11, 11.11s/it]deep_c14_e3: 100%|██████████| 2/2 [00:22<00:00, 11.11s/it]deep_c14_e3: 100%|██████████| 2/2 [00:22<00:00, 11.11s/it]
+deep_c7_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c7_e2:  50%|█████     | 1/2 [00:10<00:10, 10.42s/it]deep_c7_e2: 100%|██████████| 2/2 [00:20<00:00, 10.42s/it]deep_c7_e2: 100%|██████████| 2/2 [00:20<00:00, 10.42s/it]
+deep_c21_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c21_e2:  50%|█████     | 1/2 [00:14<00:14, 14.34s/it]deep_c21_e2: 100%|██████████| 2/2 [00:28<00:00, 14.34s/it]deep_c21_e2: 100%|██████████| 2/2 [00:28<00:00, 14.34s/it]
+toca_0.25:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.25:  50%|█████     | 1/2 [00:16<00:16, 16.33s/it]toca_0.25: 100%|██████████| 2/2 [00:32<00:00, 16.32s/it]toca_0.25: 100%|██████████| 2/2 [00:32<00:00, 16.32s/it]
+toca_0.5:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.5:  50%|█████     | 1/2 [00:16<00:16, 16.31s/it]toca_0.5: 100%|██████████| 2/2 [00:32<00:00, 16.32s/it]toca_0.5: 100%|██████████| 2/2 [00:32<00:00, 16.32s/it]
+toca_0.75:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.75:  50%|█████     | 1/2 [00:16<00:16, 16.31s/it]toca_0.75: 100%|██████████| 2/2 [00:32<00:00, 16.32s/it]toca_0.75: 100%|██████████| 2/2 [00:32<00:00, 16.32s/it]
+gamma_t
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/gate/run_explore.py", line 977, in <module>
+    main()
+  File "/root/viewdit/experiments/gate/run_explore.py", line 745, in main
+    write_json(out / "gamma.json", payload)
+TypeError: unsupported operand type(s) for /: 'dict' and 'str'
+===== explore start 2026-09-20T11:33:04+08:00 =====
+loading stack
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Loading model from: /root/miniconda3/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+op-reuse_eps-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K15: 100%|██████████| 2/2 [00:00<00:00, 11214.72it/s]
+op-reuse_eps-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K20: 100%|██████████| 2/2 [00:00<00:00, 5940.94it/s]
+op-reuse_eps-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K25: 100%|██████████| 2/2 [00:00<00:00, 3724.96it/s]
+op-taylor1-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K15: 100%|██████████| 2/2 [00:00<00:00, 3153.61it/s]
+op-taylor1-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K20: 100%|██████████| 2/2 [00:00<00:00, 2504.81it/s]
+op-taylor1-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K25: 100%|██████████| 2/2 [00:00<00:00, 2019.89it/s]
+op-taylor2-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K15: 100%|██████████| 2/2 [00:00<00:00, 1836.39it/s]
+op-taylor2-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K20: 100%|██████████| 2/2 [00:00<00:00, 1562.42it/s]
+op-taylor2-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K25: 100%|██████████| 2/2 [00:00<00:00, 1371.58it/s]
+op-residual-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K15: 100%|██████████| 2/2 [00:00<00:00, 1287.39it/s]
+op-teacache-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K15: 100%|██████████| 2/2 [00:00<00:00, 1144.73it/s]
+op-residual-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K20: 100%|██████████| 2/2 [00:00<00:00, 1024.38it/s]
+op-teacache-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K20: 100%|██████████| 2/2 [00:00<00:00, 955.10it/s]
+op-residual-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K25: 100%|██████████| 2/2 [00:00<00:00, 870.91it/s]
+op-teacache-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K25: 100%|██████████| 2/2 [00:00<00:00, 812.46it/s]
+ind-dx-K15:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K15: 100%|██████████| 2/2 [00:00<00:00, 929.90it/s]
+ind-entropy-K15:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K15: 100%|██████████| 2/2 [00:00<00:00, 872.81it/s]
+ind-dx-K20:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K20: 100%|██████████| 2/2 [00:00<00:00, 806.44it/s]
+ind-entropy-K20:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K20: 100%|██████████| 2/2 [00:00<00:00, 740.59it/s]
+ind-dx-K25:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K25: 100%|██████████| 2/2 [00:00<00:00, 709.04it/s]
+ind-entropy-K25:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K25: 100%|██████████| 2/2 [00:00<00:00, 666.13it/s]
+deep_c14_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c14_e2: 100%|██████████| 2/2 [00:00<00:00, 683.39it/s]
+deep_c14_e3:   0%|          | 0/2 [00:00<?, ?it/s]deep_c14_e3: 100%|██████████| 2/2 [00:00<00:00, 650.58it/s]
+deep_c7_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c7_e2: 100%|██████████| 2/2 [00:00<00:00, 616.76it/s]
+deep_c21_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c21_e2: 100%|██████████| 2/2 [00:00<00:00, 593.55it/s]
+toca_0.25:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.25: 100%|██████████| 2/2 [00:00<00:00, 586.74it/s]
+toca_0.5:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.5: 100%|██████████| 2/2 [00:00<00:00, 549.21it/s]
+toca_0.75:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.75: 100%|██████████| 2/2 [00:00<00:00, 532.37it/s]
+class invalidation
+===== explore start 2026-09-20T11:34:02+08:00 =====
+loading stack
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Loading model from: /root/miniconda3/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+op-reuse_eps-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K15: 100%|██████████| 2/2 [00:00<00:00, 11305.40it/s]
+op-reuse_eps-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K20: 100%|██████████| 2/2 [00:00<00:00, 5940.94it/s]
+op-reuse_eps-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-reuse_eps-K25: 100%|██████████| 2/2 [00:00<00:00, 3771.86it/s]
+op-taylor1-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K15: 100%|██████████| 2/2 [00:00<00:00, 3138.27it/s]
+op-taylor1-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K20: 100%|██████████| 2/2 [00:00<00:00, 2450.66it/s]
+op-taylor1-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor1-K25: 100%|██████████| 2/2 [00:00<00:00, 1999.19it/s]
+op-taylor2-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K15: 100%|██████████| 2/2 [00:00<00:00, 1809.84it/s]
+op-taylor2-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K20: 100%|██████████| 2/2 [00:00<00:00, 1558.35it/s]
+op-taylor2-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-taylor2-K25: 100%|██████████| 2/2 [00:00<00:00, 1379.25it/s]
+op-residual-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K15: 100%|██████████| 2/2 [00:00<00:00, 1235.80it/s]
+op-teacache-K15:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K15: 100%|██████████| 2/2 [00:00<00:00, 1141.31it/s]
+op-residual-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K20: 100%|██████████| 2/2 [00:00<00:00, 1042.58it/s]
+op-teacache-K20:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K20: 100%|██████████| 2/2 [00:00<00:00, 967.66it/s]
+op-residual-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-residual-K25: 100%|██████████| 2/2 [00:00<00:00, 872.27it/s]
+op-teacache-K25:   0%|          | 0/2 [00:00<?, ?it/s]op-teacache-K25: 100%|██████████| 2/2 [00:00<00:00, 823.54it/s]
+ind-dx-K15:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K15: 100%|██████████| 2/2 [00:00<00:00, 916.29it/s]
+ind-entropy-K15:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K15: 100%|██████████| 2/2 [00:00<00:00, 869.74it/s]
+ind-dx-K20:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K20: 100%|██████████| 2/2 [00:00<00:00, 815.85it/s]
+ind-entropy-K20:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K20: 100%|██████████| 2/2 [00:00<00:00, 760.87it/s]
+ind-dx-K25:   0%|          | 0/2 [00:00<?, ?it/s]ind-dx-K25: 100%|██████████| 2/2 [00:00<00:00, 715.26it/s]
+ind-entropy-K25:   0%|          | 0/2 [00:00<?, ?it/s]ind-entropy-K25: 100%|██████████| 2/2 [00:00<00:00, 676.39it/s]
+deep_c14_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c14_e2: 100%|██████████| 2/2 [00:00<00:00, 680.73it/s]
+deep_c14_e3:   0%|          | 0/2 [00:00<?, ?it/s]deep_c14_e3: 100%|██████████| 2/2 [00:00<00:00, 655.51it/s]
+deep_c7_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c7_e2: 100%|██████████| 2/2 [00:00<00:00, 621.79it/s]
+deep_c21_e2:   0%|          | 0/2 [00:00<?, ?it/s]deep_c21_e2: 100%|██████████| 2/2 [00:00<00:00, 588.92it/s]
+toca_0.25:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.25: 100%|██████████| 2/2 [00:00<00:00, 582.14it/s]
+toca_0.5:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.5: 100%|██████████| 2/2 [00:00<00:00, 552.21it/s]
+toca_0.75:   0%|          | 0/2 [00:00<?, ?it/s]toca_0.75: 100%|██████████| 2/2 [00:00<00:00, 533.66it/s]
+class invalidation
+repair latency
+explore done /root/viewdit/results/gate/explore/SUMMARY.md
+===== explore done 2026-09-20T11:36:13+08:00 =====

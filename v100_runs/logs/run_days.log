@@ -1,0 +1,516 @@
+===== days start 2026-09-20T10:23:51+08:00 =====
+[setup 2026-09-20T10:23:51+08:00] begin
+Sun Sep 20 10:23:51 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.158.01             Driver Version: 570.158.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-SXM2-32GB           On  |   00000000:00:08.0 Off |                    0 |
+| N/A   47C    P0             27W /  300W |       0MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[setup 2026-09-20T10:23:51+08:00] conda already at /root/miniconda3
+[setup 2026-09-20T10:23:51+08:00] python env already marked ok
+[setup 2026-09-20T10:23:51+08:00] env ready
+GPU queue released
+loading DiT-XL/2 + VAE
+The cache for model files in Transformers v4.22.0 has been updated. Migrating your old cache. This is a one-time only operation. You can interrupt this and resume the migration later on by calling `transformers.utils.move_cache()`.
+0it [00:00, ?it/s]0it [00:00, ?it/s]
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/gate/run_gate.py", line 847, in <module>
+    main()
+  File "/root/viewdit/experiments/gate/run_gate.py", line 637, in main
+    x, ncomp, _ = run_closed_loop(cache, diffusion, z, y, cfg, decide_full)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 237, in run_closed_loop
+    out = diffusion.ddim_sample(
+  File "/root/viewdit/third_party/DiT/diffusion/gaussian_diffusion.py", line 528, in ddim_sample
+    out = self.p_mean_variance(
+  File "/root/viewdit/third_party/DiT/diffusion/respace.py", line 92, in p_mean_variance
+    return super().p_mean_variance(self._wrap_model(model), *args, **kwargs)
+  File "/root/viewdit/third_party/DiT/diffusion/gaussian_diffusion.py", line 279, in p_mean_variance
+    model_output = model(x, t, **model_kwargs)
+  File "/root/viewdit/third_party/DiT/diffusion/respace.py", line 129, in __call__
+    return self.model(x, new_ts, **kwargs)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 232, in model_fn
+    out, _, _ = cache.forward_with_cfg(
+  File "/root/viewdit/experiments/gate/run_gate.py", line 114, in forward_with_cfg
+    x_tok, c, mod = self._embed(x, t, y)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 94, in _embed
+    c = m.t_embedder(t) + m.y_embedder(y, train=False)
+RuntimeError: The size of tensor a (8) must match the size of tensor b (16) at non-singleton dimension 0
+===== days start 2026-09-20T10:26:41+08:00 =====
+[setup 2026-09-20T10:26:41+08:00] begin
+Sun Sep 20 10:26:41 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.158.01             Driver Version: 570.158.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-SXM2-32GB           On  |   00000000:00:08.0 Off |                    0 |
+| N/A   47C    P0             27W /  300W |       0MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[setup 2026-09-20T10:26:41+08:00] conda already at /root/miniconda3
+[setup 2026-09-20T10:26:41+08:00] python env already marked ok
+[setup 2026-09-20T10:26:41+08:00] env ready
+GPU queue released
+loading DiT-XL/2 + VAE
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/gate/run_gate.py", line 847, in <module>
+    main()
+  File "/root/viewdit/experiments/gate/run_gate.py", line 637, in main
+    x, ncomp, _ = run_closed_loop(cache, diffusion, z, y, cfg, decide_full)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 237, in run_closed_loop
+    out = diffusion.ddim_sample(
+  File "/root/viewdit/third_party/DiT/diffusion/gaussian_diffusion.py", line 528, in ddim_sample
+    out = self.p_mean_variance(
+  File "/root/viewdit/third_party/DiT/diffusion/respace.py", line 92, in p_mean_variance
+    return super().p_mean_variance(self._wrap_model(model), *args, **kwargs)
+  File "/root/viewdit/third_party/DiT/diffusion/gaussian_diffusion.py", line 279, in p_mean_variance
+    model_output = model(x, t, **model_kwargs)
+  File "/root/viewdit/third_party/DiT/diffusion/respace.py", line 129, in __call__
+    return self.model(x, new_ts, **kwargs)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 232, in model_fn
+    out, _, _ = cache.forward_with_cfg(
+  File "/root/viewdit/experiments/gate/run_gate.py", line 114, in forward_with_cfg
+    x_tok, c, mod = self._embed(x, t, y)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 94, in _embed
+    c = m.t_embedder(t) + m.y_embedder(y, train=False)
+RuntimeError: The size of tensor a (8) must match the size of tensor b (16) at non-singleton dimension 0
+===== days start 2026-09-20T10:29:11+08:00 =====
+[setup 2026-09-20T10:29:11+08:00] begin
+Sun Sep 20 10:29:11 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.158.01             Driver Version: 570.158.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-SXM2-32GB           On  |   00000000:00:08.0 Off |                    0 |
+| N/A   47C    P0             27W /  300W |       0MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[setup 2026-09-20T10:29:11+08:00] conda already at /root/miniconda3
+[setup 2026-09-20T10:29:11+08:00] python env already marked ok
+[setup 2026-09-20T10:29:11+08:00] env ready
+GPU queue released
+loading DiT-XL/2 + VAE
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/gate/run_gate.py", line 847, in <module>
+    main()
+  File "/root/viewdit/experiments/gate/run_gate.py", line 637, in main
+    x, ncomp, _ = run_closed_loop(cache, diffusion, z, y, cfg, decide_full)
+  File "/root/miniconda3/lib/python3.10/site-packages/torch/utils/_contextlib.py", line 116, in decorate_context
+    return func(*args, **kwargs)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 237, in run_closed_loop
+    out = diffusion.ddim_sample(
+  File "/root/viewdit/third_party/DiT/diffusion/gaussian_diffusion.py", line 528, in ddim_sample
+    out = self.p_mean_variance(
+  File "/root/viewdit/third_party/DiT/diffusion/respace.py", line 92, in p_mean_variance
+    return super().p_mean_variance(self._wrap_model(model), *args, **kwargs)
+  File "/root/viewdit/third_party/DiT/diffusion/gaussian_diffusion.py", line 279, in p_mean_variance
+    model_output = model(x, t, **model_kwargs)
+  File "/root/viewdit/third_party/DiT/diffusion/respace.py", line 129, in __call__
+    return self.model(x, new_ts, **kwargs)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 232, in model_fn
+    out, _, _ = cache.forward_with_cfg(
+  File "/root/viewdit/experiments/gate/run_gate.py", line 114, in forward_with_cfg
+    x_tok, c, mod = self._embed(x, t, y)
+  File "/root/viewdit/experiments/gate/run_gate.py", line 94, in _embed
+    c = m.t_embedder(t) + m.y_embedder(y, train=False)
+RuntimeError: The size of tensor a (8) must match the size of tensor b (16) at non-singleton dimension 0
+===== days start 2026-09-20T10:30:53+08:00 =====
+[setup 2026-09-20T10:30:53+08:00] begin
+Sun Sep 20 10:30:53 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.158.01             Driver Version: 570.158.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-SXM2-32GB           On  |   00000000:00:08.0 Off |                    0 |
+| N/A   47C    P0             27W /  300W |       0MiB /  32768MiB |      0%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[setup 2026-09-20T10:30:53+08:00] conda already at /root/miniconda3
+[setup 2026-09-20T10:30:53+08:00] python env already marked ok
+[setup 2026-09-20T10:30:53+08:00] env ready
+GPU queue released
+loading DiT-XL/2 + VAE
+smoke 16.7s for 8 images
+dump-train:   0%|          | 0/8 [00:00<?, ?it/s]dump-train:  12%|█▎        | 1/8 [00:16<01:53, 16.27s/it]dump-train:  25%|██▌       | 2/8 [00:32<01:37, 16.30s/it]dump-train:  38%|███▊      | 3/8 [00:48<01:21, 16.32s/it]dump-train:  50%|█████     | 4/8 [01:05<01:05, 16.32s/it]dump-train:  62%|██████▎   | 5/8 [01:21<00:48, 16.33s/it]dump-train:  75%|███████▌  | 6/8 [01:37<00:32, 16.33s/it]dump-train:  88%|████████▊ | 7/8 [01:54<00:16, 16.34s/it]dump-train: 100%|██████████| 8/8 [02:10<00:00, 16.34s/it]dump-train: 100%|██████████| 8/8 [02:10<00:00, 16.33s/it]
+dump-held:   0%|          | 0/4 [00:00<?, ?it/s]dump-held:  25%|██▌       | 1/4 [00:16<00:48, 16.33s/it]dump-held:  50%|█████     | 2/4 [00:32<00:32, 16.34s/it]dump-held:  75%|███████▌  | 3/4 [00:49<00:16, 16.35s/it]dump-held: 100%|██████████| 4/4 [01:05<00:00, 16.35s/it]dump-held: 100%|██████████| 4/4 [01:05<00:00, 16.35s/it]
+calibrated deltas {10: 0.12206705418775088, 15: 0.06339606613680861, 20: 0.0509585339491897, 25: 0.0329250282016383, 30: 0.0212733255466019}
+train-uniform-K10:   0%|          | 0/8 [00:00<?, ?it/s]Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Downloading: "https://download.pytorch.org/models/alexnet-owt-7be5be79.pth" to /root/.cache/torch/hub/checkpoints/alexnet-owt-7be5be79.pth
+
+  0%|          | 0.00/233M [00:00<?, ?B/s][A
+  0%|          | 128k/233M [00:00<17:21, 235kB/s][A
+  0%|          | 256k/233M [00:01<17:10, 237kB/s][A
+  0%|          | 512k/233M [00:01<07:27, 544kB/s][A
+  0%|          | 640k/233M [00:01<08:40, 468kB/s][A
+  0%|          | 896k/233M [00:01<05:29, 740kB/s][A
+  0%|          | 1.12M/233M [00:01<03:57, 1.02MB/s][A
+  1%|          | 2.25M/233M [00:01<01:24, 2.87MB/s][A
+  1%|          | 2.75M/233M [00:02<01:47, 2.25MB/s][A
+  2%|▏         | 3.62M/233M [00:02<01:11, 3.36MB/s][A
+  2%|▏         | 5.00M/233M [00:02<00:44, 5.43MB/s][A
+  3%|▎         | 5.88M/233M [00:02<00:41, 5.80MB/s][A
+  3%|▎         | 6.62M/233M [00:03<01:16, 3.11MB/s][A
+  4%|▍         | 9.38M/233M [00:03<00:53, 4.39MB/s][A
+  5%|▌         | 11.9M/233M [00:03<00:35, 6.45MB/s][A
+  5%|▌         | 12.8M/233M [00:03<00:36, 6.28MB/s][A
+  6%|▌         | 13.6M/233M [00:04<00:45, 5.01MB/s][A
+  6%|▋         | 15.0M/233M [00:04<00:36, 6.28MB/s][A
+  7%|▋         | 15.9M/233M [00:04<00:33, 6.73MB/s][A
+  7%|▋         | 16.9M/233M [00:04<00:30, 7.38MB/s][A
+  8%|▊         | 17.9M/233M [00:05<00:54, 4.13MB/s][A
+  9%|▊         | 20.1M/233M [00:05<00:49, 4.50MB/s][A
+  9%|▉         | 21.5M/233M [00:05<00:39, 5.61MB/s][A
+ 10%|▉         | 23.1M/233M [00:06<00:45, 4.84MB/s][A
+ 10%|█         | 23.9M/233M [00:06<00:50, 4.36MB/s][A
+ 11%|█         | 26.1M/233M [00:06<00:47, 4.62MB/s][A
+ 12%|█▏        | 27.5M/233M [00:07<00:38, 5.64MB/s][A
+ 12%|█▏        | 28.8M/233M [00:07<00:32, 6.62MB/s][A
+ 13%|█▎        | 29.8M/233M [00:07<00:43, 4.91MB/s][A
+ 13%|█▎        | 31.0M/233M [00:07<00:35, 6.00MB/s][A
+ 14%|█▍        | 32.1M/233M [00:07<00:30, 6.90MB/s][A
+ 14%|█▍        | 33.1M/233M [00:07<00:28, 7.24MB/s][A
+ 15%|█▍        | 34.1M/233M [00:08<00:39, 5.23MB/s][A
+ 15%|█▌        | 35.4M/233M [00:08<00:31, 6.48MB/s][A
+ 16%|█▌        | 36.6M/233M [00:08<00:26, 7.63MB/s][A
+ 16%|█▌        | 37.6M/233M [00:08<00:26, 7.74MB/s][A
+ 17%|█▋        | 38.6M/233M [00:09<00:50, 4.02MB/s][A
+ 18%|█▊        | 41.4M/233M [00:09<00:41, 4.89MB/s][A
+ 18%|█▊        | 43.0M/233M [00:09<00:32, 6.17MB/s][A
+ 19%|█▉        | 44.1M/233M [00:09<00:28, 6.89MB/s][A
+ 19%|█▉        | 45.1M/233M [00:10<00:38, 5.07MB/s][A
+ 20%|█▉        | 46.2M/233M [00:10<00:32, 5.98MB/s][A
+ 20%|██        | 47.5M/233M [00:10<00:27, 7.04MB/s][A
+ 21%|██        | 48.5M/233M [00:10<00:26, 7.33MB/s][A
+ 21%|██▏       | 49.6M/233M [00:10<00:23, 8.21MB/s][A
+ 22%|██▏       | 50.6M/233M [00:11<00:43, 4.39MB/s][A
+ 23%|██▎       | 52.9M/233M [00:11<00:48, 3.89MB/s][A
+ 24%|██▍       | 55.9M/233M [00:12<00:31, 5.87MB/s][A
+ 24%|██▍       | 56.8M/233M [00:12<00:36, 5.01MB/s][A
+ 25%|██▍       | 58.2M/233M [00:12<00:29, 6.20MB/s][A
+ 25%|██▌       | 59.2M/233M [00:12<00:28, 6.34MB/s][A
+ 26%|██▌       | 60.1M/233M [00:13<00:36, 4.99MB/s][A
+ 26%|██▋       | 61.4M/233M [00:13<00:29, 6.10MB/s][A
+ 27%|██▋       | 62.5M/233M [00:13<00:27, 6.61MB/s][A
+ 27%|██▋       | 63.8M/233M [00:13<00:22, 7.72MB/s][A
+ 28%|██▊       | 64.8M/233M [00:13<00:31, 5.55MB/s][A
+ 28%|██▊       | 66.1M/233M [00:13<00:25, 6.88MB/s][A
+ 29%|██▉       | 67.1M/233M [00:13<00:24, 7.10MB/s][A
+ 29%|██▉       | 68.4M/233M [00:14<00:20, 8.27MB/s][A
+ 30%|██▉       | 69.4M/233M [00:14<00:30, 5.72MB/s][A
+ 30%|███       | 70.6M/233M [00:14<00:24, 6.94MB/s][A
+ 31%|███       | 71.6M/233M [00:14<00:23, 7.18MB/s][A
+ 31%|███▏      | 72.9M/233M [00:14<00:20, 8.39MB/s][A
+ 32%|███▏      | 73.9M/233M [00:15<00:29, 5.69MB/s][A
+ 32%|███▏      | 75.1M/233M [00:15<00:23, 6.95MB/s][A
+ 33%|███▎      | 76.2M/233M [00:15<00:22, 7.29MB/s][A
+ 33%|███▎      | 77.2M/233M [00:15<00:30, 5.37MB/s][A
+ 34%|███▍      | 78.9M/233M [00:15<00:22, 7.21MB/s][A
+ 34%|███▍      | 80.1M/233M [00:15<00:19, 8.32MB/s][A
+ 35%|███▍      | 81.2M/233M [00:15<00:19, 8.27MB/s][A
+ 35%|███▌      | 82.2M/233M [00:16<00:27, 5.75MB/s][A
+ 36%|███▌      | 83.6M/233M [00:16<00:21, 7.19MB/s][A
+ 36%|███▋      | 85.0M/233M [00:16<00:18, 8.48MB/s][A
+ 37%|███▋      | 86.1M/233M [00:16<00:18, 8.38MB/s][A
+ 37%|███▋      | 87.1M/233M [00:17<00:26, 5.80MB/s][A
+ 38%|███▊      | 88.5M/233M [00:17<00:20, 7.22MB/s][A
+ 38%|███▊      | 89.6M/233M [00:17<00:20, 7.45MB/s][A
+ 39%|███▉      | 91.0M/233M [00:17<00:17, 8.76MB/s][A
+ 40%|███▉      | 92.1M/233M [00:17<00:24, 6.07MB/s][A
+ 40%|████      | 93.5M/233M [00:17<00:19, 7.44MB/s][A
+ 41%|████      | 94.5M/233M [00:17<00:19, 7.52MB/s][A
+ 41%|████      | 95.5M/233M [00:18<00:36, 3.98MB/s][A
+ 42%|████▏     | 98.5M/233M [00:19<00:28, 5.00MB/s][A
+ 43%|████▎     | 99.9M/233M [00:19<00:23, 5.95MB/s][A
+ 43%|████▎     | 101M/233M [00:19<00:19, 7.06MB/s] [A
+ 44%|████▍     | 102M/233M [00:19<00:19, 7.20MB/s][A
+ 44%|████▍     | 103M/233M [00:19<00:24, 5.46MB/s][A
+ 45%|████▍     | 105M/233M [00:19<00:20, 6.72MB/s][A
+ 45%|████▌     | 106M/233M [00:20<00:19, 7.01MB/s][A
+ 46%|████▌     | 107M/233M [00:20<00:22, 5.88MB/s][A
+ 47%|████▋     | 109M/233M [00:20<00:17, 7.31MB/s][A
+ 47%|████▋     | 110M/233M [00:20<00:16, 7.83MB/s][A
+ 48%|████▊     | 111M/233M [00:20<00:15, 8.21MB/s][A
+ 48%|████▊     | 112M/233M [00:21<00:21, 5.82MB/s][A
+ 48%|████▊     | 113M/233M [00:21<00:25, 4.91MB/s][A
+ 49%|████▉     | 115M/233M [00:21<00:19, 6.51MB/s][A
+ 50%|████▉     | 116M/233M [00:22<00:43, 2.80MB/s][A
+ 50%|████▉     | 116M/233M [00:22<00:42, 2.86MB/s][A
+ 51%|█████     | 118M/233M [00:23<00:37, 3.20MB/s][A
+ 51%|█████▏    | 120M/233M [00:23<00:27, 4.35MB/s][A
+ 52%|█████▏    | 121M/233M [00:23<00:22, 5.19MB/s][A
+ 52%|█████▏    | 122M/233M [00:23<00:20, 5.71MB/s][A
+ 53%|█████▎    | 123M/233M [00:23<00:23, 4.82MB/s][A
+ 53%|█████▎    | 124M/233M [00:23<00:18, 6.12MB/s][A
+ 54%|█████▍    | 126M/233M [00:24<00:15, 7.38MB/s][A
+ 54%|█████▍    | 127M/233M [00:24<00:14, 7.48MB/s][A
+ 55%|█████▍    | 128M/233M [00:24<00:20, 5.50MB/s][A
+ 55%|█████▌    | 129M/233M [00:24<00:16, 6.67MB/s][A
+ 56%|█████▌    | 131M/233M [00:24<00:14, 7.44MB/s][A
+ 57%|█████▋    | 132M/233M [00:25<00:18, 5.83MB/s][A
+ 57%|█████▋    | 133M/233M [00:25<00:14, 7.05MB/s][A
+ 58%|█████▊    | 135M/233M [00:25<00:13, 7.75MB/s][A
+ 58%|█████▊    | 136M/233M [00:25<00:11, 8.64MB/s][A
+ 59%|█████▉    | 137M/233M [00:25<00:16, 6.00MB/s][A
+ 59%|█████▉    | 138M/233M [00:26<00:13, 7.14MB/s][A
+ 60%|█████▉    | 139M/233M [00:26<00:13, 7.33MB/s][A
+ 60%|██████    | 141M/233M [00:26<00:17, 5.51MB/s][A
+ 61%|██████    | 142M/233M [00:26<00:14, 6.69MB/s][A
+ 61%|██████▏   | 143M/233M [00:26<00:11, 7.87MB/s][A
+ 62%|██████▏   | 144M/233M [00:26<00:11, 7.87MB/s][A
+ 62%|██████▏   | 145M/233M [00:27<00:16, 5.51MB/s][A
+ 63%|██████▎   | 146M/233M [00:27<00:13, 6.71MB/s][A
+ 63%|██████▎   | 148M/233M [00:27<00:12, 7.26MB/s][A
+ 64%|██████▍   | 149M/233M [00:27<00:10, 8.33MB/s][A
+ 64%|██████▍   | 150M/233M [00:27<00:15, 5.71MB/s][A
+ 65%|██████▍   | 151M/233M [00:28<00:12, 6.87MB/s][A
+ 65%|██████▌   | 152M/233M [00:28<00:11, 7.12MB/s][A
+ 66%|██████▌   | 154M/233M [00:28<00:09, 8.83MB/s][A
+ 66%|██████▋   | 155M/233M [00:28<00:13, 6.14MB/s][A
+ 67%|██████▋   | 156M/233M [00:28<00:10, 7.73MB/s][A
+ 67%|██████▋   | 157M/233M [00:28<00:10, 7.64MB/s][A
+ 68%|██████▊   | 158M/233M [00:28<00:08, 9.01MB/s][A
+ 68%|██████▊   | 160M/233M [00:29<00:12, 6.22MB/s][A
+ 69%|██████▉   | 161M/233M [00:29<00:09, 7.78MB/s][A
+ 70%|██████▉   | 162M/233M [00:29<00:09, 7.70MB/s][A
+ 70%|███████   | 164M/233M [00:29<00:08, 9.08MB/s][A
+ 71%|███████   | 165M/233M [00:30<00:11, 6.27MB/s][A
+ 71%|███████   | 166M/233M [00:30<00:09, 7.68MB/s][A
+ 72%|███████▏  | 167M/233M [00:30<00:09, 7.63MB/s][A
+ 72%|███████▏  | 168M/233M [00:30<00:07, 9.03MB/s][A
+ 73%|███████▎  | 170M/233M [00:30<00:10, 6.20MB/s][A
+ 73%|███████▎  | 171M/233M [00:30<00:08, 7.77MB/s][A
+ 74%|███████▍  | 172M/233M [00:30<00:08, 7.80MB/s][A
+ 74%|███████▍  | 174M/233M [00:31<00:06, 9.14MB/s][A
+ 75%|███████▍  | 175M/233M [00:31<00:09, 6.27MB/s][A
+ 76%|███████▌  | 176M/233M [00:31<00:07, 7.63MB/s][A
+ 76%|███████▌  | 177M/233M [00:31<00:07, 7.75MB/s][A
+ 77%|███████▋  | 178M/233M [00:31<00:06, 8.99MB/s][A
+ 77%|███████▋  | 180M/233M [00:32<00:09, 6.21MB/s][A
+ 78%|███████▊  | 181M/233M [00:32<00:07, 7.23MB/s][A
+ 78%|███████▊  | 182M/233M [00:32<00:06, 7.72MB/s][A
+ 79%|███████▊  | 183M/233M [00:33<00:19, 2.67MB/s][A
+ 79%|███████▉  | 185M/233M [00:33<00:12, 4.16MB/s][A
+ 80%|████████  | 187M/233M [00:33<00:09, 5.37MB/s][A
+ 81%|████████  | 188M/233M [00:34<00:10, 4.61MB/s][A
+ 81%|████████  | 189M/233M [00:34<00:08, 5.57MB/s][A
+ 82%|████████▏ | 190M/233M [00:34<00:06, 6.54MB/s][A
+ 82%|████████▏ | 192M/233M [00:34<00:08, 5.11MB/s][A
+ 83%|████████▎ | 193M/233M [00:34<00:06, 6.39MB/s][A
+ 83%|████████▎ | 194M/233M [00:34<00:05, 7.50MB/s][A
+ 84%|████████▍ | 195M/233M [00:35<00:05, 7.61MB/s][A
+ 84%|████████▍ | 196M/233M [00:35<00:08, 4.36MB/s][A
+ 85%|████████▌ | 198M/233M [00:36<00:08, 4.41MB/s][A
+ 86%|████████▌ | 200M/233M [00:36<00:06, 5.46MB/s][A
+ 86%|████████▌ | 201M/233M [00:36<00:05, 6.51MB/s][A
+ 87%|████████▋ | 202M/233M [00:36<00:06, 4.81MB/s][A
+ 87%|████████▋ | 203M/233M [00:36<00:07, 4.07MB/s][A
+ 88%|████████▊ | 205M/233M [00:37<00:06, 4.34MB/s][A
+ 88%|████████▊ | 206M/233M [00:37<00:05, 4.89MB/s][A
+ 89%|████████▉ | 208M/233M [00:38<00:05, 4.70MB/s][A
+ 90%|████████▉ | 209M/233M [00:38<00:04, 5.49MB/s][A
+ 90%|█████████ | 211M/233M [00:38<00:03, 6.55MB/s][A
+ 91%|█████████ | 212M/233M [00:38<00:04, 5.08MB/s][A
+ 91%|█████████▏| 213M/233M [00:38<00:03, 5.97MB/s][A
+ 92%|█████████▏| 214M/233M [00:38<00:03, 6.54MB/s][A
+ 92%|█████████▏| 215M/233M [00:39<00:02, 7.92MB/s][A
+ 93%|█████████▎| 216M/233M [00:39<00:03, 5.68MB/s][A
+ 93%|█████████▎| 217M/233M [00:39<00:02, 6.63MB/s][A
+ 94%|█████████▍| 219M/233M [00:39<00:02, 7.12MB/s][A
+ 94%|█████████▍| 220M/233M [00:39<00:02, 5.21MB/s][A
+ 95%|█████████▍| 221M/233M [00:40<00:02, 6.38MB/s][A
+ 95%|█████████▌| 222M/233M [00:40<00:01, 7.50MB/s][A
+ 96%|█████████▌| 223M/233M [00:40<00:01, 7.72MB/s][A
+ 96%|█████████▌| 224M/233M [00:40<00:02, 4.05MB/s][A
+ 97%|█████████▋| 227M/233M [00:41<00:01, 4.88MB/s][A
+ 98%|█████████▊| 228M/233M [00:41<00:00, 5.75MB/s][A
+ 99%|█████████▊| 230M/233M [00:41<00:00, 6.64MB/s][A
+ 99%|█████████▉| 231M/233M [00:42<00:00, 5.20MB/s][A
+100%|█████████▉| 232M/233M [00:42<00:00, 6.16MB/s][A100%|██████████| 233M/233M [00:42<00:00, 5.79MB/s]
+Loading model from: /root/miniconda3/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+train-uniform-K10:  12%|█▎        | 1/8 [00:47<05:30, 47.24s/it]train-uniform-K10:  25%|██▌       | 2/8 [00:50<02:09, 21.62s/it]train-uniform-K10:  38%|███▊      | 3/8 [00:54<01:07, 13.43s/it]train-uniform-K10:  50%|█████     | 4/8 [00:58<00:38,  9.59s/it]train-uniform-K10:  62%|██████▎   | 5/8 [01:01<00:22,  7.46s/it]train-uniform-K10:  75%|███████▌  | 6/8 [01:05<00:12,  6.18s/it]train-uniform-K10:  88%|████████▊ | 7/8 [01:09<00:05,  5.37s/it]train-uniform-K10: 100%|██████████| 8/8 [01:13<00:00,  4.84s/it]train-uniform-K10: 100%|██████████| 8/8 [01:13<00:00,  9.14s/it]
+train-teacache-K10:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K10:  12%|█▎        | 1/8 [00:03<00:24,  3.46s/it]train-teacache-K10:  25%|██▌       | 2/8 [00:06<00:20,  3.49s/it]train-teacache-K10:  38%|███▊      | 3/8 [00:10<00:17,  3.50s/it]train-teacache-K10:  50%|█████     | 4/8 [00:13<00:13,  3.48s/it]train-teacache-K10:  62%|██████▎   | 5/8 [00:17<00:10,  3.46s/it]train-teacache-K10:  75%|███████▌  | 6/8 [00:20<00:06,  3.46s/it]train-teacache-K10:  88%|████████▊ | 7/8 [00:24<00:03,  3.49s/it]train-teacache-K10: 100%|██████████| 8/8 [00:27<00:00,  3.49s/it]train-teacache-K10: 100%|██████████| 8/8 [00:27<00:00,  3.48s/it]
+train-topk-K10:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K10:  12%|█▎        | 1/8 [00:03<00:26,  3.72s/it]train-topk-K10:  25%|██▌       | 2/8 [00:07<00:22,  3.72s/it]train-topk-K10:  38%|███▊      | 3/8 [00:11<00:18,  3.73s/it]train-topk-K10:  50%|█████     | 4/8 [00:14<00:14,  3.72s/it]train-topk-K10:  62%|██████▎   | 5/8 [00:18<00:11,  3.72s/it]train-topk-K10:  75%|███████▌  | 6/8 [00:22<00:07,  3.72s/it]train-topk-K10:  88%|████████▊ | 7/8 [00:26<00:03,  3.72s/it]train-topk-K10: 100%|██████████| 8/8 [00:29<00:00,  3.73s/it]train-topk-K10: 100%|██████████| 8/8 [00:29<00:00,  3.72s/it]
+train-minmax-K10:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K10:  12%|█▎        | 1/8 [00:03<00:26,  3.79s/it]train-minmax-K10:  25%|██▌       | 2/8 [00:07<00:22,  3.83s/it]train-minmax-K10:  38%|███▊      | 3/8 [00:11<00:19,  3.83s/it]train-minmax-K10:  50%|█████     | 4/8 [00:15<00:15,  3.82s/it]train-minmax-K10:  62%|██████▎   | 5/8 [00:19<00:11,  3.82s/it]train-minmax-K10:  75%|███████▌  | 6/8 [00:22<00:07,  3.84s/it]train-minmax-K10:  88%|████████▊ | 7/8 [00:26<00:03,  3.84s/it]train-minmax-K10: 100%|██████████| 8/8 [00:30<00:00,  3.84s/it]train-minmax-K10: 100%|██████████| 8/8 [00:30<00:00,  3.83s/it]
+train-uniform-K15:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K15:  12%|█▎        | 1/8 [00:05<00:37,  5.29s/it]train-uniform-K15:  25%|██▌       | 2/8 [00:10<00:31,  5.29s/it]train-uniform-K15:  38%|███▊      | 3/8 [00:15<00:26,  5.29s/it]train-uniform-K15:  50%|█████     | 4/8 [00:21<00:21,  5.29s/it]train-uniform-K15:  62%|██████▎   | 5/8 [00:26<00:15,  5.29s/it]train-uniform-K15:  75%|███████▌  | 6/8 [00:31<00:10,  5.29s/it]train-uniform-K15:  88%|████████▊ | 7/8 [00:37<00:05,  5.29s/it]train-uniform-K15: 100%|██████████| 8/8 [00:42<00:00,  5.29s/it]train-uniform-K15: 100%|██████████| 8/8 [00:42<00:00,  5.29s/it]
+train-teacache-K15:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K15:  12%|█▎        | 1/8 [00:05<00:36,  5.17s/it]train-teacache-K15:  25%|██▌       | 2/8 [00:10<00:31,  5.21s/it]train-teacache-K15:  38%|███▊      | 3/8 [00:15<00:26,  5.24s/it]train-teacache-K15:  50%|█████     | 4/8 [00:21<00:21,  5.28s/it]train-teacache-K15:  62%|██████▎   | 5/8 [00:26<00:15,  5.32s/it]train-teacache-K15:  75%|███████▌  | 6/8 [00:31<00:10,  5.24s/it]train-teacache-K15:  88%|████████▊ | 7/8 [00:37<00:05,  5.36s/it]train-teacache-K15: 100%|██████████| 8/8 [00:42<00:00,  5.43s/it]train-teacache-K15: 100%|██████████| 8/8 [00:42<00:00,  5.34s/it]
+train-topk-K15:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K15:  12%|█▎        | 1/8 [00:05<00:37,  5.29s/it]train-topk-K15:  25%|██▌       | 2/8 [00:10<00:31,  5.29s/it]train-topk-K15:  38%|███▊      | 3/8 [00:15<00:26,  5.29s/it]train-topk-K15:  50%|█████     | 4/8 [00:21<00:21,  5.30s/it]train-topk-K15:  62%|██████▎   | 5/8 [00:26<00:15,  5.30s/it]train-topk-K15:  75%|███████▌  | 6/8 [00:31<00:10,  5.30s/it]train-topk-K15:  88%|████████▊ | 7/8 [00:37<00:05,  5.30s/it]train-topk-K15: 100%|██████████| 8/8 [00:42<00:00,  5.30s/it]train-topk-K15: 100%|██████████| 8/8 [00:42<00:00,  5.30s/it]
+train-minmax-K15:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K15:  12%|█▎        | 1/8 [00:05<00:38,  5.47s/it]train-minmax-K15:  25%|██▌       | 2/8 [00:10<00:32,  5.45s/it]train-minmax-K15:  38%|███▊      | 3/8 [00:16<00:27,  5.42s/it]train-minmax-K15:  50%|█████     | 4/8 [00:21<00:21,  5.44s/it]train-minmax-K15:  62%|██████▎   | 5/8 [00:27<00:16,  5.44s/it]train-minmax-K15:  75%|███████▌  | 6/8 [00:32<00:10,  5.44s/it]train-minmax-K15:  88%|████████▊ | 7/8 [00:38<00:05,  5.46s/it]train-minmax-K15: 100%|██████████| 8/8 [00:43<00:00,  5.46s/it]train-minmax-K15: 100%|██████████| 8/8 [00:43<00:00,  5.45s/it]
+train-uniform-K20:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K20:  12%|█▎        | 1/8 [00:06<00:48,  6.87s/it]train-uniform-K20:  25%|██▌       | 2/8 [00:13<00:41,  6.87s/it]train-uniform-K20:  38%|███▊      | 3/8 [00:20<00:34,  6.87s/it]train-uniform-K20:  50%|█████     | 4/8 [00:27<00:27,  6.87s/it]train-uniform-K20:  62%|██████▎   | 5/8 [00:34<00:20,  6.87s/it]train-uniform-K20:  75%|███████▌  | 6/8 [00:41<00:13,  6.88s/it]train-uniform-K20:  88%|████████▊ | 7/8 [00:48<00:06,  6.87s/it]train-uniform-K20: 100%|██████████| 8/8 [00:54<00:00,  6.88s/it]train-uniform-K20: 100%|██████████| 8/8 [00:54<00:00,  6.87s/it]
+train-teacache-K20:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K20:  12%|█▎        | 1/8 [00:06<00:42,  6.08s/it]train-teacache-K20:  25%|██▌       | 2/8 [00:12<00:36,  6.16s/it]train-teacache-K20:  38%|███▊      | 3/8 [00:18<00:30,  6.19s/it]train-teacache-K20:  50%|█████     | 4/8 [00:24<00:24,  6.25s/it]train-teacache-K20:  62%|██████▎   | 5/8 [00:31<00:18,  6.32s/it]train-teacache-K20:  75%|███████▌  | 6/8 [00:37<00:12,  6.25s/it]train-teacache-K20:  88%|████████▊ | 7/8 [00:43<00:06,  6.32s/it]train-teacache-K20: 100%|██████████| 8/8 [00:50<00:00,  6.42s/it]train-teacache-K20: 100%|██████████| 8/8 [00:50<00:00,  6.31s/it]
+train-topk-K20:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K20:  12%|█▎        | 1/8 [00:06<00:48,  6.88s/it]train-topk-K20:  25%|██▌       | 2/8 [00:13<00:41,  6.89s/it]train-topk-K20:  38%|███▊      | 3/8 [00:20<00:34,  6.89s/it]train-topk-K20:  50%|█████     | 4/8 [00:27<00:27,  6.89s/it]train-topk-K20:  62%|██████▎   | 5/8 [00:34<00:20,  6.89s/it]train-topk-K20:  75%|███████▌  | 6/8 [00:41<00:13,  6.89s/it]train-topk-K20:  88%|████████▊ | 7/8 [00:48<00:06,  6.89s/it]train-topk-K20: 100%|██████████| 8/8 [00:55<00:00,  6.89s/it]train-topk-K20: 100%|██████████| 8/8 [00:55<00:00,  6.89s/it]
+train-minmax-K20:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K20:  12%|█▎        | 1/8 [00:07<00:49,  7.04s/it]train-minmax-K20:  25%|██▌       | 2/8 [00:14<00:42,  7.06s/it]train-minmax-K20:  38%|███▊      | 3/8 [00:21<00:35,  7.04s/it]train-minmax-K20:  50%|█████     | 4/8 [00:28<00:28,  7.05s/it]train-minmax-K20:  62%|██████▎   | 5/8 [00:35<00:21,  7.02s/it]train-minmax-K20:  75%|███████▌  | 6/8 [00:42<00:14,  7.04s/it]train-minmax-K20:  88%|████████▊ | 7/8 [00:49<00:07,  7.04s/it]train-minmax-K20: 100%|██████████| 8/8 [00:56<00:00,  7.03s/it]train-minmax-K20: 100%|██████████| 8/8 [00:56<00:00,  7.04s/it]
+train-uniform-K25:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K25:  12%|█▎        | 1/8 [00:08<00:59,  8.45s/it]train-uniform-K25:  25%|██▌       | 2/8 [00:16<00:50,  8.46s/it]train-uniform-K25:  38%|███▊      | 3/8 [00:25<00:42,  8.45s/it]train-uniform-K25:  50%|█████     | 4/8 [00:33<00:33,  8.46s/it]train-uniform-K25:  62%|██████▎   | 5/8 [00:42<00:25,  8.46s/it]train-uniform-K25:  75%|███████▌  | 6/8 [00:50<00:16,  8.46s/it]train-uniform-K25:  88%|████████▊ | 7/8 [00:59<00:08,  8.46s/it]train-uniform-K25: 100%|██████████| 8/8 [01:07<00:00,  8.46s/it]train-uniform-K25: 100%|██████████| 8/8 [01:07<00:00,  8.46s/it]
+train-teacache-K25:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K25:  12%|█▎        | 1/8 [00:08<00:58,  8.39s/it]train-teacache-K25:  25%|██▌       | 2/8 [00:16<00:49,  8.33s/it]train-teacache-K25:  38%|███▊      | 3/8 [00:24<00:41,  8.31s/it]train-teacache-K25:  50%|█████     | 4/8 [00:33<00:33,  8.40s/it]train-teacache-K25:  62%|██████▎   | 5/8 [00:42<00:25,  8.49s/it]train-teacache-K25:  75%|███████▌  | 6/8 [00:50<00:16,  8.46s/it]train-teacache-K25:  88%|████████▊ | 7/8 [00:59<00:08,  8.53s/it]train-teacache-K25: 100%|██████████| 8/8 [01:07<00:00,  8.60s/it]train-teacache-K25: 100%|██████████| 8/8 [01:07<00:00,  8.50s/it]
+train-topk-K25:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K25:  12%|█▎        | 1/8 [00:08<00:59,  8.46s/it]train-topk-K25:  25%|██▌       | 2/8 [00:16<00:50,  8.46s/it]train-topk-K25:  38%|███▊      | 3/8 [00:25<00:42,  8.46s/it]train-topk-K25:  50%|█████     | 4/8 [00:33<00:33,  8.46s/it]train-topk-K25:  62%|██████▎   | 5/8 [00:42<00:25,  8.47s/it]train-topk-K25:  75%|███████▌  | 6/8 [00:50<00:16,  8.47s/it]train-topk-K25:  88%|████████▊ | 7/8 [00:59<00:08,  8.47s/it]train-topk-K25: 100%|██████████| 8/8 [01:07<00:00,  8.47s/it]train-topk-K25: 100%|██████████| 8/8 [01:07<00:00,  8.47s/it]
+train-minmax-K25:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K25:  12%|█▎        | 1/8 [00:08<01:00,  8.60s/it]train-minmax-K25:  25%|██▌       | 2/8 [00:17<00:51,  8.58s/it]train-minmax-K25:  38%|███▊      | 3/8 [00:25<00:42,  8.59s/it]train-minmax-K25:  50%|█████     | 4/8 [00:34<00:34,  8.61s/it]train-minmax-K25:  62%|██████▎   | 5/8 [00:43<00:25,  8.63s/it]train-minmax-K25:  75%|███████▌  | 6/8 [00:51<00:17,  8.63s/it]train-minmax-K25:  88%|████████▊ | 7/8 [01:00<00:08,  8.62s/it]train-minmax-K25: 100%|██████████| 8/8 [01:08<00:00,  8.62s/it]train-minmax-K25: 100%|██████████| 8/8 [01:08<00:00,  8.62s/it]
+train-uniform-K30:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K30:  12%|█▎        | 1/8 [00:10<01:10, 10.03s/it]train-uniform-K30:  25%|██▌       | 2/8 [00:20<01:00, 10.03s/it]train-uniform-K30:  38%|███▊      | 3/8 [00:30<00:50, 10.03s/it]train-uniform-K30:  50%|█████     | 4/8 [00:40<00:40, 10.03s/it]train-uniform-K30:  62%|██████▎   | 5/8 [00:50<00:30, 10.03s/it]train-uniform-K30:  75%|███████▌  | 6/8 [01:00<00:20, 10.04s/it]train-uniform-K30:  88%|████████▊ | 7/8 [01:10<00:10, 10.04s/it]train-uniform-K30: 100%|██████████| 8/8 [01:20<00:00, 10.04s/it]train-uniform-K30: 100%|██████████| 8/8 [01:20<00:00, 10.04s/it]
+train-teacache-K30:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K30:  12%|█▎        | 1/8 [00:10<01:12, 10.36s/it]train-teacache-K30:  25%|██▌       | 2/8 [00:20<01:01, 10.26s/it]train-teacache-K30:  38%|███▊      | 3/8 [00:30<00:51, 10.25s/it]train-teacache-K30:  50%|█████     | 4/8 [00:41<00:41, 10.36s/it]train-teacache-K30:  62%|██████▎   | 5/8 [00:51<00:31, 10.41s/it]train-teacache-K30:  75%|███████▌  | 6/8 [01:02<00:20, 10.35s/it]train-teacache-K30:  88%|████████▊ | 7/8 [01:12<00:10, 10.45s/it]train-teacache-K30: 100%|██████████| 8/8 [01:23<00:00, 10.48s/it]train-teacache-K30: 100%|██████████| 8/8 [01:23<00:00, 10.41s/it]
+train-topk-K30:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K30:  12%|█▎        | 1/8 [00:10<01:10, 10.04s/it]train-topk-K30:  25%|██▌       | 2/8 [00:20<01:00, 10.04s/it]train-topk-K30:  38%|███▊      | 3/8 [00:30<00:50, 10.04s/it]train-topk-K30:  50%|█████     | 4/8 [00:40<00:40, 10.04s/it]train-topk-K30:  62%|██████▎   | 5/8 [00:50<00:30, 10.05s/it]train-topk-K30:  75%|███████▌  | 6/8 [01:00<00:20, 10.05s/it]train-topk-K30:  88%|████████▊ | 7/8 [01:10<00:10, 10.05s/it]train-topk-K30: 100%|██████████| 8/8 [01:20<00:00, 10.05s/it]train-topk-K30: 100%|██████████| 8/8 [01:20<00:00, 10.05s/it]
+train-minmax-K30:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K30:  12%|█▎        | 1/8 [00:10<01:11, 10.19s/it]train-minmax-K30:  25%|██▌       | 2/8 [00:20<01:01, 10.19s/it]train-minmax-K30:  38%|███▊      | 3/8 [00:30<00:50, 10.17s/it]train-minmax-K30:  50%|█████     | 4/8 [00:40<00:40, 10.18s/it]train-minmax-K30:  62%|██████▎   | 5/8 [00:50<00:30, 10.19s/it]train-minmax-K30:  75%|███████▌  | 6/8 [01:01<00:20, 10.17s/it]train-minmax-K30:  88%|████████▊ | 7/8 [01:11<00:10, 10.18s/it]train-minmax-K30: 100%|██████████| 8/8 [01:21<00:00, 10.18s/it]train-minmax-K30: 100%|██████████| 8/8 [01:21<00:00, 10.18s/it]
+held-uniform-K10:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K10:  25%|██▌       | 1/4 [00:03<00:11,  3.73s/it]held-uniform-K10:  50%|█████     | 2/4 [00:07<00:07,  3.73s/it]held-uniform-K10:  75%|███████▌  | 3/4 [00:11<00:03,  3.73s/it]held-uniform-K10: 100%|██████████| 4/4 [00:14<00:00,  3.73s/it]held-uniform-K10: 100%|██████████| 4/4 [00:14<00:00,  3.73s/it]
+held-teacache-K10:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K10:  25%|██▌       | 1/4 [00:03<00:10,  3.47s/it]held-teacache-K10:  50%|█████     | 2/4 [00:06<00:06,  3.45s/it]held-teacache-K10:  75%|███████▌  | 3/4 [00:10<00:03,  3.46s/it]held-teacache-K10: 100%|██████████| 4/4 [00:13<00:00,  3.47s/it]held-teacache-K10: 100%|██████████| 4/4 [00:13<00:00,  3.46s/it]
+held-topk-K10:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K10:  25%|██▌       | 1/4 [00:03<00:11,  3.74s/it]held-topk-K10:  50%|█████     | 2/4 [00:07<00:07,  3.74s/it]held-topk-K10:  75%|███████▌  | 3/4 [00:11<00:03,  3.73s/it]held-topk-K10: 100%|██████████| 4/4 [00:14<00:00,  3.73s/it]held-topk-K10: 100%|██████████| 4/4 [00:14<00:00,  3.73s/it]
+held-minmax-K10:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K10:  25%|██▌       | 1/4 [00:03<00:11,  3.81s/it]held-minmax-K10:  50%|█████     | 2/4 [00:07<00:07,  3.85s/it]held-minmax-K10:  75%|███████▌  | 3/4 [00:11<00:03,  3.84s/it]held-minmax-K10: 100%|██████████| 4/4 [00:15<00:00,  3.85s/it]held-minmax-K10: 100%|██████████| 4/4 [00:15<00:00,  3.84s/it]
+held-uniform-K15:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K15:  25%|██▌       | 1/4 [00:05<00:15,  5.33s/it]held-uniform-K15:  50%|█████     | 2/4 [00:10<00:10,  5.32s/it]held-uniform-K15:  75%|███████▌  | 3/4 [00:15<00:05,  5.31s/it]held-uniform-K15: 100%|██████████| 4/4 [00:21<00:00,  5.31s/it]held-uniform-K15: 100%|██████████| 4/4 [00:21<00:00,  5.31s/it]
+held-teacache-K15:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K15:  25%|██▌       | 1/4 [00:05<00:15,  5.25s/it]held-teacache-K15:  50%|█████     | 2/4 [00:10<00:10,  5.17s/it]held-teacache-K15:  75%|███████▌  | 3/4 [00:15<00:05,  5.30s/it]held-teacache-K15: 100%|██████████| 4/4 [00:21<00:00,  5.27s/it]held-teacache-K15: 100%|██████████| 4/4 [00:21<00:00,  5.26s/it]
+held-topk-K15:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K15:  25%|██▌       | 1/4 [00:05<00:15,  5.31s/it]held-topk-K15:  50%|█████     | 2/4 [00:10<00:10,  5.31s/it]held-topk-K15:  75%|███████▌  | 3/4 [00:15<00:05,  5.31s/it]held-topk-K15: 100%|██████████| 4/4 [00:21<00:00,  5.31s/it]held-topk-K15: 100%|██████████| 4/4 [00:21<00:00,  5.31s/it]
+held-minmax-K15:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K15:  25%|██▌       | 1/4 [00:05<00:16,  5.48s/it]held-minmax-K15:  50%|█████     | 2/4 [00:10<00:10,  5.43s/it]held-minmax-K15:  75%|███████▌  | 3/4 [00:16<00:05,  5.40s/it]held-minmax-K15: 100%|██████████| 4/4 [00:21<00:00,  5.44s/it]held-minmax-K15: 100%|██████████| 4/4 [00:21<00:00,  5.43s/it]
+held-uniform-K20:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K20:  25%|██▌       | 1/4 [00:06<00:20,  6.88s/it]held-uniform-K20:  50%|█████     | 2/4 [00:13<00:13,  6.89s/it]held-uniform-K20:  75%|███████▌  | 3/4 [00:20<00:06,  6.88s/it]held-uniform-K20: 100%|██████████| 4/4 [00:27<00:00,  6.88s/it]held-uniform-K20: 100%|██████████| 4/4 [00:27<00:00,  6.88s/it]
+held-teacache-K20:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K20:  25%|██▌       | 1/4 [00:06<00:18,  6.25s/it]held-teacache-K20:  50%|█████     | 2/4 [00:12<00:12,  6.05s/it]held-teacache-K20:  75%|███████▌  | 3/4 [00:18<00:06,  6.14s/it]held-teacache-K20: 100%|██████████| 4/4 [00:24<00:00,  6.16s/it]held-teacache-K20: 100%|██████████| 4/4 [00:24<00:00,  6.15s/it]
+held-topk-K20:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K20:  25%|██▌       | 1/4 [00:06<00:20,  6.89s/it]held-topk-K20:  50%|█████     | 2/4 [00:13<00:13,  6.89s/it]held-topk-K20:  75%|███████▌  | 3/4 [00:20<00:06,  6.89s/it]held-topk-K20: 100%|██████████| 4/4 [00:27<00:00,  6.89s/it]held-topk-K20: 100%|██████████| 4/4 [00:27<00:00,  6.89s/it]
+held-minmax-K20:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K20:  25%|██▌       | 1/4 [00:07<00:21,  7.06s/it]held-minmax-K20:  50%|█████     | 2/4 [00:14<00:14,  7.06s/it]held-minmax-K20:  75%|███████▌  | 3/4 [00:21<00:07,  7.05s/it]held-minmax-K20: 100%|██████████| 4/4 [00:28<00:00,  7.05s/it]held-minmax-K20: 100%|██████████| 4/4 [00:28<00:00,  7.05s/it]
+held-uniform-K25:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K25:  25%|██▌       | 1/4 [00:08<00:25,  8.45s/it]held-uniform-K25:  50%|█████     | 2/4 [00:16<00:16,  8.45s/it]held-uniform-K25:  75%|███████▌  | 3/4 [00:25<00:08,  8.46s/it]held-uniform-K25: 100%|██████████| 4/4 [00:33<00:00,  8.46s/it]held-uniform-K25: 100%|██████████| 4/4 [00:33<00:00,  8.46s/it]
+held-teacache-K25:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K25:  25%|██▌       | 1/4 [00:08<00:25,  8.48s/it]held-teacache-K25:  50%|█████     | 2/4 [00:16<00:16,  8.35s/it]held-teacache-K25:  75%|███████▌  | 3/4 [00:25<00:08,  8.40s/it]held-teacache-K25: 100%|██████████| 4/4 [00:33<00:00,  8.42s/it]held-teacache-K25: 100%|██████████| 4/4 [00:33<00:00,  8.41s/it]
+held-topk-K25:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K25:  25%|██▌       | 1/4 [00:08<00:25,  8.46s/it]held-topk-K25:  50%|█████     | 2/4 [00:16<00:16,  8.47s/it]held-topk-K25:  75%|███████▌  | 3/4 [00:25<00:08,  8.47s/it]held-topk-K25: 100%|██████████| 4/4 [00:33<00:00,  8.47s/it]held-topk-K25: 100%|██████████| 4/4 [00:33<00:00,  8.47s/it]
+held-minmax-K25:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K25:  25%|██▌       | 1/4 [00:08<00:25,  8.63s/it]held-minmax-K25:  50%|█████     | 2/4 [00:17<00:17,  8.63s/it]held-minmax-K25:  75%|███████▌  | 3/4 [00:25<00:08,  8.58s/it]held-minmax-K25: 100%|██████████| 4/4 [00:34<00:00,  8.60s/it]held-minmax-K25: 100%|██████████| 4/4 [00:34<00:00,  8.60s/it]
+held-uniform-K30:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K30:  25%|██▌       | 1/4 [00:10<00:30, 10.03s/it]held-uniform-K30:  50%|█████     | 2/4 [00:20<00:20, 10.03s/it]held-uniform-K30:  75%|███████▌  | 3/4 [00:30<00:10, 10.03s/it]held-uniform-K30: 100%|██████████| 4/4 [00:40<00:00, 10.03s/it]held-uniform-K30: 100%|██████████| 4/4 [00:40<00:00, 10.03s/it]
+held-teacache-K30:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K30:  25%|██▌       | 1/4 [00:10<00:31, 10.41s/it]held-teacache-K30:  50%|█████     | 2/4 [00:20<00:20, 10.32s/it]held-teacache-K30:  75%|███████▌  | 3/4 [00:30<00:10, 10.32s/it]held-teacache-K30: 100%|██████████| 4/4 [00:41<00:00, 10.29s/it]held-teacache-K30: 100%|██████████| 4/4 [00:41<00:00, 10.31s/it]
+held-topk-K30:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K30:  25%|██▌       | 1/4 [00:10<00:30, 10.05s/it]held-topk-K30:  50%|█████     | 2/4 [00:20<00:20, 10.05s/it]held-topk-K30:  75%|███████▌  | 3/4 [00:30<00:10, 10.05s/it]held-topk-K30: 100%|██████████| 4/4 [00:40<00:00, 10.05s/it]held-topk-K30: 100%|██████████| 4/4 [00:40<00:00, 10.05s/it]
+held-minmax-K30:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K30:  25%|██▌       | 1/4 [00:10<00:30, 10.21s/it]held-minmax-K30:  50%|█████     | 2/4 [00:20<00:20, 10.20s/it]held-minmax-K30:  75%|███████▌  | 3/4 [00:30<00:10, 10.17s/it]held-minmax-K30: 100%|██████████| 4/4 [00:40<00:00, 10.19s/it]held-minmax-K30: 100%|██████████| 4/4 [00:40<00:00, 10.19s/it]
+beam-K15:   0%|          | 0/16 [00:00<?, ?it/s]/root/viewdit/experiments/gate/run_gate.py:458: UserWarning: Using a target size (torch.Size([4, 32, 32])) that is different to the input size (torch.Size([1, 4, 32, 32])). This will likely lead to incorrect results due to broadcasting. Please ensure they have the same size.
+  l2 = F.mse_loss(x_new, target).item()
+beam-K15:   6%|▋         | 1/16 [00:07<01:57,  7.81s/it]beam-K15:  12%|█▎        | 2/16 [00:16<01:57,  8.42s/it]beam-K15:  19%|█▉        | 3/16 [00:25<01:49,  8.42s/it]===== days start 2026-09-20T11:03:35+08:00 =====
+[setup 2026-09-20T11:03:35+08:00] begin
+Sun Sep 20 11:03:35 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 570.158.01             Driver Version: 570.158.01     CUDA Version: 12.8     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  Tesla V100-SXM2-32GB           On  |   00000000:00:08.0 Off |                    0 |
+| N/A   67C    P0             72W /  300W |       0MiB /  32768MiB |     36%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[setup 2026-09-20T11:03:35+08:00] conda already at /root/miniconda3
+[setup 2026-09-20T11:03:35+08:00] python env already marked ok
+[setup 2026-09-20T11:03:35+08:00] env ready
+GPU queue released
+loading DiT-XL/2 + VAE
+smoke already done
+dump-train:   0%|          | 0/8 [00:00<?, ?it/s]dump-train: 100%|██████████| 8/8 [00:00<00:00, 13590.29it/s]
+dump-held:   0%|          | 0/4 [00:00<?, ?it/s]dump-held: 100%|██████████| 4/4 [00:00<00:00, 14847.09it/s]
+calibrated deltas {10: 0.12206705418775088, 15: 0.06339606613680861, 20: 0.0509585339491897, 25: 0.0329250282016383, 30: 0.0212733255466019}
+train-uniform-K10:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K10: 100%|██████████| 8/8 [00:00<00:00, 11233.49it/s]
+train-teacache-K10:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K10: 100%|██████████| 8/8 [00:00<00:00, 6394.97it/s]
+train-topk-K10:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K10: 100%|██████████| 8/8 [00:00<00:00, 4150.72it/s]
+train-minmax-K10:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K10: 100%|██████████| 8/8 [00:00<00:00, 3189.28it/s]
+train-uniform-K15:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K15: 100%|██████████| 8/8 [00:00<00:00, 2451.38it/s]
+train-teacache-K15:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K15: 100%|██████████| 8/8 [00:00<00:00, 2055.65it/s]
+train-topk-K15:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K15: 100%|██████████| 8/8 [00:00<00:00, 1701.20it/s]
+train-minmax-K15:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K15: 100%|██████████| 8/8 [00:00<00:00, 1501.25it/s]
+train-uniform-K20:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K20: 100%|██████████| 8/8 [00:00<00:00, 1345.89it/s]
+train-teacache-K20:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K20: 100%|██████████| 8/8 [00:00<00:00, 1206.21it/s]
+train-topk-K20:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K20: 100%|██████████| 8/8 [00:00<00:00, 1085.03it/s]
+train-minmax-K20:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K20: 100%|██████████| 8/8 [00:00<00:00, 997.28it/s]
+train-uniform-K25:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K25: 100%|██████████| 8/8 [00:00<00:00, 915.51it/s]
+train-teacache-K25:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K25: 100%|██████████| 8/8 [00:00<00:00, 846.39it/s]
+train-topk-K25:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K25: 100%|██████████| 8/8 [00:00<00:00, 810.61it/s]
+train-minmax-K25:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K25: 100%|██████████| 8/8 [00:00<00:00, 767.38it/s]
+train-uniform-K30:   0%|          | 0/8 [00:00<?, ?it/s]train-uniform-K30: 100%|██████████| 8/8 [00:00<00:00, 714.73it/s]
+train-teacache-K30:   0%|          | 0/8 [00:00<?, ?it/s]train-teacache-K30: 100%|██████████| 8/8 [00:00<00:00, 670.28it/s]
+train-topk-K30:   0%|          | 0/8 [00:00<?, ?it/s]train-topk-K30: 100%|██████████| 8/8 [00:00<00:00, 617.74it/s]
+train-minmax-K30:   0%|          | 0/8 [00:00<?, ?it/s]train-minmax-K30: 100%|██████████| 8/8 [00:00<00:00, 560.08it/s]
+held-uniform-K10:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K10: 100%|██████████| 4/4 [00:00<00:00, 1058.03it/s]
+held-teacache-K10:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K10: 100%|██████████| 4/4 [00:00<00:00, 1011.65it/s]
+held-topk-K10:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K10: 100%|██████████| 4/4 [00:00<00:00, 913.15it/s]
+held-minmax-K10:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K10: 100%|██████████| 4/4 [00:00<00:00, 949.10it/s]
+held-uniform-K15:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K15: 100%|██████████| 4/4 [00:00<00:00, 793.44it/s]
+held-teacache-K15:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K15: 100%|██████████| 4/4 [00:00<00:00, 877.15it/s]
+held-topk-K15:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K15: 100%|██████████| 4/4 [00:00<00:00, 479.57it/s]
+held-minmax-K15:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K15: 100%|██████████| 4/4 [00:00<00:00, 799.52it/s]
+held-uniform-K20:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K20: 100%|██████████| 4/4 [00:00<00:00, 776.65it/s]
+held-teacache-K20:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K20: 100%|██████████| 4/4 [00:00<00:00, 757.74it/s]
+held-topk-K20:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K20: 100%|██████████| 4/4 [00:00<00:00, 706.50it/s]
+held-minmax-K20:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K20: 100%|██████████| 4/4 [00:00<00:00, 697.95it/s]
+held-uniform-K25:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K25: 100%|██████████| 4/4 [00:00<00:00, 667.88it/s]
+held-teacache-K25:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K25: 100%|██████████| 4/4 [00:00<00:00, 658.37it/s]
+held-topk-K25:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K25: 100%|██████████| 4/4 [00:00<00:00, 572.44it/s]
+held-minmax-K25:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K25: 100%|██████████| 4/4 [00:00<00:00, 571.43it/s]
+held-uniform-K30:   0%|          | 0/4 [00:00<?, ?it/s]held-uniform-K30: 100%|██████████| 4/4 [00:00<00:00, 553.06it/s]
+held-teacache-K30:   0%|          | 0/4 [00:00<?, ?it/s]held-teacache-K30: 100%|██████████| 4/4 [00:00<00:00, 534.83it/s]
+held-topk-K30:   0%|          | 0/4 [00:00<?, ?it/s]held-topk-K30: 100%|██████████| 4/4 [00:00<00:00, 508.25it/s]
+held-minmax-K30:   0%|          | 0/4 [00:00<?, ?it/s]held-minmax-K30: 100%|██████████| 4/4 [00:00<00:00, 496.90it/s]
+beam-K15:   0%|          | 0/16 [00:00<?, ?it/s]Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Loading model from: /root/miniconda3/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+beam-K15:  25%|██▌       | 4/16 [00:08<00:24,  2.03s/it]beam-K15:  31%|███▏      | 5/16 [00:16<00:41,  3.78s/it]beam-K15:  38%|███▊      | 6/16 [00:25<00:51,  5.17s/it]beam-K15:  44%|████▍     | 7/16 [00:34<00:55,  6.16s/it]beam-K15:  50%|█████     | 8/16 [00:42<00:53,  6.70s/it]beam-K15:  56%|█████▋    | 9/16 [00:50<00:48,  6.97s/it]beam-K15:  62%|██████▎   | 10/16 [00:57<00:43,  7.21s/it]beam-K15:  69%|██████▉   | 11/16 [01:05<00:36,  7.37s/it]beam-K15:  75%|███████▌  | 12/16 [01:13<00:29,  7.47s/it]beam-K15:  81%|████████▏ | 13/16 [01:21<00:23,  7.69s/it]beam-K15:  88%|████████▊ | 14/16 [01:30<00:15,  7.99s/it]beam-K15:  94%|█████████▍| 15/16 [01:38<00:08,  8.11s/it]beam-K15: 100%|██████████| 16/16 [01:46<00:00,  8.11s/it]beam-K15: 100%|██████████| 16/16 [01:46<00:00,  6.67s/it]
+beam-K20:   0%|          | 0/16 [00:00<?, ?it/s]beam-K20:   6%|▋         | 1/16 [00:09<02:18,  9.24s/it]beam-K20:  12%|█▎        | 2/16 [00:19<02:15,  9.67s/it]beam-K20:  19%|█▉        | 3/16 [00:28<02:05,  9.64s/it]beam-K20:  25%|██▌       | 4/16 [00:36<01:47,  8.97s/it]beam-K20:  31%|███▏      | 5/16 [00:46<01:41,  9.22s/it]beam-K20:  38%|███▊      | 6/16 [00:56<01:34,  9.47s/it]beam-K20:  44%|████▍     | 7/16 [01:05<01:25,  9.51s/it]beam-K20:  50%|█████     | 8/16 [01:15<01:15,  9.42s/it]beam-K20:  56%|█████▋    | 9/16 [01:23<01:02,  8.92s/it]beam-K20:  62%|██████▎   | 10/16 [01:32<00:54,  9.02s/it]beam-K20:  69%|██████▉   | 11/16 [01:41<00:45,  9.17s/it]beam-K20:  75%|███████▌  | 12/16 [01:50<00:35,  9.00s/it]beam-K20:  81%|████████▏ | 13/16 [02:00<00:27,  9.25s/it]beam-K20:  88%|████████▊ | 14/16 [02:10<00:18,  9.45s/it]beam-K20:  94%|█████████▍| 15/16 [02:19<00:09,  9.55s/it]beam-K20: 100%|██████████| 16/16 [02:29<00:00,  9.46s/it]beam-K20: 100%|██████████| 16/16 [02:29<00:00,  9.32s/it]
+dump-expand:   0%|          | 0/22 [00:00<?, ?it/s]dump-expand:   5%|▍         | 1/22 [00:16<05:45, 16.43s/it]dump-expand:   9%|▉         | 2/22 [00:32<05:28, 16.43s/it]dump-expand:  14%|█▎        | 3/22 [00:49<05:12, 16.43s/it]dump-expand:  18%|█▊        | 4/22 [01:05<04:55, 16.43s/it]dump-expand:  23%|██▎       | 5/22 [01:22<04:39, 16.43s/it]dump-expand:  27%|██▋       | 6/22 [01:38<04:22, 16.43s/it]dump-expand:  32%|███▏      | 7/22 [01:54<04:06, 16.42s/it]dump-expand:  36%|███▋      | 8/22 [02:11<03:49, 16.42s/it]dump-expand:  41%|████      | 9/22 [02:27<03:33, 16.42s/it]dump-expand:  45%|████▌     | 10/22 [02:44<03:17, 16.42s/it]dump-expand:  50%|█████     | 11/22 [03:00<03:00, 16.42s/it]dump-expand:  55%|█████▍    | 12/22 [03:17<02:44, 16.41s/it]dump-expand:  59%|█████▉    | 13/22 [03:33<02:27, 16.41s/it]dump-expand:  64%|██████▎   | 14/22 [03:49<02:11, 16.41s/it]dump-expand:  68%|██████▊   | 15/22 [04:06<01:54, 16.41s/it]dump-expand:  73%|███████▎  | 16/22 [04:14<01:24, 14.06s/it]dump-expand:  77%|███████▋  | 17/22 [04:31<01:13, 14.76s/it]dump-expand:  82%|████████▏ | 18/22 [04:47<01:01, 15.26s/it]dump-expand:  86%|████████▋ | 19/22 [05:04<00:46, 15.60s/it]dump-expand:  91%|█████████ | 20/22 [05:20<00:31, 15.85s/it]dump-expand:  95%|█████████▌| 21/22 [05:36<00:16, 16.02s/it]dump-expand: 100%|██████████| 22/22 [05:53<00:00, 16.14s/it]dump-expand: 100%|██████████| 22/22 [05:53<00:00, 16.06s/it]
+/root/viewdit/results/gate/SUMMARY.md
+dump-wave1:   0%|          | 0/5 [00:00<?, ?it/s]dump-wave1:  20%|██        | 1/5 [00:16<01:05, 16.42s/it]dump-wave1:  40%|████      | 2/5 [00:32<00:49, 16.42s/it]dump-wave1:  60%|██████    | 3/5 [00:49<00:32, 16.42s/it]dump-wave1:  80%|████████  | 4/5 [01:05<00:16, 16.42s/it]dump-wave1: 100%|██████████| 5/5 [01:22<00:00, 16.42s/it]dump-wave1: 100%|██████████| 5/5 [01:22<00:00, 16.42s/it]
+train-uniform-K15:   0%|          | 0/5 [00:00<?, ?it/s]train-uniform-K15:  20%|██        | 1/5 [00:05<00:21,  5.32s/it]train-uniform-K15:  40%|████      | 2/5 [00:10<00:15,  5.31s/it]train-uniform-K15:  60%|██████    | 3/5 [00:15<00:10,  5.31s/it]train-uniform-K15:  80%|████████  | 4/5 [00:21<00:05,  5.31s/it]train-uniform-K15: 100%|██████████| 5/5 [00:26<00:00,  5.31s/it]train-uniform-K15: 100%|██████████| 5/5 [00:26<00:00,  5.31s/it]
+train-teacache-K15:   0%|          | 0/5 [00:00<?, ?it/s]train-teacache-K15:  20%|██        | 1/5 [00:05<00:21,  5.48s/it]train-teacache-K15:  40%|████      | 2/5 [00:10<00:16,  5.36s/it]train-teacache-K15:  60%|██████    | 3/5 [00:15<00:10,  5.30s/it]train-teacache-K15:  80%|████████  | 4/5 [00:21<00:05,  5.44s/it]train-teacache-K15: 100%|██████████| 5/5 [00:27<00:00,  5.43s/it]train-teacache-K15: 100%|██████████| 5/5 [00:27<00:00,  5.41s/it]
+train-uniform-K20:   0%|          | 0/5 [00:00<?, ?it/s]train-uniform-K20:  20%|██        | 1/5 [00:06<00:27,  6.88s/it]train-uniform-K20:  40%|████      | 2/5 [00:13<00:20,  6.88s/it]train-uniform-K20:  60%|██████    | 3/5 [00:20<00:13,  6.88s/it]train-uniform-K20:  80%|████████  | 4/5 [00:27<00:06,  6.88s/it]train-uniform-K20: 100%|██████████| 5/5 [00:34<00:00,  6.88s/it]train-uniform-K20: 100%|██████████| 5/5 [00:34<00:00,  6.88s/it]
+train-teacache-K20:   0%|          | 0/5 [00:00<?, ?it/s]train-teacache-K20:  20%|██        | 1/5 [00:06<00:25,  6.37s/it]train-teacache-K20:  40%|████      | 2/5 [00:12<00:18,  6.28s/it]train-teacache-K20:  60%|██████    | 3/5 [00:18<00:12,  6.24s/it]train-teacache-K20:  80%|████████  | 4/5 [00:25<00:06,  6.36s/it]train-teacache-K20: 100%|██████████| 5/5 [00:31<00:00,  6.33s/it]train-teacache-K20: 100%|██████████| 5/5 [00:31<00:00,  6.32s/it]
+fid full 8/10000
+fid full 16/10000
+fid full 24/10000
+fid full 32/10000
+fid full 40/10000

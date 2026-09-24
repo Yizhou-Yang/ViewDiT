@@ -1,0 +1,139 @@
+wait 1 still 4 cfg jobs
+wait 2 still 4 cfg jobs
+wait 3 still 4 cfg jobs
+wait 4 still 4 cfg jobs
+wait 5 still 4 cfg jobs
+wait 6 still 4 cfg jobs
+wait 7 still 4 cfg jobs
+wait 8 still 4 cfg jobs
+wait 9 still 4 cfg jobs
+wait 10 still 4 cfg jobs
+wait 11 still 4 cfg jobs
+wait 12 still 4 cfg jobs
+wait 13 still 4 cfg jobs
+wait 14 still 4 cfg jobs
+wait 15 still 4 cfg jobs
+wait 16 still 4 cfg jobs
+wait 17 still 4 cfg jobs
+wait 18 still 4 cfg jobs
+wait 19 still 4 cfg jobs
+wait 20 still 4 cfg jobs
+wait 21 still 4 cfg jobs
+wait 22 still 4 cfg jobs
+wait 23 still 4 cfg jobs
+wait 24 still 4 cfg jobs
+wait 25 still 4 cfg jobs
+wait 26 still 4 cfg jobs
+wait 27 still 4 cfg jobs
+wait 28 still 4 cfg jobs
+wait 29 still 4 cfg jobs
+wait 30 still 4 cfg jobs
+wait 31 still 4 cfg jobs
+wait 32 still 4 cfg jobs
+wait 33 still 4 cfg jobs
+wait 34 still 4 cfg jobs
+wait 35 still 4 cfg jobs
+wait 36 still 4 cfg jobs
+wait 37 still 4 cfg jobs
+wait 38 still 4 cfg jobs
+wait 39 still 4 cfg jobs
+wait 40 still 4 cfg jobs
+wait 41 still 4 cfg jobs
+wait 42 still 4 cfg jobs
+wait 43 still 4 cfg jobs
+wait 44 still 4 cfg jobs
+wait 45 still 4 cfg jobs
+wait 46 still 4 cfg jobs
+wait 47 still 4 cfg jobs
+wait 48 still 4 cfg jobs
+wait 49 still 4 cfg jobs
+wait 50 still 4 cfg jobs
+wait 51 still 4 cfg jobs
+wait 52 still 4 cfg jobs
+wait 53 still 4 cfg jobs
+wait 54 still 4 cfg jobs
+wait 55 still 4 cfg jobs
+wait 56 still 4 cfg jobs
+wait 57 still 2 cfg jobs
+wait 58 still 2 cfg jobs
+wait 59 still 2 cfg jobs
+wait 60 still 2 cfg jobs
+wait 61 still 2 cfg jobs
+wait 62 still 2 cfg jobs
+wait 63 still 2 cfg jobs
+wait 64 still 2 cfg jobs
+wait 65 still 2 cfg jobs
+wait 66 still 2 cfg jobs
+wait 67 still 2 cfg jobs
+wait 68 still 2 cfg jobs
+wait 69 still 2 cfg jobs
+wait 70 still 2 cfg jobs
+wait 71 still 2 cfg jobs
+wait 72 still 2 cfg jobs
+wait 73 still 2 cfg jobs
+wait 74 still 2 cfg jobs
+wait 75 still 2 cfg jobs
+wait 76 still 2 cfg jobs
+wait 77 still 2 cfg jobs
+wait 78 still 2 cfg jobs
+wait 79 still 2 cfg jobs
+wait 80 still 2 cfg jobs
+wait 81 still 2 cfg jobs
+wait 82 still 2 cfg jobs
+wait 83 still 2 cfg jobs
+wait 84 still 2 cfg jobs
+wait 85 still 2 cfg jobs
+wait 86 still 2 cfg jobs
+wait 87 still 2 cfg jobs
+wait 88 still 2 cfg jobs
+wait 89 still 2 cfg jobs
+wait 90 still 2 cfg jobs
+wait 91 still 2 cfg jobs
+wait 92 still 2 cfg jobs
+wait 93 still 2 cfg jobs
+wait 94 still 2 cfg jobs
+wait 95 still 2 cfg jobs
+wait 96 still 2 cfg jobs
+wait 97 still 2 cfg jobs
+wait 98 still 2 cfg jobs
+wait 99 still 2 cfg jobs
+wait 100 still 2 cfg jobs
+field 0 {"eps_u_adj": -0.018167564819248198, "eps_u_key4": 1.1030081146208368, "eps_u_rank90": 13.88, "eps_c_adj": -0.0195636568427742, "eps_c_key4": 1.103466342696634, "eps_c_rank90": 13.88, "eps_g_adj": -0.002461393934386924, "eps_g_key4": 1.096366194506265, "eps_g_rank90": 13.92, "eps_d_adj": 0.5768937793034634, "eps_d_key4": 0.7420677389288156, "eps_d_rank90": 9.86, "x0_u_adj": 0.8995038405070336, "x0_u_key4": 0.3427092235240099, "x0_u_rank90": 7.86, "x0_c_adj": 0.8919648203214092, "x0_c_key4": 0.36392069548663036, "x0_c_rank90": 7.84, "x0_g_adj": 0.791902259092239, "x0_g_key4": 0.5321997162076753, "x0_g_rank90": 9.02, "x0_d_adj": 0.5768937567481186, "x0_d_key4": 0.742067738134011, "x0_d_rank90": 9.86, "key4_ratio_u_over_g": 0.6439485273800442, "adj_gain_u_minus_g": 0.10760158141479459, "keep_unification": false, "thg_abs_dcond": 9.280097349565857, "thg_abs_duncond": 9.638097260679517, "thg_abs_ddelta": 2.703579125355701, "thg_abs_ratio_d_over_c": 0.2913309013382473, "rel_dcond": 0.0379125851759989, "rel_ddelta": 0.3580713745818787}
+field 1 {"eps_u_adj": -0.01646593036522405, "eps_u_key4": 1.0999894390453349, "eps_u_rank90": 13.92, "eps_c_adj": -0.0171192319884937, "eps_c_key4": 1.1004132718219999, "eps_c_rank90": 13.92, "eps_g_adj": -0.008680123115136277, "eps_g_key4": 1.096489493464025, "eps_g_rank90": 13.94, "eps_d_adj": 0.8538362079404621, "eps_d_key4": 0.39868821323541, "eps_d_rank90": 12.24, "x0_u_adj": 0.9885524097269573, "x0_u_key4": 0.08761544869324517, "x0_u_rank90": 7.9, "x0_c_adj": 0.9910088220743909, "x0_c_key4": 0.08581996554435206, "x0_c_rank90": 7.88, "x0_g_adj": 0.9640202261094879, "x0_g_key4": 0.1745218801049205, "x0_g_rank90": 10.08, "x0_d_adj": 0.8538361982056738, "x0_d_key4": 0.39868821885264455, "x0_d_rank90": 12.24, "key4_ratio_u_over_g": 0.5020313134408808, "adj_gain_u_minus_g": 0.02453218361746945, "keep_unification": false, "thg_abs_dcond": 7.1070204608294425, "thg_abs_duncond": 7.25684346471514, "thg_abs_ddelta": 1.4729833803614791, "thg_abs_ratio_d_over_c": 0.20725751226971575, "rel_dcond": 0.02819266176070865, "rel_ddelta": 0.3506671085674168}
+field 2 {"eps_u_adj": 0.0008346841465221266, "eps_u_key4": 1.0927194729031593, "eps_u_rank90": 13.92, "eps_c_adj": -0.0006556107461788285, "eps_c_key4": 1.0933905108541675, "eps_c_rank90": 13.9, "eps_g_adj": 0.03185326587809988, "eps_g_key4": 1.0759570344549847, "eps_g_rank90": 13.94, "eps_d_adj": 0.786436742445523, "eps_d_key4": 0.4760364356346274, "eps_d_rank90": 11.88, "x0_u_adj": 0.9754588574173654, "x0_u_key4": 0.15816097430814394, "x0_u_rank90": 9.1, "x0_c_adj": 0.9623513455552433, "x0_c_key4": 0.18595576895661292, "x0_c_rank90": 8.9, "x0_g_adj": 0.9161626116485561, "x0_g_key4": 0.3028722571004576, "x0_g_rank90": 10.88, "x0_d_adj": 0.786436753567836, "x0_d_key4": 0.4760364381199899, "x0_d_rank90": 11.88, "key4_ratio_u_over_g": 0.522203571308562, "adj_gain_u_minus_g": 0.05929624576880932, "keep_unification": false, "thg_abs_dcond": 10.058499592907575, "thg_abs_duncond": 10.366981743549815, "thg_abs_ddelta": 2.640612469643963, "thg_abs_ratio_d_over_c": 0.2625254835727095, "rel_dcond": 0.04031192557541598, "rel_ddelta": 0.31740944202577787}
+FIELD MEAN {
+  "eps_u_adj": -0.01126627034598337,
+  "eps_u_key4": 1.0985723421897768,
+  "eps_u_rank90": 13.906666666666666,
+  "eps_c_adj": -0.012446166525815575,
+  "eps_c_key4": 1.0990900417909337,
+  "eps_c_rank90": 13.9,
+  "eps_g_adj": 0.0069039162761922275,
+  "eps_g_key4": 1.089604240808425,
+  "eps_g_rank90": 13.933333333333332,
+  "eps_d_adj": 0.7390555765631496,
+  "eps_d_key4": 0.538930795932951,
+  "eps_d_rank90": 11.326666666666668,
+  "x0_u_adj": 0.9545050358837854,
+  "x0_u_key4": 0.196161882175133,
+  "x0_u_rank90": 8.286666666666667,
+  "x0_c_adj": 0.9484416626503478,
+  "x0_c_key4": 0.2118988099958651,
+  "x0_c_rank90": 8.206666666666665,
+  "x0_g_adj": 0.8906950322834276,
+  "x0_g_key4": 0.33653128447101777,
+  "x0_g_rank90": 9.993333333333334,
+  "x0_d_adj": 0.7390555695072095,
+  "x0_d_key4": 0.5389307983688818,
+  "x0_d_rank90": 11.326666666666668,
+  "key4_ratio_u_over_g": 0.5560611373764957,
+  "adj_gain_u_minus_g": 0.06381000360035778,
+  "keep_unification": false,
+  "thg_abs_dcond": 8.815205801100959,
+  "thg_abs_duncond": 9.087307489648158,
+  "thg_abs_ddelta": 2.272391658453714,
+  "thg_abs_ratio_d_over_c": 0.2537046323935575,
+  "rel_dcond": 0.03547239083737451,
+  "rel_ddelta": 0.3420493083916911
+}
+UNIFICATION DEAD — not running closed loop

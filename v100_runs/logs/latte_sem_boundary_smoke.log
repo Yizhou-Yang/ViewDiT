@@ -1,0 +1,46 @@
+Using Ema!
+/root/viewdit/experiments/video/preset_latte_semantic_boundary.py:101: FutureWarning: `torch.cuda.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cuda', args...)` instead.
+  with torch.cuda.amp.autocast(dtype=torch.float16):
+[base_classA] class=28 shape=(1, 16, 4, 32, 32)
+[edit_classB] class=82 shape=(1, 16, 4, 32, 32)
+ROW none prefix_rms 0.122619 future_rms 0.0 payload None
+ROW full_oracle prefix_rms 0.0 future_rms 0.0 payload 0
+ROW boundary_rank4 prefix_rms 0.044955 future_rms 0.0 payload 16388
+{
+  "complete": true,
+  "protocol": {
+    "model": "Latte-XL/2",
+    "ckpt": "ucf101.pt",
+    "steps": 3,
+    "frames": 16,
+    "prefix": 5,
+    "rank": 4,
+    "class_a": 28,
+    "class_b": 82,
+    "seed": 999,
+    "note": "latent-domain mechanism probe on second DiT (Latte-XL/2, UCF101, extras=2). Regenerate future under different action class = semantic-edit proxy; test whether a compact rank-k boundary state preserves the committed prefix, vs storing the full prefix latent.",
+    "decoder": "deferred pixel decode."
+  },
+  "rows": [
+    {
+      "method": "none",
+      "prefix_latent_rms": 0.1226186454296112,
+      "future_latent_rms": 0.0,
+      "payload_bytes": null
+    },
+    {
+      "method": "full_oracle",
+      "prefix_latent_rms": 0.0,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 0
+    },
+    {
+      "method": "boundary_rank4",
+      "prefix_latent_rms": 0.04495454952120781,
+      "future_latent_rms": 0.0,
+      "payload_bytes": 16388
+    }
+  ],
+  "edit_distance_ab": 0.12034425139427185
+}
+LATTE_SEMANTIC_BOUNDARY_OK

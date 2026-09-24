@@ -1,0 +1,417 @@
+===================== audit queue start 2026-09-20T20:24:42+08:00 =====================
+----- drift start 2026-09-20T20:24:42+08:00 -----
+load Latte-XL/2 /root/viewdit/weights/Latte/ffs.pt steps 50 ddim
+Using Ema!
+v0 (clean latent per-element var) = 0.547683835029602
+wrote /root/viewdit/results/video/audit_drift/drift_full.png decode_std 0.32231777906417847
+diag 0 {"drift_rel_mean": 0.045673752477461686, "drift_rel_final": 0.1697658441586683, "drift_coherence_cos": 0.9146132481098175, "rms_ratio_skip_over_full": 1.0016074584007844, "rms_ratio_final": 1.0025203586636373, "schedule_rms_pred_rel_err_on_full": 0.0039353704221028706, "per_frame_drift_max_over_min": 2.5375887690758216, "drift_top4_frame_rank_share": 0.5869992119105552}
+diag 1 {"drift_rel_mean": 0.09900498500115379, "drift_rel_final": 0.369628333271194, "drift_coherence_cos": 0.9217469346523285, "rms_ratio_skip_over_full": 1.003364825089761, "rms_ratio_final": 1.0106885684694118, "schedule_rms_pred_rel_err_on_full": 0.019828879816295743, "per_frame_drift_max_over_min": 1.7419320831493454, "drift_top4_frame_rank_share": 0.5832343994495741}
+diag 2 {"drift_rel_mean": 0.07268919703483041, "drift_rel_final": 0.27349793736671685, "drift_coherence_cos": 0.9133699476718903, "rms_ratio_skip_over_full": 1.0007560163071578, "rms_ratio_final": 0.9987090404673156, "schedule_rms_pred_rel_err_on_full": 0.015142665927426118, "per_frame_drift_max_over_min": 3.3166909947687264, "drift_top4_frame_rank_share": 0.5515720696081338}
+loop 0 full 50
+loop 0 taylor1 15
+loop 0 scaling_like 15
+loop 0 gauge_global 15
+loop 0 gauge_frame 15
+loop 0 gauge_oracle 15
+loop 1 full 50
+loop 1 taylor1 15
+loop 1 scaling_like 15
+loop 1 gauge_global 15
+loop 1 gauge_frame 15
+loop 1 gauge_oracle 15
+loop 2 full 50
+loop 2 taylor1 15
+loop 2 scaling_like 15
+loop 2 gauge_global 15
+loop 2 gauge_frame 15
+loop 2 gauge_oracle 15
+loop 3 full 50
+loop 3 taylor1 15
+loop 3 scaling_like 15
+loop 3 gauge_global 15
+loop 3 gauge_frame 15
+loop 3 gauge_oracle 15
+loop 4 full 50
+loop 4 taylor1 15
+loop 4 scaling_like 15
+loop 4 gauge_global 15
+loop 4 gauge_frame 15
+loop 4 gauge_oracle 15
+loop 5 full 50
+loop 5 taylor1 15
+loop 5 scaling_like 15
+loop 5 gauge_global 15
+loop 5 gauge_frame 15
+loop 5 gauge_oracle 15
+loop 6 full 50
+loop 6 taylor1 15
+loop 6 scaling_like 15
+loop 6 gauge_global 15
+loop 6 gauge_frame 15
+loop 6 gauge_oracle 15
+loop 7 full 50
+loop 7 taylor1 15
+loop 7 scaling_like 15
+loop 7 gauge_global 15
+loop 7 gauge_frame 15
+loop 7 gauge_oracle 15
+# Drift-operator audit (DDIM-50, Latte-XL/2)
+
+{
+  "v0": 0.547683835029602,
+  "K": 15,
+  "steps": 50,
+  "diagnostics": {
+    "drift_rel_mean": 0.07245597817114863,
+    "drift_rel_final": 0.27096403826552634,
+    "drift_rel_curve": [
+      0.0,
+      0.0,
+      0.0003,
+      0.0007,
+      0.0008,
+      0.0008,
+      0.0011,
+      0.0015,
+      0.0016,
+      0.0014,
+      0.0016,
+      0.0018,
+      0.002,
+      0.0033,
+      0.0054,
+      0.0057,
+      0.0045,
+      0.0041,
+      0.0046,
+      0.0052,
+      0.0065,
+      0.0084,
+      0.0097,
+      0.0113,
+      0.0139,
+      0.0164,
+      0.0192,
+      0.0225,
+      0.0264,
+      0.0302,
+      0.0347,
+      0.0395,
+      0.0444,
+      0.0501,
+      0.0559,
+      0.0624,
+      0.0688,
+      0.0759,
+      0.0837,
+      0.0911,
+      0.0992,
+      0.1071,
+      0.1151,
+      0.1232,
+      0.1309,
+      0.1387,
+      0.146,
+      0.1526,
+      0.1597,
+      0.1697,
+      0.1698
+    ],
+    "drift_coherence_cos": 0.9165767101446787,
+    "rms_ratio_skip_over_full": 1.001909433265901,
+    "rms_ratio_final": 1.0039726558667883,
+    "schedule_rms_pred_rel_err_on_full": 0.01296897205527491,
+    "per_frame_drift_max_over_min": 2.532070615664631,
+    "drift_top4_frame_rank_share": 0.573935226989421
+  },
+  "closed_loop": {
+    "full": {
+      "latent_relL2": 0.0,
+      "nfe": 50.0
+    },
+    "taylor1": {
+      "latent_relL2": 0.20962256417081243,
+      "nfe": 15.0
+    },
+    "scaling_like": {
+      "latent_relL2": 0.17343249704501437,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": 0.17264394827413868,
+      "keep": false
+    },
+    "gauge_global": {
+      "latent_relL2": 0.25149291996883283,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.19974164500679442,
+      "keep": false
+    },
+    "gauge_frame": {
+      "latent_relL2": 0.2784167336654717,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.3281811276700244,
+      "keep": false
+    },
+    "gauge_oracle": {
+      "latent_relL2": 0.2095573572792803,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": 0.0003110680941723606,
+      "keep": false
+    }
+  }
+}
+
+## Reading
+
+- drift coherence cos=0.9165767101446787: drift is a DIRECTION (contractible)
+- rms ratio skip/full=1.001909433265901: state stays on the shell; a norm gauge cannot help
+- schedule rms pred err on Full=0.01296897205527491: gauge target is computable at inference
+- gauge_oracle drop=0.0003110680941723606: CEILING of any norm gauge
+
+gauge_oracle is not a method. If the ceiling is under 25%, the whole
+norm-gauge family is dead and no tuning rescues it.
+----- drift exit=0 2026-09-20T20:27:18+08:00 -----
+----- applies start 2026-09-20T20:27:18+08:00 -----
+load Latte-XL/2 /root/viewdit/weights/Latte/ffs.pt steps 50 ddim
+Using Ema!
+loop 0 full|0.0|1.0 50
+loop 0 taylor1|0.0|1.0 15
+loop 0 damp_g|0.0|0.5 15
+loop 0 damp_g|0.0|0.7 15
+loop 0 damp_g|0.0|0.85 15
+loop 0 damp_online|0.0|1.0 15
+loop 0 dir_taylor|0.0|1.0 15
+loop 0 dir_taylor_frame|0.0|1.0 15
+loop 0 dct_x0|0.05|1.0 15
+loop 0 dct_x0|0.2|1.0 15
+loop 0 dct_x0|1.0|1.0 15
+loop 0 dct_x0|5.0|1.0 15
+wrote /root/viewdit/results/video/audit_applies/applies_full.png decode_std 0.49317196011543274
+loop 1 full|0.0|1.0 50
+loop 1 taylor1|0.0|1.0 15
+loop 1 damp_g|0.0|0.5 15
+loop 1 damp_g|0.0|0.7 15
+loop 1 damp_g|0.0|0.85 15
+loop 1 damp_online|0.0|1.0 15
+loop 1 dir_taylor|0.0|1.0 15
+loop 1 dir_taylor_frame|0.0|1.0 15
+loop 1 dct_x0|0.05|1.0 15
+loop 1 dct_x0|0.2|1.0 15
+loop 1 dct_x0|1.0|1.0 15
+loop 1 dct_x0|5.0|1.0 15
+loop 2 full|0.0|1.0 50
+loop 2 taylor1|0.0|1.0 15
+loop 2 damp_g|0.0|0.5 15
+loop 2 damp_g|0.0|0.7 15
+loop 2 damp_g|0.0|0.85 15
+loop 2 damp_online|0.0|1.0 15
+loop 2 dir_taylor|0.0|1.0 15
+loop 2 dir_taylor_frame|0.0|1.0 15
+loop 2 dct_x0|0.05|1.0 15
+loop 2 dct_x0|0.2|1.0 15
+loop 2 dct_x0|1.0|1.0 15
+loop 2 dct_x0|5.0|1.0 15
+loop 3 full|0.0|1.0 50
+loop 3 taylor1|0.0|1.0 15
+loop 3 damp_g|0.0|0.5 15
+loop 3 damp_g|0.0|0.7 15
+loop 3 damp_g|0.0|0.85 15
+loop 3 damp_online|0.0|1.0 15
+loop 3 dir_taylor|0.0|1.0 15
+loop 3 dir_taylor_frame|0.0|1.0 15
+loop 3 dct_x0|0.05|1.0 15
+loop 3 dct_x0|0.2|1.0 15
+loop 3 dct_x0|1.0|1.0 15
+loop 3 dct_x0|5.0|1.0 15
+loop 4 full|0.0|1.0 50
+loop 4 taylor1|0.0|1.0 15
+loop 4 damp_g|0.0|0.5 15
+loop 4 damp_g|0.0|0.7 15
+loop 4 damp_g|0.0|0.85 15
+loop 4 damp_online|0.0|1.0 15
+loop 4 dir_taylor|0.0|1.0 15
+loop 4 dir_taylor_frame|0.0|1.0 15
+loop 4 dct_x0|0.05|1.0 15
+loop 4 dct_x0|0.2|1.0 15
+loop 4 dct_x0|1.0|1.0 15
+loop 4 dct_x0|5.0|1.0 15
+loop 5 full|0.0|1.0 50
+loop 5 taylor1|0.0|1.0 15
+loop 5 damp_g|0.0|0.5 15
+loop 5 damp_g|0.0|0.7 15
+loop 5 damp_g|0.0|0.85 15
+loop 5 damp_online|0.0|1.0 15
+loop 5 dir_taylor|0.0|1.0 15
+loop 5 dir_taylor_frame|0.0|1.0 15
+loop 5 dct_x0|0.05|1.0 15
+loop 5 dct_x0|0.2|1.0 15
+loop 5 dct_x0|1.0|1.0 15
+loop 5 dct_x0|5.0|1.0 15
+loop 6 full|0.0|1.0 50
+loop 6 taylor1|0.0|1.0 15
+loop 6 damp_g|0.0|0.5 15
+loop 6 damp_g|0.0|0.7 15
+loop 6 damp_g|0.0|0.85 15
+loop 6 damp_online|0.0|1.0 15
+loop 6 dir_taylor|0.0|1.0 15
+loop 6 dir_taylor_frame|0.0|1.0 15
+loop 6 dct_x0|0.05|1.0 15
+loop 6 dct_x0|0.2|1.0 15
+loop 6 dct_x0|1.0|1.0 15
+loop 6 dct_x0|5.0|1.0 15
+loop 7 full|0.0|1.0 50
+loop 7 taylor1|0.0|1.0 15
+loop 7 damp_g|0.0|0.5 15
+loop 7 damp_g|0.0|0.7 15
+loop 7 damp_g|0.0|0.85 15
+loop 7 damp_online|0.0|1.0 15
+loop 7 dir_taylor|0.0|1.0 15
+loop 7 dir_taylor_frame|0.0|1.0 15
+loop 7 dct_x0|0.05|1.0 15
+loop 7 dct_x0|0.2|1.0 15
+loop 7 dct_x0|1.0|1.0 15
+loop 7 dct_x0|5.0|1.0 15
+{
+  "K": 15,
+  "steps": 50,
+  "best_baseline": "taylor1|0.0|1.0",
+  "best_baseline_relL2": 0.17136634327471714,
+  "taylor1_relL2": 0.17136634327471714,
+  "closed_loop": {
+    "full|0.0|1.0": {
+      "latent_relL2": 0.0,
+      "nfe": 50.0
+    },
+    "taylor1|0.0|1.0": {
+      "latent_relL2": 0.17136634327471714,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": 0.0,
+      "rel_drop_vs_best_baseline": 0.0,
+      "is_baseline": true,
+      "keep": false
+    },
+    "damp_g|0.0|0.5": {
+      "latent_relL2": 0.249093597209623,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.45357362740886303,
+      "rel_drop_vs_best_baseline": -0.45357362740886303,
+      "is_baseline": true,
+      "keep": false
+    },
+    "damp_g|0.0|0.7": {
+      "latent_relL2": 0.21268182856441759,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.24109451424465334,
+      "rel_drop_vs_best_baseline": -0.24109451424465334,
+      "is_baseline": true,
+      "keep": false
+    },
+    "damp_g|0.0|0.85": {
+      "latent_relL2": 0.1895414718611833,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.10606008297282532,
+      "rel_drop_vs_best_baseline": -0.10606008297282532,
+      "is_baseline": true,
+      "keep": false
+    },
+    "damp_online|0.0|1.0": {
+      "latent_relL2": 0.22307020332406646,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.3017153722330582,
+      "rel_drop_vs_best_baseline": -0.3017153722330582,
+      "is_baseline": true,
+      "keep": false
+    },
+    "dir_taylor|0.0|1.0": {
+      "latent_relL2": 0.7079557970035661,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -3.1312417798904844,
+      "rel_drop_vs_best_baseline": -3.1312417798904844,
+      "is_baseline": false,
+      "keep": false
+    },
+    "dir_taylor_frame|0.0|1.0": {
+      "latent_relL2": 0.7073231900522621,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -3.1275502326518883,
+      "rel_drop_vs_best_baseline": -3.1275502326518883,
+      "is_baseline": false,
+      "keep": false
+    },
+    "dct_x0|0.05|1.0": {
+      "latent_relL2": 0.1941650160582392,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.13304055129993364,
+      "rel_drop_vs_best_baseline": -0.13304055129993364,
+      "is_baseline": false,
+      "keep": false
+    },
+    "dct_x0|0.2|1.0": {
+      "latent_relL2": 0.2776410447218689,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -0.6201608753288441,
+      "rel_drop_vs_best_baseline": -0.6201608753288441,
+      "is_baseline": false,
+      "keep": false
+    },
+    "dct_x0|1.0|1.0": {
+      "latent_relL2": 0.3942037270304542,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -1.3003567649133223,
+      "rel_drop_vs_best_baseline": -1.3003567649133223,
+      "is_baseline": false,
+      "keep": false
+    },
+    "dct_x0|5.0|1.0": {
+      "latent_relL2": 0.45979747720084096,
+      "nfe": 15.0,
+      "rel_drop_vs_taylor1": -1.6831259185109664,
+      "rel_drop_vs_best_baseline": -1.6831259185109664,
+      "is_baseline": false,
+      "keep": false
+    }
+  },
+  "keeps": []
+}
+----- applies exit=0 2026-09-20T20:30:00+08:00 -----
+promoted ucf101.pt (2696560929 bytes)
+----- cfg start 2026-09-20T20:30:00+08:00 -----
+load ucf101.pt
+Using Ema!
+loop 0 full fwd 100
+loop 0 taylor1_guided fwd 30
+loop 0 cond_only_uncond_taylor fwd 65
+loop 1 full fwd 100
+loop 1 taylor1_guided fwd 30
+loop 1 cond_only_uncond_taylor fwd 65
+loop 2 full fwd 100
+loop 2 taylor1_guided fwd 30
+loop 2 cond_only_uncond_taylor fwd 65
+loop 3 full fwd 100
+loop 3 taylor1_guided fwd 30
+loop 3 cond_only_uncond_taylor fwd 65
+loop 4 full fwd 100
+loop 4 taylor1_guided fwd 30
+loop 4 cond_only_uncond_taylor fwd 65
+loop 5 full fwd 100
+loop 5 taylor1_guided fwd 30
+loop 5 cond_only_uncond_taylor fwd 65
+loop 6 full fwd 100
+loop 6 taylor1_guided fwd 30
+loop 6 cond_only_uncond_taylor fwd 65
+loop 7 full fwd 100
+loop 7 taylor1_guided fwd 30
+loop 7 cond_only_uncond_taylor fwd 65
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/video/audit_cfg.py", line 230, in <module>
+    main()
+  File "/root/viewdit/experiments/video/audit_cfg.py", line 197, in main
+    rels = [rel_l2(xs[name][i].numpy(), xs["full"][i].numpy()) for i in range(N_VID)]
+  File "/root/viewdit/experiments/video/audit_cfg.py", line 197, in <listcomp>
+    rels = [rel_l2(xs[name][i].numpy(), xs["full"][i].numpy()) for i in range(N_VID)]
+  File "/root/viewdit/experiments/video/audit_cfg.py", line 87, in rel_l2
+    e = (np.asarray(p, dtype=np.float64) - np.asarray(t, dtype=np.float64)).reshape(-1)
+ValueError: operands could not be broadcast together with shapes (1,16,4,32,32) (65536,) 
+----- cfg exit=1 2026-09-20T20:32:15+08:00 -----
+BEST KEEP: None
+no keep; Row 1 intentionally not produced
+===================== audit queue done 2026-09-20T20:32:15+08:00 =====================

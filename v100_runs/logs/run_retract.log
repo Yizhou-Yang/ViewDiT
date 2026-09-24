@@ -1,0 +1,15 @@
+===== retract start 2026-09-20T14:21:14+08:00 =====
+loading stack
+Setting up [LPIPS] perceptual loss: trunk [alex], v[0.1], spatial [off]
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:208: UserWarning: The parameter 'pretrained' is deprecated since 0.13 and may be removed in the future, please use 'weights' instead.
+  warnings.warn(
+/root/miniconda3/lib/python3.10/site-packages/torchvision/models/_utils.py:223: UserWarning: Arguments other than a weight enum or `None` for 'weights' are deprecated since 0.13 and may be removed in the future. The current behavior is equivalent to passing `weights=AlexNet_Weights.IMAGENET1K_V1`. You can also use `weights=AlexNet_Weights.DEFAULT` to get the most up-to-date weights.
+  warnings.warn(msg)
+Loading model from: /root/miniconda3/lib/python3.10/site-packages/lpips/weights/v0.1/alex.pth
+A=157.41 |B| mean=3.14815 max=28.5468
+train-K15:   0%|          | 0/2 [00:00<?, ?it/s]train-K15:  50%|█████     | 1/2 [00:24<00:24, 24.63s/it]train-K15: 100%|██████████| 2/2 [00:48<00:00, 24.42s/it]train-K15: 100%|██████████| 2/2 [00:48<00:00, 24.45s/it]
+train-K20:   0%|          | 0/2 [00:00<?, ?it/s]train-K20:  50%|█████     | 1/2 [00:29<00:29, 29.18s/it]train-K20: 100%|██████████| 2/2 [00:58<00:00, 29.16s/it]train-K20: 100%|██████████| 2/2 [00:58<00:00, 29.16s/it]
+held-K15:   0%|          | 0/2 [00:00<?, ?it/s]held-K15:  50%|█████     | 1/2 [00:24<00:24, 24.47s/it]held-K15: 100%|██████████| 2/2 [00:48<00:00, 24.50s/it]held-K15: 100%|██████████| 2/2 [00:48<00:00, 24.50s/it]
+held-K20:   0%|          | 0/2 [00:00<?, ?it/s]held-K20:  50%|█████     | 1/2 [00:29<00:29, 29.25s/it]held-K20: 100%|██████████| 2/2 [00:58<00:00, 29.28s/it]held-K20: 100%|██████████| 2/2 [00:58<00:00, 29.28s/it]
+done /root/viewdit/results/gate/retract/SUMMARY.md
+===== retract done 2026-09-20T14:25:10+08:00 =====

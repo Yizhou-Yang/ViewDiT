@@ -1,0 +1,52 @@
+===== video explore start 2026-09-20T19:26:48+08:00 =====
+load Latte-S/2 ffs_s_2.pt
+dump video 0 T=20
+dump video 1 T=20
+dump video 2 T=20
+dump video 3 T=20
+# Video-axis explore (Latte)
+
+{
+  "n": 4,
+  "T": 20,
+  "F": 16,
+  "K": 8,
+  "V1_cos_adj_frame": -0.020080487188299575,
+  "V1_cos_same_frame_next_t": 0.9879695855564374,
+  "V2_frame_step_energy_maxmin": 1.2577638626098633,
+  "V3_top4_frames_share_of_taylor_residual": 0.2745179161429405,
+  "V4_teacher_forced_taylor1_rel_l2": 0.0484574390796095,
+  "V4_teacher_forced_2d_rel_l2": 0.5846081426515073,
+  "V4_2d_rel_drop": -11.064363155697711,
+  "V6_tf_taylor1_vs_image_0.056": 0.0484574390796095,
+  "V7_keyframe4_lift_rel_l2": 1.105166385164587,
+  "V7_keyframe8_lift_rel_l2": 0.880278147378674,
+  "V8_svd_rank_90pct": 13.9125,
+  "V9_best_shift_cos": 0.987676925322169,
+  "V9_zero_shift_cos": 0.987676925322169,
+  "V11_taylor_early_half": 0.04816037656671984,
+  "V11_taylor_late_half": 0.04870859356824341,
+  "V12_var_across_frames": 0.8335146938658781,
+  "V14_bilinear_t_rel_l2": 0.0741875609575704
+}
+
+## Gates (KEEP = measure closed-loop next, not the paper)
+
+- V1 adj-frame cos=-0.020  KILL frame-reuse
+- V2 max/min frame |Δε|=1.26  KILL frame-asymmetric schedule
+- V3 top-4 residual share=0.275  KILL frame-MOR
+- V4 TF 1D=0.0485 2D=0.5846 rel=-11.064363155697711  2D not a method yet
+- V6 TF 1D=0.0485 vs image 0.056  still TaylorSeer-world on-path
+- V7 keyframe-4 lift=1.1052  key-8=0.8803  KILL naive keyframe interp
+- V8 rank@90%=13.91 / 16  KILL low-rank field
+- V9 shift-cos=0.988 vs 0-shift=0.988  KILL integer warp
+- V11 early=0.0482 late=0.0487  KILL early/late split
+- V14 bilinear-t=0.0742 vs Taylor1=0.0485  bilinear-t not better than Taylor
+
+A KEEP is not the paper. Closed-loop + occupation check only for cells that kept.
+
+## Closed-loop latent relL2
+
+{}
+
+===== video explore done 2026-09-20T19:26:55+08:00 =====

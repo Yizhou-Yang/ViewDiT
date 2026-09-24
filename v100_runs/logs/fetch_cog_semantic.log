@@ -1,0 +1,50 @@
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/video/fetch_cog_semantic.py", line 59, in <module>
+    main()
+  File "/root/viewdit/experiments/video/fetch_cog_semantic.py", line 53, in main
+    list(pool.map(fetch, selected))
+  File "/root/miniconda3/lib/python3.10/concurrent/futures/_base.py", line 621, in result_iterator
+    yield _result_or_cancel(fs.pop())
+  File "/root/miniconda3/lib/python3.10/concurrent/futures/_base.py", line 319, in _result_or_cancel
+    return fut.result(timeout)
+  File "/root/miniconda3/lib/python3.10/concurrent/futures/_base.py", line 458, in result
+    return self.__get_result()
+  File "/root/miniconda3/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/root/miniconda3/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/root/viewdit/experiments/video/fetch_cog_semantic.py", line 36, in fetch
+    with urllib.request.urlopen(BASE + row['path'], timeout=120) as r, temp.open('wb') as f:
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 216, in urlopen
+    return opener.open(url, data, timeout)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 557, in error
+    result = self._call_chain(*args)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 749, in http_error_302
+    return self.parent.open(new, timeout=req.timeout)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 557, in error
+    result = self._call_chain(*args)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 749, in http_error_302
+    return self.parent.open(new, timeout=req.timeout)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 525, in open
+    response = meth(req, response)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 634, in http_response
+    response = self.parent.error(
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 563, in error
+    return self._call_chain(*args)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 496, in _call_chain
+    result = func(*args)
+  File "/root/miniconda3/lib/python3.10/urllib/request.py", line 643, in http_error_default
+    raise HTTPError(req.full_url, code, msg, hdrs, fp)
+urllib.error.HTTPError: HTTP Error 403: Forbidden
