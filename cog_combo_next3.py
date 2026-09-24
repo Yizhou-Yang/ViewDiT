@@ -68,12 +68,21 @@ class Executor:
 
     def reset(self, bmode='zero', damp=0.5, keep_ops=False):
         self.mem, self.bmode, self.damp, self.keep_ops = {}, bmode, damp, keep_ops
-        self.step, self.branches, self.reuse_now = -1, ['u', 'c'], set()
+        self.step, self.branches, self.reuse_now, self.reuse_u_now = -1, ['u', 'c'], set(), set()
         self.calls = dict(full=0, reuse=0, attn_only=0, ffn_only=0)
 
     def _fwd(self, idx, h, e, temb, rope):
         br = self.branches
         ready = all((idx, b) in self.mem for b in br)
+        if br == ['u', 'c'] and idx in self.reuse_u_now and ready and idx not in self.reuse_now:
+            # asymmetric: uncond branch reuses its cached residual, cond branch recomputed
+            ho_c, eo_c, (ah, ae, ff) = block_fwd(self.blocks[idx], h[1:2], e[1:2], temb[1:2], rope)
+            self.calls['full'] += 1; self.calls['reuse'] += 1
+            old = self.mem.get((idx, 'c'))
+            self.mem[(idx, 'c')] = dict(dh=(ho_c - h[1:2]).detach(), de=(eo_c - e[1:2]).detach(), s=self.step,
+                                        pdh=old['dh'], pde=old['de'], ps=old['s'])
+            mu = self.mem[(idx, 'u')]
+            return torch.cat([h[0:1] + mu['dh'], ho_c]), torch.cat([e[0:1] + mu['de'], eo_c])
         if idx not in self.reuse_now or not ready:
             ho, eo, (ah, ae, ff) = block_fwd(self.blocks[idx], h, e, temb, rope)
             self.calls['full'] += len(br)
@@ -145,8 +154,11 @@ class Sampler:
         lat = lat * self.sch.init_noise_sigma
         C = set(plan.get('C', ())); G = set(plan.get('G', ())); O = set(plan.get('O', ()))
         breuse = {int(k): set(v) for k, v in plan.get('B', {}).items()}
+        bureuse = {int(k): set(v) for k, v in plan.get('BU', {}).items()}
         ford, retro_w = plan.get('ford', 'v1'), plan.get('retro_w', 0.)
+        odamp, cmode, cdamp = plan.get('odamp', 1.), plan.get('cmode', 'zero'), plan.get('cdamp', 0.5)
         hist, delta, pend, A_log = [], None, [], {}
+        dhist = []
         kinds = dict(F=0, C=0, G=0, O=0)
         torch.cuda.synchronize(); t0 = time.perf_counter()
         for i, t in enumerate(ts):
@@ -159,7 +171,7 @@ class Sampler:
                     v = vj
                 else:
                     j1, vj1, x0j1 = hist[-2]
-                    r = (i - j) / (j - j1)
+                    r = odamp * (i - j) / (j - j1)
                     if ford == 'v1':
                         v = vj + r * (vj - vj1)
                     else:  # x0-space Taylor-1
@@ -169,6 +181,7 @@ class Sampler:
             else:
                 self.ex.step = i
                 self.ex.reuse_now = breuse.get(i, set())
+                self.ex.reuse_u_now = bureuse.get(i, set())
                 if i in G:
                     kinds['G'] += 1
                     self.ex.branches = ['c']
@@ -177,13 +190,18 @@ class Sampler:
                     kinds['C'] += 1
                     self.ex.branches = ['c']
                     c = self.dit_call(lat, [pe], t)
-                    u = c + delta
+                    if cmode == 't1' and len(dhist) >= 2:
+                        (j0, d0), (j1_, d1) = dhist[-2], dhist[-1]
+                        u = c + d1 + cdamp * (i - j1_) / (j1_ - j0) * (d1 - d0)
+                    else:
+                        u = c + delta
                     v = u + CFG * (c - u)
                 else:
                     kinds['F'] += 1
                     self.ex.branches = ['u', 'c']
                     u, c = self.dit_call(lat, [ne, pe], t).chunk(2)
                     delta = u - c
+                    dhist = (dhist + [(i, delta)])[-2:]
                     v = u + CFG * (c - u)
                 if retro_w > 0 and pend and hist:
                     j, vj, _ = hist[-1]
@@ -285,6 +303,35 @@ def PLANS(phase):
         P['CB_OSx0+L4'] = dict(B={s: set(range(30)) for s in L4 if s % 2 == 0}, O=[s for s in range(4, 30) if s % 2], ford='x01')
         P['CB_OSx0+L4+GI'] = dict(B={s: set(range(30)) for s in L4 if s % 2 == 0}, O=[s for s in range(4, 30) if s % 2], ford='x01',
                                   G=[s for s in range(22, 30) if s % 2 == 0])
+    if phase == 'screen4':
+        # new components: BU (uncond-only block reuse), odamp (damped x0 forecast), cmode=t1 (Taylor CFG-delta)
+        L4 = late(10, 4)
+        odd = lambda lo, hi=30: [s for s in range(lo, hi) if s % 2]
+        even = lambda lo, hi=30: [s for s in range(lo, hi) if s % 2 == 0]
+        allb = set(range(30))
+        OSB = {s: allb for s in L4 if s % 2 == 0}
+        for d in (0.5, 0.75):
+            P[f'S4_OSx0_d{d}'] = dict(O=odd(4), ford='x01', odamp=d)
+            P[f'S4_OSx0_d{d}+L4'] = dict(B=OSB, O=odd(4), ford='x01', odamp=d)
+        P['S4_OSv1_d0.5+L4'] = dict(B=OSB, O=odd(4), ford='v1', odamp=0.5)
+        P['S4_CFt1_k2'] = dict(C=odd(3), cmode='t1', cdamp=0.5)
+        P['S4_CFt1_k2_d1'] = dict(C=odd(3), cmode='t1', cdamp=1.0)
+        P['S4_CFt1_k3'] = dict(C=[s for s in range(3, 30) if s % 3], cmode='t1', cdamp=0.5)
+        P['S4_CFt1_k2_w10'] = dict(C=odd(11), cmode='t1', cdamp=0.5)
+        # BU: uncond branch reuses its block residuals, cond recomputed (refresh u every k steps)
+        for w, k in [(4, 2), (4, 3), (10, 2), (10, 4)]:
+            P[f'S4_BU_w{w}_k{k}'] = dict(BU={s: allb for s in range(w, 30) if (s - w) % k})
+        P['S4_BU_w4_k2_mid'] = dict(BU={s: set(range(3, 27)) for s in range(4, 30) if (s - 4) % 2})
+        # BU in early phase + symmetric B in late phase (refresh rule: BU steps never refresh-of-B)
+        P['S4_BUe+L4'] = dict(BU={s: allb for s in odd(4, 10)}, B=L4)
+        P['S4_BUe+L4+GI8'] = dict(BU={s: allb for s in odd(4, 10)}, B=L4, G=list(range(22, 30)))
+        # BU on B-refresh steps of L4 (only refresh cond there; u refreshed every 2nd refresh)
+        ref = [s for s in range(10, 30) if s not in L4]
+        P['S4_L4+BUref'] = dict(B=L4, BU={s: allb for s in ref[1::2]})
+        # BU on real steps of OS stack
+        realO = [s for s in range(4, 30) if s % 2 == 0]
+        P['S4_OSx0+L4+BUe'] = dict(B=OSB, O=odd(4), ford='x01', BU={s: allb for s in realO if s < 10 and s > 4})
+        P['S4_OSx0_d0.75+L4+GI'] = dict(B=OSB, O=odd(4), ford='x01', odamp=0.75, G=[s for s in even(22)])
     if phase == 'screen3':
         # push speed: stack step skip (O) + late block reuse + late guidance-off; all refresh rules respected
         allb = set(range(30))

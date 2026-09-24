@@ -1,0 +1,1 @@
+cp cog_combo_next2.py cog_combo.py && /root/miniconda3/bin/python cog_combo.py gen --phase confirm --p0 8 --nprompt 8 --seeds 3000 4000 && /root/miniconda3/bin/python cog_combo.py score --phase confirm && /root/miniconda3/bin/python cog_combo.py summary --phase confirm

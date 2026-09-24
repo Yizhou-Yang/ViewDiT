@@ -246,6 +246,54 @@ def PLANS(phase):
         P['CB_OSx0+L4'] = dict(B={s: set(range(30)) for s in L4 if s % 2 == 0}, O=[s for s in range(4, 30) if s % 2], ford='x01')
         P['CB_attnL2+CF'] = dict(B=late(5, 2), bmode='attn', C=[s for s in range(2, 30) if s % 2])
         P['CB_steps20+L4s'] = dict(steps=20, B=late(7, 3, 19))
+    if phase == 'screen2':
+        # rule learned in screen: CFG-reuse (C) steps must never be block-refresh steps (else uncond block cache goes stale).
+        for s in (14, 13, 11, 10):
+            P[f'steps{s}'] = dict(steps=s)
+        L4 = late(10, 4)
+        odd = lambda lo, hi=30: [s for s in range(lo, hi) if s % 2]
+        even = lambda lo, hi=30: [s for s in range(lo, hi) if s % 2 == 0]
+        P['S2_L4+CFe'] = dict(B=L4, C=[3, 5, 7, 9])
+        P['S2_L4+CFe+GI8'] = dict(B=L4, C=[3, 5, 7, 9], G=list(range(22, 30)))
+        P['S2_L4+GI12'] = dict(B=L4, G=list(range(18, 30)))
+        OSB = {s: set(range(30)) for s in L4 if s % 2 == 0}
+        P['S2_OS+L4+GI8'] = dict(B=OSB, O=odd(4), ford='x01', G=even(22))
+        P['S2_OS+L4+CFe'] = dict(B=OSB, O=odd(4), ford='x01', C=[4, 6, 8])
+        P['S2_OS+L4+CFe+GI8'] = dict(B=OSB, O=odd(4), ford='x01', C=[4, 6, 8], G=even(22))
+        P['S2_OSlate+L4'] = dict(B={s: set(range(30)) for s in L4 if s % 2 == 0}, O=odd(11), ford='x01')
+        P['S2_OSlate+L4+CFe+GI8'] = dict(B={s: set(range(30)) for s in L4 if s % 2 == 0}, O=odd(11), ford='x01', C=[3, 5, 7, 9], G=even(22))
+        P['S2_OSv1+L4'] = dict(B=OSB, O=odd(4), ford='v1')
+        # skip 2 of every 3 steps after warmup; block reuse on alternate real late steps
+        O3 = [s for s in range(4, 30) if (s - 4) % 3]
+        real = [s for s in range(10, 30) if s not in O3]
+        P['S2_OS3x0'] = dict(O=O3, ford='x01')
+        P['S2_OS3x0+Bhalf'] = dict(O=O3, ford='x01', B={s: set(range(30)) for s in real[1::2]})
+        P['S2_attnL4+OS'] = dict(B=OSB, bmode='attn', O=odd(4), ford='x01')
+        P['S2_L6+OS'] = dict(B={s: set(range(30)) for s in late(10, 6) if s % 2 == 0}, O=odd(4), ford='x01')
+        P['S2_attnL2w5+CFodd'] = dict(B=late(5, 2), bmode='attn', C=even(6))  # C on reuse (even) steps, refresh (odd) stay full
+        P['S2_L4+CFlate'] = dict(B=L4, C=sorted(L4))  # C only on reuse steps: tests that fixed rule is sufficient
+        P['S2_OS+L4_r25'] = dict(B=OSB, O=odd(4), ford='x01', retro_w=0.25)
+    if phase == 'screen3':
+        # push speed: stack step skip (O) + late block reuse + late guidance-off; all refresh rules respected
+        allb = set(range(30))
+        for warm, k in [(8, 3), (6, 3), (10, 3)]:
+            O = [s for s in range(warm, 30) if (s - warm) % 2]
+            real = [s for s in range(warm, 30) if s not in O]
+            Bm = {s: allb for s in real if (real.index(s) % k) != 0}
+            P[f'S3_O{warm}_B{k}'] = dict(O=O, ford='x01', B=Bm)
+            P[f'S3_O{warm}_B{k}+GI'] = dict(O=O, ford='x01', B=Bm, G=[s for s in real if s >= 22])
+        O4 = [s for s in range(4, 30) if (s - 4) % 3]
+        real4 = [s for s in range(4, 30) if s not in O4]
+        P['S3_OS3_Ball'] = dict(O=O4, ford='x01', B={s: allb for s in real4[2::2]})
+        P['S3_OS3_Ball+GI'] = dict(O=O4, ford='x01', B={s: allb for s in real4[2::2]}, G=[s for s in real4 if s >= 22])
+        # mid-only block reuse (keep first/last 3 blocks fresh) at higher density
+        mid = set(range(3, 27))
+        P['S3_Lmid_k6_w6'] = dict(B={s: mid for s in range(6, 30) if (s - 6) % 6})
+        P['S3_Lall_k6_w6'] = dict(B={s: allb for s in range(6, 30) if (s - 6) % 6})
+        P['S3_Lall_k8_w8'] = dict(B={s: allb for s in range(8, 30) if (s - 8) % 8})
+        P['S3_Lall_k8_w8+GI'] = dict(B={s: allb for s in range(8, 30) if (s - 8) % 8}, G=list(range(22, 30)))
+        for s in (9, 8):
+            P[f'steps{s}'] = dict(steps=s)
     return P
 
 
