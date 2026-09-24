@@ -123,6 +123,7 @@ class Sampler:
         self.sch = CogVideoXDDIMScheduler.from_pretrained(MODEL / 'scheduler')
         self.ex = Executor(self.dit)
         self.emb = torch.load(OUT / 'embeddings.pt', map_location='cpu', weights_only=True)
+        self.calib = {}
 
     def dit_call(self, lat, pe_list, t):
         x = torch.cat([lat] * len(pe_list))
@@ -172,6 +173,24 @@ class Sampler:
                 else:
                     j1, vj1, x0j1 = hist[-2]
                     r = odamp * (i - j) / (j - j1)
+                    if 'ocoef' in plan and str(i) in plan['ocoef']:
+                        r = plan['ocoef'][str(i)] * (i - j) / (j - j1)
+                    if plan.get('calib'):
+                        # small-training: closed-loop LS fit of forecast coefficient against the true DiT output
+                        self.ex.step = i; self.ex.reuse_now = set(); self.ex.reuse_u_now = set(); self.ex.branches = ['u', 'c']
+                        snap = dict(self.ex.mem)
+                        uu, cc = self.dit_call(lat, [ne, pe], t).chunk(2)
+                        self.ex.mem = snap  # probe must not refresh block caches
+                        vt = uu + CFG * (cc - uu)
+                        base = (i - j) / (j - j1)
+                        if ford == 'v1':
+                            dlt, tgt = base * (vj - vj1), vt - vj
+                        else:
+                            x0t = ab ** .5 * x - (1 - ab) ** .5 * vt
+                            dlt, tgt = base * (x0j - x0j1), x0t - x0j
+                        num, den = float((dlt * tgt).sum()), float((dlt * dlt).sum())
+                        acc = self.calib.setdefault(i, [0., 0.]); acc[0] += num; acc[1] += den
+                        r = (num / max(den, 1e-12)) * base
                     if ford == 'v1':
                         v = vj + r * (vj - vj1)
                     else:  # x0-space Taylor-1
@@ -331,7 +350,26 @@ def PLANS(phase):
         # BU on real steps of OS stack
         realO = [s for s in range(4, 30) if s % 2 == 0]
         P['S4_OSx0+L4+BUe'] = dict(B=OSB, O=odd(4), ford='x01', BU={s: allb for s in realO if s < 10 and s > 4})
+        P['S4L_OS3x0'] = dict(O=[s for s in range(4, 30) if (s - 4) % 3], ford='x01')
         P['S4_OSx0_d0.75+L4+GI'] = dict(B=OSB, O=odd(4), ford='x01', odamp=0.75, G=[s for s in even(22)])
+    if phase == 'learn':
+        # small-training component: per-step forecast coefficients fit on prompts 0-3 (seed 5000), tested on held-out prompts 8-15
+        cf = OUT / 'calib_coef.json'
+        coef = json.load(open(cf)) if cf.exists() else {}
+        P['full_perturb1e-2'] = dict(perturb=1e-2)
+        L4 = late(10, 4); allb = set(range(30))
+        odd = lambda lo, hi=30: [s for s in range(lo, hi) if s % 2]
+        OSB = {s: allb for s in L4 if s % 2 == 0}
+        P['L_OSx0'] = dict(O=odd(4), ford='x01')
+        P['L_OSx0+L4'] = dict(B=OSB, O=odd(4), ford='x01')
+        P['L_OSx0_d0.5+L4'] = dict(B=OSB, O=odd(4), ford='x01', odamp=0.5)
+        for k in ('S4_OSx0_d0.5', 'S4_OSx0_d0.5+L4', 'S4_OSv1_d0.5+L4'):
+            if k in coef:
+                b = PLANS('screen4')[k]; P['L_fit_' + k[3:]] = dict(b, ocoef=coef[k], odamp=1.)
+        O3 = [s for s in range(4, 30) if (s - 4) % 3]
+        P['L_OS3x0'] = dict(O=O3, ford='x01')
+        if 'S4L_OS3x0' in coef:
+            P['L_fit_OS3x0'] = dict(O=O3, ford='x01', ocoef=coef['S4L_OS3x0'])
     if phase == 'screen3':
         # push speed: stack step skip (O) + late block reuse + late guidance-off; all refresh rules respected
         allb = set(range(30))
@@ -518,10 +556,28 @@ def cmd_summary(a):
     print('\n'.join(lines))
 
 
+def cmd_calib(a):
+    """fit per-step forecast coefficients on calibration prompts (disjoint from test prompts p0..)."""
+    S = Sampler()
+    base = PLANS('screen4')
+    res = {}
+    for name in a.only.split(','):
+        plan = dict(base[name]); plan['calib'] = True
+        S.calib = {}
+        for i in range(a.p0, a.p0 + a.nprompt):
+            for seed in a.seeds:
+                S.run(TEST[i], seed, plan)
+        res[name] = {str(k): v[0] / max(v[1], 1e-12) for k, v in sorted(S.calib.items())}
+        print(name, res[name], flush=True)
+    f = OUT / 'calib_coef.json'
+    old = json.load(open(f)) if f.exists() else {}
+    old.update(res); json.dump(old, open(f, 'w'), indent=1)
+
+
 if __name__ == '__main__':
     p = argparse.ArgumentParser(); sp = p.add_subparsers(dest='cmd', required=True)
     sp.add_parser('embed'); sp.add_parser('verify')
-    for n in ('gen', 'score', 'summary'):
+    for n in ('gen', 'score', 'summary', 'calib'):
         q = sp.add_parser(n); q.add_argument('--phase', default='screen')
         q.add_argument('--nprompt', type=int, default=8); q.add_argument('--p0', type=int, default=0); q.add_argument('--seeds', type=int, nargs='+', default=[3000])
         q.add_argument('--only', default='')
@@ -529,4 +585,4 @@ if __name__ == '__main__':
     OUT.mkdir(parents=True, exist_ok=True)
     with open(OUT / 'run_meta.jsonl', 'a') as fh:
         fh.write(json.dumps(dict(cmd=a.cmd, args=vars(a), sha=hashlib.sha256(Path(__file__).read_bytes()).hexdigest(), start=time.strftime('%F %T'))) + '\n')
-    dict(embed=cmd_embed, verify=cmd_verify, gen=cmd_gen, score=cmd_score, summary=cmd_summary)[a.cmd](a)
+    dict(embed=cmd_embed, verify=cmd_verify, gen=cmd_gen, score=cmd_score, summary=cmd_summary, calib=cmd_calib)[a.cmd](a)
