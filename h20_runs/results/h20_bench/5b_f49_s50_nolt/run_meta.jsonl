@@ -1,0 +1,1 @@
+{"cmd": "gen", "model": "5b", "F": 49, "N": 50, "suf": "_g3", "args": {"cmd": "gen", "phase": "tune", "nprompt": 4, "p0": 0, "plist": [3], "seeds": [3000], "only": "OURS_Ow17_L4_GI,OURS_O3w13_B2"}, "sha": "f058955a0b41fb83f9d3bc05cb42eed5c3c12e8099254bda45d93536d702af55", "start": "2026-09-28 12:45:56"}
