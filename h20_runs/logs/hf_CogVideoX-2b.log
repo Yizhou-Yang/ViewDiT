@@ -1,0 +1,40 @@
+Fetching 19 files:   0%|          | 0/19 [00:00<?, ?it/s]Downloading '.gitattributes' to 'weights/CogVideoX-2b/.cache/huggingface/download/.gitattributes.a6344aac8c09253b3b630fb776ae94478aa0275b.incomplete'
+Downloading 'scheduler/scheduler_config.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/scheduler/scheduler_config.json.1cd0fa68fef783c8cdf693df52963325916c08e8.incomplete'
+Downloading 'model_index.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/model_index.json.fb567b55facec3424156baa3ae3e1968cc4526b9.incomplete'
+Downloading 'README.md' to 'weights/CogVideoX-2b/.cache/huggingface/download/README.md.9a133026cd6da3606e7027799a16b48464bc4da3.incomplete'
+Downloading 'text_encoder/config.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/text_encoder/config.json.9bb422ed546933cdd114d6f86f08008317aa51ae.incomplete'
+Downloading 'LICENSE' to 'weights/CogVideoX-2b/.cache/huggingface/download/LICENSE.f98e413cf55b56dbabdf693559055d79800f63c9.incomplete'
+Downloading 'README_zh.md' to 'weights/CogVideoX-2b/.cache/huggingface/download/README_zh.md.7f5f684e491484d6d263d8ffedd855c1610ef185.incomplete'
+Downloading '.gitignore' to 'weights/CogVideoX-2b/.cache/huggingface/download/.gitignore.6ff20ae38c4181891eeca6610e30481f8aa843c5.incomplete'
+Download complete. Moving file to weights/CogVideoX-2b/.gitattributes
+Fetching 19 files:   5%|▌         | 1/19 [00:01<00:26,  1.50s/it]Download complete. Moving file to weights/CogVideoX-2b/scheduler/scheduler_config.json
+Download complete. Moving file to weights/CogVideoX-2b/model_index.json
+Download complete. Moving file to weights/CogVideoX-2b/README.md
+Download complete. Moving file to weights/CogVideoX-2b/LICENSE
+Download complete. Moving file to weights/CogVideoX-2b/text_encoder/config.json
+Download complete. Moving file to weights/CogVideoX-2b/README_zh.md
+Download complete. Moving file to weights/CogVideoX-2b/.gitignore
+Fetching 19 files:  11%|█         | 2/19 [00:01<00:11,  1.43it/s]Downloading 'text_encoder/model-00001-of-00002.safetensors' to 'weights/CogVideoX-2b/.cache/huggingface/download/text_encoder/model-00001-of-00002.safetensors.4f2751ceeb2a96edd693e539dc5d6bba0b8d3814f49a9b3798403a0cec4b2e3d.incomplete'
+Downloading 'text_encoder/model-00002-of-00002.safetensors' to 'weights/CogVideoX-2b/.cache/huggingface/download/text_encoder/model-00002-of-00002.safetensors.f63154532130422309532ff56f11945fbea8266c958e3133e8e5aef85c6293c7.incomplete'
+Downloading 'tokenizer/spiece.model' to 'weights/CogVideoX-2b/.cache/huggingface/download/tokenizer/spiece.model.d60acb128cf7b7f2536e8f38a5b18a05535c9e14c7a355904270e15b0945ea86.incomplete'
+Downloading 'tokenizer/added_tokens.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/tokenizer/added_tokens.json.3f5132007c4fcf42b75b65c8b6aa49c7098bcdf4.incomplete'
+Downloading 'text_encoder/model.safetensors.index.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/text_encoder/model.safetensors.index.json.c8728bc3dca59d2616a2a594cbac3ddb9eb77d5b.incomplete'
+Downloading 'tokenizer/special_tokens_map.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/tokenizer/special_tokens_map.json.17ade346a1042cbe0c1436f5bedcbd85c099d582.incomplete'
+Downloading 'tokenizer/tokenizer_config.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/tokenizer/tokenizer_config.json.161715af5ee99558c9fcce7b31d3d547a72c349b.incomplete'
+Downloading 'transformer/config.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/transformer/config.json.d60c8d31d51203a80c264afdf873c20f1cf2c0cb.incomplete'
+Download complete. Moving file to weights/CogVideoX-2b/tokenizer/added_tokens.json
+Download complete. Moving file to weights/CogVideoX-2b/tokenizer/special_tokens_map.json
+Download complete. Moving file to weights/CogVideoX-2b/text_encoder/model.safetensors.index.json
+Download complete. Moving file to weights/CogVideoX-2b/tokenizer/tokenizer_config.json
+Download complete. Moving file to weights/CogVideoX-2b/transformer/config.json
+Download complete. Moving file to weights/CogVideoX-2b/tokenizer/spiece.model
+Downloading 'transformer/diffusion_pytorch_model.safetensors' to 'weights/CogVideoX-2b/.cache/huggingface/download/transformer/diffusion_pytorch_model.safetensors.8fbb6a5e67c70885a8ed8e33df144ac61253e45977be5035fa18cfdf77d386c7.incomplete'
+Downloading 'vae/diffusion_pytorch_model.safetensors' to 'weights/CogVideoX-2b/.cache/huggingface/download/vae/diffusion_pytorch_model.safetensors.a410e48d988c8224cef392b68db0654485cfd41f345f4a3a81d3e6b765bb995e.incomplete'
+Downloading 'vae/config.json' to 'weights/CogVideoX-2b/.cache/huggingface/download/vae/config.json.c402176986b75b2f31dd0837ea8a412f52a57eca.incomplete'
+Download complete. Moving file to weights/CogVideoX-2b/vae/config.json
+Download complete. Moving file to weights/CogVideoX-2b/vae/diffusion_pytorch_model.safetensors
+Download complete. Moving file to weights/CogVideoX-2b/transformer/diffusion_pytorch_model.safetensors
+Download complete. Moving file to weights/CogVideoX-2b/text_encoder/model-00002-of-00002.safetensors
+Download complete. Moving file to weights/CogVideoX-2b/text_encoder/model-00001-of-00002.safetensors
+Fetching 19 files:  47%|████▋     | 9/19 [08:30<10:22, 62.29s/it]Fetching 19 files: 100%|██████████| 19/19 [08:30<00:00, 26.89s/it]
+/data/workspace/viewdit/weights/CogVideoX-2b

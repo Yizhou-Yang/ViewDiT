@@ -1,0 +1,10 @@
+{
+ "model": "2b",
+ "F": 49,
+ "N": 50,
+ "max_abs_diff_vs_pipeline": 0.0,
+ "rel_mean_diff": 0.0,
+ "seconds_full": 166.64516448206268,
+ "gpu": "NVIDIA H20",
+ "NL": 30
+}

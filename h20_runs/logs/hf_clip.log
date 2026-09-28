@@ -1,0 +1,22 @@
+Fetching 10 files:   0%|          | 0/10 [00:00<?, ?it/s]Downloading 'config.json' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/config.json.2c19f6666e0e163c7954df66cb901353fcad088e.incomplete'
+Downloading 'merges.txt' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/merges.txt.76e821f1b6f0a9709293c3b6b51ed90980b3166b.incomplete'
+Downloading '.gitattributes' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/.gitattributes.2bf99854609538f90af03c921c41a0cbde670b2f.incomplete'
+Downloading 'preprocessor_config.json' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/preprocessor_config.json.5a12a1eb250987a4eee0e3e7d7338c4b22724be1.incomplete'
+Downloading 'tokenizer.json' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/tokenizer.json.580c79c6862f31d1f9bd08dd1a415ba0d0502cd9.incomplete'
+Downloading 'special_tokens_map.json' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/special_tokens_map.json.9bfb42aa97dcd61e89f279ccaee988bccb4fabae.incomplete'
+Downloading 'README.md' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/README.md.4ccd659d4a0f649d10686540ea4a2b20ff276eda.incomplete'
+Download complete. Moving file to weights/clip-vit-large-patch14/config.json
+Download complete. Moving file to weights/clip-vit-large-patch14/.gitattributes
+Fetching 10 files:  10%|█         | 1/10 [00:01<00:10,  1.22s/it]Download complete. Moving file to weights/clip-vit-large-patch14/preprocessor_config.json
+Download complete. Moving file to weights/clip-vit-large-patch14/special_tokens_map.json
+Download complete. Moving file to weights/clip-vit-large-patch14/README.md
+Download complete. Moving file to weights/clip-vit-large-patch14/merges.txt
+Fetching 10 files:  40%|████      | 4/10 [00:01<00:02,  2.89it/s]Downloading 'tokenizer_config.json' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/tokenizer_config.json.702bb12920b291cade3706cf215c1604d2255d93.incomplete'
+Downloading 'vocab.json' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/vocab.json.4297ea6a8d2bae1fea8f48b45e257814dcb11f69.incomplete'
+Download complete. Moving file to weights/clip-vit-large-patch14/tokenizer_config.json
+Download complete. Moving file to weights/clip-vit-large-patch14/tokenizer.json
+Downloading 'model.safetensors' to 'weights/clip-vit-large-patch14/.cache/huggingface/download/model.safetensors.a2bf730a0c7debf160f7a6b50b3aaf3703e7e88ac73de7a314903141db026dcb.incomplete'
+Download complete. Moving file to weights/clip-vit-large-patch14/vocab.json
+Download complete. Moving file to weights/clip-vit-large-patch14/model.safetensors
+Fetching 10 files:  50%|█████     | 5/10 [02:53<04:01, 48.21s/it]Fetching 10 files: 100%|██████████| 10/10 [02:53<00:00, 17.38s/it]
+/data/workspace/viewdit/weights/clip-vit-large-patch14
