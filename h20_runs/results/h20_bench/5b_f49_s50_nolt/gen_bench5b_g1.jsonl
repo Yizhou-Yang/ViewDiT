@@ -1,0 +1,1 @@
+{"phase": "bench5b", "prompt": 12, "seed": 3000, "method": "full", "latent_mse_to_full": 0.0, "seconds": 435.82527259294875, "kinds": {"F": 50, "C": 0, "G": 0, "O": 0}, "full": 4200, "reuse": 0, "attn_only": 0, "ffn_only": 0}
