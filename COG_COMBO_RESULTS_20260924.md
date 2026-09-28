@@ -49,5 +49,24 @@ speed = 同 prompt 同 seed 下 DiT 采样墙钟时间之比（相对 full）。
 - cmode=t1：对 CFG 差值 (u−c) 做 Taylor 外推。
 - 小训练组件：闭环最小二乘拟合每步外推系数。在 prompts 0–3（seed 5000）上标定，在 prompts 8–15 上 held-out 测试。
 
+## screen4 / screen5 / confirm / confirm2 / f49 结论（V100，已完成）
+- 后段集中（screen5）：O 和 B 只在 w 之后使用。w 决定质量：w6 为 23.8 dB，w8 为 28.0，w10 为 30.2，w12 为 34.3（1.73×）。
+- held-out（confirm2，prompts 8–15 × 2 seeds，n=16，17f）：
+  - S5_Ow10_L4：1.94× / 30.2 dB；
+  - S5_Ow10_L4_GI22：2.06× / 29.8；
+  - S5_O3w10_B2：2.10× / 28.8；
+  - S2_L6+OS：2.60× / 24.2；
+  - steps14 同速仅 16.0 dB，steps11 为 15.3 dB。
+- 49 帧（f49，n=4）：S5_Ow10_L4 2.00× / 33.1，S5_Ow10_L4_GI22 2.14× / 32.6，S2_L6+OS 2.72× / 27.8，steps11 2.73× / 13.7（ΔCLIP −4.2）。
+- 负结果（screen4）：
+  - BU（只复用无条件分支块残差）有害，锐度会爆到 2–11 倍；
+  - CFG 差值 Taylor 外推（CFt1）有害；
+  - 前段加中间块复用（earlyMid）掉 9 dB；
+  - odamp 0.5 仅 +0.6 dB；
+  - attn-only 复用速度更低、质量几乎一样。
+- learn（每步外推系数最小二乘拟合）：calib_coef.json 已生成，gen 因 plans dump bug 中断，未得出结论；H20 版脚本已修复这个 bug。
+
+## 下一阶段：H20 同设置竞品对标（见 H20_BENCH_RESULTS_20260928.md）
+
 ## 待完成
-- screen3（2.5–3× 堆叠）、screen5（后段密集）、confirm（第一轮胜者，held-out）、screen4（新组件）、learn（小训练）、confirm2（后段胜者，held-out），按此顺序排队。
+- 无（V100 队列已全部完成）。
