@@ -1,0 +1,2 @@
+{"phase": "tune", "prompt": 3, "seed": 3000, "method": "full", "latent_mse_to_full": 0.0, "seconds": 428.5158794440795, "kinds": {"F": 50, "C": 0, "G": 0, "O": 0}, "full": 4200, "reuse": 0, "attn_only": 0, "ffn_only": 0}
+{"phase": "tune", "prompt": 3, "seed": 3000, "method": "full_perturb1e-2", "latent_mse_to_full": 0.0383850559592247, "seconds": 428.29882994899526, "kinds": {"F": 50, "C": 0, "G": 0, "O": 0}, "full": 4200, "reuse": 0, "attn_only": 0, "ffn_only": 0}
