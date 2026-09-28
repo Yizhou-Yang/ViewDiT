@@ -6,65 +6,102 @@ quality key = psnr (psnr_lmse = -10log10 latent MSE to full, used when pixel sco
 
 | method | fam | n | speed | PSNR | LPIPS | latPSNR | dAesth | dCLIP | dSubj | imaging× | motion× | flicker× |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
-| TEA_0.8 | TEA | 4 | 8.11 | nan | nan | 1.96 | nan | nan | nan | nan | nan | nan |
-| TEA_0.5 | TEA | 4 | 5.47 | nan | nan | 3.64 | nan | nan | nan | nan | nan | nan |
-| TEA_0.4 | TEA | 4 | 4.94 | nan | nan | 3.81 | nan | nan | nan | nan | nan | nan |
-| TEAw10_0.8 | TEAw | 4 | 3.81 | nan | nan | 8.49 | nan | nan | nan | nan | nan | nan |
-| TEAw10_0.5_GI | TEAw_GI | 4 | 3.54 | nan | nan | 10.01 | nan | nan | nan | nan | nan | nan |
-| dpm15 | dpm | 4 | 3.35 | nan | nan | 0.85 | nan | nan | nan | nan | nan | nan |
-| unipc15 | unipc | 4 | 3.34 | nan | nan | 0.95 | nan | nan | nan | nan | nan | nan |
-| OURS_O3w10_B3 | OURS | 4 | 3.34 | nan | nan | 11.28 | nan | nan | nan | nan | nan | nan |
-| TEAw10_0.5 | TEAw | 4 | 3.31 | nan | nan | 10.08 | nan | nan | nan | nan | nan | nan |
-| OURS_O4w13_B2_GI | OURS | 4 | 2.94 | nan | nan | 15.29 | nan | nan | nan | nan | nan | nan |
-| TEAw10_0.3 | TEAw | 4 | 2.93 | nan | nan | 12.46 | nan | nan | nan | nan | nan | nan |
-| TEAw10_0.2_GI | TEAw_GI | 4 | 2.75 | nan | nan | 14.19 | nan | nan | nan | nan | nan | nan |
-| TEAw17_0.8 | TEAw | 4 | 2.62 | nan | nan | 9.84 | nan | nan | nan | nan | nan | nan |
-| TEAw17_0.5_GI | TEAw_GI | 4 | 2.55 | nan | nan | 12.99 | nan | nan | nan | nan | nan | nan |
-| dpm20 | dpm | 4 | 2.51 | nan | nan | 1.34 | nan | nan | nan | nan | nan | nan |
-| unipc20 | unipc | 4 | 2.51 | nan | nan | 1.63 | nan | nan | nan | nan | nan | nan |
-| OURS_O3w13_B2 | OURS | 4 | 2.51 | nan | nan | 16.91 | nan | nan | nan | nan | nan | nan |
-| dpm3_20 | dpm3 | 4 | 2.51 | nan | nan | 1.31 | nan | nan | nan | nan | nan | nan |
-| FORAw10_n4 | FORAw | 4 | 2.50 | 26.49 | 0.062 | 13.56 | nan | nan | nan | nan | nan | nan |
-| TEAw10_0.2 | TEAw | 4 | 2.49 | nan | nan | 14.40 | nan | nan | nan | nan | nan | nan |
-| TEAw17_0.5 | TEAw | 4 | 2.38 | nan | nan | 13.35 | nan | nan | nan | nan | nan | nan |
-| TEAw17_0.3 | TEAw | 4 | 2.17 | nan | nan | 17.61 | nan | nan | nan | nan | nan | nan |
-| TEAw17_0.2_GI | TEAw_GI | 4 | 2.16 | nan | nan | 18.94 | nan | nan | nan | nan | nan | nan |
-| Oonly_O3w10 | Oonly | 4 | 2.09 | nan | nan | 14.08 | nan | nan | nan | nan | nan | nan |
-| FORAw10_n3 | FORAw | 4 | 2.08 | 27.91 | 0.052 | 14.64 | nan | nan | nan | nan | nan | nan |
-| OURS_Ow17_L4_GI | OURS | 4 | 2.08 | nan | nan | 21.42 | nan | nan | nan | nan | nan | nan |
-| TSw10_n3 | TSw | 4 | 2.07 | nan | nan | 14.98 | nan | nan | nan | nan | nan | nan |
-| dpm25 | dpm | 4 | 2.01 | nan | nan | 2.01 | nan | nan | nan | nan | nan | nan |
-| unipc25 | unipc | 4 | 2.01 | nan | nan | 2.45 | nan | nan | nan | nan | nan | nan |
-| TEAw17_0.2 | TEAw | 4 | 2.00 | nan | nan | 20.34 | nan | nan | nan | nan | nan | nan |
-| FORAw17_n4 | FORAw | 4 | 1.93 | nan | nan | 22.09 | nan | nan | nan | nan | nan | nan |
-| TEAw10_0.1 | TEAw | 4 | 1.85 | nan | nan | 17.95 | nan | nan | nan | nan | nan | nan |
-| Oonly_O3w17 | Oonly | 4 | 1.79 | nan | nan | 24.46 | nan | nan | nan | nan | nan | nan |
-| OURS_Ow20_L4 | OURS | 4 | 1.79 | nan | nan | 25.58 | nan | nan | nan | nan | nan | nan |
-| FORAw17_n3 | FORAw | 4 | 1.79 | nan | nan | 23.64 | nan | nan | nan | nan | nan | nan |
-| TSw17_n3 | TSw | 4 | 1.78 | nan | nan | 25.14 | nan | nan | nan | nan | nan | nan |
-| dpm30 | dpm | 4 | 1.68 | nan | nan | 2.60 | nan | nan | nan | nan | nan | nan |
-| Oonly_O2w10 | Oonly | 4 | 1.67 | nan | nan | 18.28 | nan | nan | nan | nan | nan | nan |
-| unipc30 | unipc | 4 | 1.67 | nan | nan | 3.16 | nan | nan | nan | nan | nan | nan |
-| FORAw10_n2 | FORAw | 4 | 1.67 | 31.36 | 0.028 | 18.15 | nan | nan | nan | nan | nan | nan |
-| TEAw17_0.1 | TEAw | 4 | 1.67 | nan | nan | 25.90 | nan | nan | nan | nan | nan | nan |
-| TSw10_n2 | TSw | 4 | 1.66 | nan | nan | 19.36 | nan | nan | nan | nan | nan | nan |
-| Oonly_O2w17 | Oonly | 4 | 1.48 | nan | nan | 31.30 | nan | nan | nan | nan | nan | nan |
-| FORAw17_n2 | FORAw | 4 | 1.47 | 41.14 | 0.003 | 28.61 | nan | nan | nan | nan | nan | nan |
-| TSw17_n2 | TSw | 4 | 1.47 | nan | nan | 30.89 | nan | nan | nan | nan | nan | nan |
-| full_perturb1e-2 | full_perturb1e-2 | 4 | 1.00 | nan | nan | 17.67 | nan | nan | nan | nan | nan | nan |
-| full | full | 4 | 1.00 | nan | nan | 120.00 | nan | nan | nan | nan | nan | nan |
+| TEA_0.8 | TEA | 4 | 8.11 | 11.76 | 0.558 | 1.96 | -0.999 | 2.17 | -0.0183 | 0.446 | 0.967 | 0.927 |
+| TEA_0.5 | TEA | 4 | 5.47 | 13.59 | 0.436 | 3.64 | -0.546 | -0.15 | -0.0067 | 0.900 | 0.857 | 0.808 |
+| TEA_0.4 | TEA | 4 | 4.94 | 13.83 | 0.416 | 3.81 | -0.492 | 0.96 | -0.0041 | 1.016 | 0.926 | 0.888 |
+| TEAw10_0.8 | TEAw | 4 | 3.81 | 21.02 | 0.187 | 8.49 | -0.513 | 0.81 | -0.0090 | 0.808 | 1.013 | 0.974 |
+| TEAw10_0.5_GI | TEAw_GI | 4 | 3.54 | 22.68 | 0.137 | 10.01 | -0.456 | 0.68 | -0.0047 | 0.859 | 1.004 | 0.972 |
+| dpm15 | dpm | 4 | 3.35 | 10.30 | 0.553 | 0.85 | -0.081 | 2.22 | 0.0027 | 1.117 | 1.164 | 1.270 |
+| unipc15 | unipc | 4 | 3.34 | 10.30 | 0.543 | 0.95 | -0.079 | 1.79 | -0.0016 | 0.999 | 1.190 | 1.281 |
+| OURS_O3w10_B3 | OURS | 4 | 3.34 | 23.31 | 0.102 | 11.28 | -0.210 | 0.08 | -0.0021 | 0.952 | 0.989 | 0.979 |
+| TEAw10_0.5 | TEAw | 4 | 3.31 | 22.74 | 0.133 | 10.08 | -0.411 | 0.69 | -0.0047 | 0.866 | 1.011 | 0.981 |
+| OURS_O4w13_B2_GI | OURS | 4 | 2.94 | 27.19 | 0.049 | 15.29 | -0.138 | -0.09 | -0.0017 | 1.031 | 1.011 | 1.010 |
+| TEAw10_0.3 | TEAw | 4 | 2.93 | 25.13 | 0.081 | 12.46 | -0.260 | 0.44 | -0.0060 | 0.939 | 0.992 | 0.981 |
+| TEAw10_0.2_GI | TEAw_GI | 4 | 2.75 | 26.71 | 0.059 | 14.19 | -0.224 | 0.51 | -0.0034 | 0.962 | 0.987 | 0.983 |
+| TEAw17_0.8 | TEAw | 4 | 2.62 | 23.61 | 0.143 | 9.84 | -0.415 | 0.93 | -0.0065 | 0.935 | 1.116 | 1.062 |
+| TEAw17_0.5_GI | TEAw_GI | 4 | 2.55 | 26.53 | 0.073 | 12.99 | -0.314 | 0.79 | -0.0044 | 0.969 | 1.049 | 1.028 |
+| dpm20 | dpm | 4 | 2.51 | 10.83 | 0.524 | 1.34 | 0.051 | 1.74 | 0.0037 | 0.843 | 1.194 | 1.284 |
+| unipc20 | unipc | 4 | 2.51 | 11.19 | 0.504 | 1.63 | 0.008 | 1.34 | 0.0005 | 0.849 | 1.160 | 1.226 |
+| OURS_O3w13_B2 | OURS | 4 | 2.51 | 29.19 | 0.033 | 16.91 | -0.141 | 0.01 | -0.0024 | 1.013 | 1.014 | 1.011 |
+| dpm3_20 | dpm3 | 4 | 2.51 | 10.78 | 0.524 | 1.31 | 0.052 | 1.52 | 0.0011 | 0.858 | 1.193 | 1.280 |
+| FORAw10_n4 | FORAw | 4 | 2.50 | 26.34 | 0.060 | 13.56 | -0.239 | 0.46 | -0.0086 | 1.025 | 1.013 | 1.011 |
+| TEAw10_0.2 | TEAw | 4 | 2.49 | 27.03 | 0.055 | 14.40 | -0.213 | 0.41 | -0.0039 | 0.967 | 0.994 | 0.990 |
+| TEAw17_0.5 | TEAw | 4 | 2.38 | 26.88 | 0.067 | 13.35 | -0.278 | 0.64 | -0.0049 | 0.983 | 1.054 | 1.035 |
+| TEAw17_0.3 | TEAw | 4 | 2.17 | 30.85 | 0.027 | 17.61 | -0.139 | 0.24 | -0.0048 | 1.004 | 1.028 | 1.022 |
+| TEAw17_0.2_GI | TEAw_GI | 4 | 2.16 | 32.13 | 0.022 | 18.94 | -0.123 | 0.28 | -0.0015 | 1.009 | 1.014 | 1.011 |
+| Oonly_O3w10 | Oonly | 4 | 2.09 | 27.06 | 0.053 | 14.08 | -0.008 | 0.08 | -0.0010 | 1.024 | 0.997 | 1.001 |
+| FORAw10_n3 | FORAw | 4 | 2.08 | 27.91 | 0.049 | 14.64 | -0.127 | 0.50 | -0.0011 | 0.994 | 0.995 | 0.994 |
+| OURS_Ow17_L4_GI | OURS | 4 | 2.08 | 34.27 | 0.014 | 21.42 | -0.032 | 0.05 | 0.0005 | 1.020 | 1.010 | 1.010 |
+| TSw10_n3 | TSw | 4 | 2.07 | 28.58 | 0.043 | 14.98 | -0.091 | 0.51 | -0.0004 | 1.014 | 1.005 | 1.007 |
+| dpm25 | dpm | 4 | 2.01 | 11.61 | 0.490 | 2.01 | 0.084 | 1.67 | 0.0050 | 0.772 | 1.114 | 1.173 |
+| unipc25 | unipc | 4 | 2.01 | 12.10 | 0.468 | 2.45 | -0.056 | 1.99 | 0.0041 | 0.782 | 1.054 | 1.087 |
+| TEAw17_0.2 | TEAw | 4 | 2.00 | 33.43 | 0.015 | 20.34 | -0.122 | 0.16 | -0.0035 | 1.013 | 1.020 | 1.018 |
+| FORAw17_n4 | FORAw | 4 | 1.93 | 34.90 | 0.011 | 22.09 | -0.047 | 0.03 | -0.0010 | 1.027 | 1.020 | 1.020 |
+| TEAw10_0.1 | TEAw | 4 | 1.85 | 30.75 | 0.027 | 17.95 | -0.095 | 0.21 | -0.0008 | 0.979 | 1.000 | 0.999 |
+| Oonly_O3w17 | Oonly | 4 | 1.79 | 37.00 | 0.007 | 24.46 | 0.005 | 0.05 | 0.0004 | 1.002 | 1.003 | 1.003 |
+| OURS_Ow20_L4 | OURS | 4 | 1.79 | 38.26 | 0.005 | 25.58 | -0.025 | 0.02 | -0.0002 | 1.008 | 1.008 | 1.008 |
+| FORAw17_n3 | FORAw | 4 | 1.79 | 36.09 | 0.008 | 23.64 | -0.021 | -0.03 | -0.0002 | 1.051 | 1.028 | 1.030 |
+| TSw17_n3 | TSw | 4 | 1.78 | 37.63 | 0.006 | 25.14 | 0.012 | -0.07 | 0.0002 | 1.035 | 1.018 | 1.020 |
+| dpm30 | dpm | 4 | 1.68 | 12.17 | 0.457 | 2.60 | 0.035 | 1.96 | 0.0031 | 0.955 | 1.140 | 1.198 |
+| Oonly_O2w10 | Oonly | 4 | 1.67 | 31.45 | 0.023 | 18.28 | -0.057 | 0.14 | -0.0022 | 1.020 | 0.997 | 1.000 |
+| unipc30 | unipc | 4 | 1.67 | 12.85 | 0.433 | 3.16 | -0.069 | 1.90 | 0.0038 | 0.919 | 1.018 | 1.023 |
+| FORAw10_n2 | FORAw | 4 | 1.67 | 31.35 | 0.026 | 18.15 | -0.093 | 0.23 | -0.0013 | 1.019 | 1.005 | 1.007 |
+| TEAw17_0.1 | TEAw | 4 | 1.67 | 38.82 | 0.005 | 25.90 | -0.039 | 0.02 | -0.0018 | 1.014 | 1.011 | 1.011 |
+| TSw10_n2 | TSw | 4 | 1.66 | 32.51 | 0.020 | 19.36 | -0.061 | 0.21 | -0.0015 | 1.024 | 1.003 | 1.006 |
+| Oonly_O2w17 | Oonly | 4 | 1.48 | 44.32 | 0.002 | 31.30 | -0.006 | 0.03 | -0.0004 | 1.001 | 1.000 | 1.000 |
+| FORAw17_n2 | FORAw | 4 | 1.47 | 41.33 | 0.003 | 28.61 | -0.019 | -0.01 | -0.0002 | 1.010 | 1.008 | 1.008 |
+| TSw17_n2 | TSw | 4 | 1.47 | 43.66 | 0.002 | 30.89 | -0.018 | 0.00 | -0.0001 | 1.007 | 1.004 | 1.005 |
+| full_perturb1e-2 | full_perturb1e-2 | 4 | 1.00 | 32.72 | 0.025 | 17.67 | 0.013 | -0.18 | -0.0006 | 1.003 | 1.002 | 1.002 |
+| full | full | 4 | 1.00 | nan | nan | 120.00 | 0.000 | 0.00 | 0.0000 | 1.000 | 1.000 | 1.000 |
 
 ## Best of each family per speed tier (by quality key)
 
 ### 1.3-1.65x
-- FORAw17_n2 (FORAw): 1.47x, psnr 41.14, LPIPS 0.003, dAesth nan, dCLIP nan
+- Oonly_O2w17 (Oonly): 1.48x, psnr 44.32, LPIPS 0.002, dAesth -0.006, dCLIP 0.03
+- TSw17_n2 (TSw): 1.47x, psnr 43.66, LPIPS 0.002, dAesth -0.018, dCLIP 0.00
+- FORAw17_n2 (FORAw): 1.47x, psnr 41.33, LPIPS 0.003, dAesth -0.019, dCLIP -0.01
 
 ### 1.65-1.95x
-- FORAw10_n2 (FORAw): 1.67x, psnr 31.36, LPIPS 0.028, dAesth nan, dCLIP nan
+- TEAw17_0.1 (TEAw): 1.67x, psnr 38.82, LPIPS 0.005, dAesth -0.039, dCLIP 0.02
+- OURS_Ow20_L4 (OURS): 1.79x, psnr 38.26, LPIPS 0.005, dAesth -0.025, dCLIP 0.02
+- TSw17_n3 (TSw): 1.78x, psnr 37.63, LPIPS 0.006, dAesth 0.012, dCLIP -0.07
+- Oonly_O3w17 (Oonly): 1.79x, psnr 37.00, LPIPS 0.007, dAesth 0.005, dCLIP 0.05
+- FORAw17_n3 (FORAw): 1.79x, psnr 36.09, LPIPS 0.008, dAesth -0.021, dCLIP -0.03
+- unipc30 (unipc): 1.67x, psnr 12.85, LPIPS 0.433, dAesth -0.069, dCLIP 1.90
+- dpm30 (dpm): 1.68x, psnr 12.17, LPIPS 0.457, dAesth 0.035, dCLIP 1.96
 
 ### 1.95-2.25x
-- FORAw10_n3 (FORAw): 2.08x, psnr 27.91, LPIPS 0.052, dAesth nan, dCLIP nan
+- OURS_Ow17_L4_GI (OURS): 2.08x, psnr 34.27, LPIPS 0.014, dAesth -0.032, dCLIP 0.05
+- TEAw17_0.2 (TEAw): 2.00x, psnr 33.43, LPIPS 0.015, dAesth -0.122, dCLIP 0.16
+- TEAw17_0.2_GI (TEAw_GI): 2.16x, psnr 32.13, LPIPS 0.022, dAesth -0.123, dCLIP 0.28
+- TSw10_n3 (TSw): 2.07x, psnr 28.58, LPIPS 0.043, dAesth -0.091, dCLIP 0.51
+- FORAw10_n3 (FORAw): 2.08x, psnr 27.91, LPIPS 0.049, dAesth -0.127, dCLIP 0.50
+- Oonly_O3w10 (Oonly): 2.09x, psnr 27.06, LPIPS 0.053, dAesth -0.008, dCLIP 0.08
+- unipc25 (unipc): 2.01x, psnr 12.10, LPIPS 0.468, dAesth -0.056, dCLIP 1.99
+- dpm25 (dpm): 2.01x, psnr 11.61, LPIPS 0.490, dAesth 0.084, dCLIP 1.67
 
 ### 2.25-2.7x
-- FORAw10_n4 (FORAw): 2.50x, psnr 26.49, LPIPS 0.062, dAesth nan, dCLIP nan
+- OURS_O3w13_B2 (OURS): 2.51x, psnr 29.19, LPIPS 0.033, dAesth -0.141, dCLIP 0.01
+- TEAw10_0.2 (TEAw): 2.49x, psnr 27.03, LPIPS 0.055, dAesth -0.213, dCLIP 0.41
+- TEAw17_0.5_GI (TEAw_GI): 2.55x, psnr 26.53, LPIPS 0.073, dAesth -0.314, dCLIP 0.79
+- FORAw10_n4 (FORAw): 2.50x, psnr 26.34, LPIPS 0.060, dAesth -0.239, dCLIP 0.46
+- unipc20 (unipc): 2.51x, psnr 11.19, LPIPS 0.504, dAesth 0.008, dCLIP 1.34
+- dpm20 (dpm): 2.51x, psnr 10.83, LPIPS 0.524, dAesth 0.051, dCLIP 1.74
+- dpm3_20 (dpm3): 2.51x, psnr 10.78, LPIPS 0.524, dAesth 0.052, dCLIP 1.52
+
+### 2.7-3.1x
+- OURS_O4w13_B2_GI (OURS): 2.94x, psnr 27.19, LPIPS 0.049, dAesth -0.138, dCLIP -0.09
+- TEAw10_0.2_GI (TEAw_GI): 2.75x, psnr 26.71, LPIPS 0.059, dAesth -0.224, dCLIP 0.51
+- TEAw10_0.3 (TEAw): 2.93x, psnr 25.13, LPIPS 0.081, dAesth -0.260, dCLIP 0.44
+
+### 3.1-3.6x
+- OURS_O3w10_B3 (OURS): 3.34x, psnr 23.31, LPIPS 0.102, dAesth -0.210, dCLIP 0.08
+- TEAw10_0.5 (TEAw): 3.31x, psnr 22.74, LPIPS 0.133, dAesth -0.411, dCLIP 0.69
+- TEAw10_0.5_GI (TEAw_GI): 3.54x, psnr 22.68, LPIPS 0.137, dAesth -0.456, dCLIP 0.68
+- unipc15 (unipc): 3.34x, psnr 10.30, LPIPS 0.543, dAesth -0.079, dCLIP 1.79
+- dpm15 (dpm): 3.35x, psnr 10.30, LPIPS 0.553, dAesth -0.081, dCLIP 2.22
+
+### 3.6-5.0x
+- TEAw10_0.8 (TEAw): 3.81x, psnr 21.02, LPIPS 0.187, dAesth -0.513, dCLIP 0.81
+- TEA_0.4 (TEA): 4.94x, psnr 13.83, LPIPS 0.416, dAesth -0.492, dCLIP 0.96
 
