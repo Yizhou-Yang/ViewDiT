@@ -279,6 +279,18 @@ def PLANS(phase, S=None):
         P[f'OURS_O4w{sc(8)}_B2'] = lateplan(sc(8), kr=2, ko=4, NL=NL)
         P[f'OURS_Ow{sc(10)}_L6'] = lateplan(sc(10), kr=6, NL=NL)
         P[f'OURS_Ow{sc(4)}_L6_GI'] = lateplan(sc(4), kr=6, gi=sc(22), NL=NL)
+    if phase == 'tune2':
+        for w30 in (6, 8):
+            P[f'OURS_O4w{sc(w30)}_B2'] = lateplan(sc(w30), kr=2, ko=4, NL=NL)
+            P[f'OURS_O4w{sc(w30)}_B3'] = lateplan(sc(w30), kr=3, ko=4, NL=NL)
+        P[f'OURS_O5w{sc(8)}_B2'] = lateplan(sc(8), kr=2, ko=5, NL=NL)
+        P[f'OURS_O4w{sc(8)}_B2_GI'] = lateplan(sc(8), kr=2, ko=4, gi=sc(22), NL=NL)
+        P[f'OURS_O4w{sc(10)}_B3'] = lateplan(sc(10), kr=3, ko=4, NL=NL)
+    if phase in ('tune2', 'bench', 'bench5b'):
+        tmid = [i for i in range(N) if 100 < 1000 * (1 - i / N) < 800]
+        # FasterCache-style, refresh-rule respected: attn refresh steps full (u,c); reuse steps = cond-only + uncond from CFG delta
+        P['FC_v2'] = dict(B={s: allb for n, s in enumerate(tmid) if n % 2}, bmode='attn', C=[s for n, s in enumerate(tmid) if n % 2])
+        P['FC_v2_k3'] = dict(B={s: allb for n, s in enumerate(tmid) if n % 3}, bmode='attn', C=[s for n, s in enumerate(tmid) if n % 3])
     if phase in ('tune', 'bench', 'bench5b'):
         for s in (N // 2, int(N * 0.4), int(N * 0.34)):
             P[f'steps{s}'] = dict(steps=s)
@@ -297,7 +309,7 @@ def PLANS(phase, S=None):
         for th in (0.1, 0.15, 0.2, 0.3):
             P[f'TEA_{th}'] = tea(th)
         sel = json.load(open(OUT.parent / f'{MNAME}_f{F}_s{N}_selected.json')) if (OUT.parent / f'{MNAME}_f{F}_s{N}_selected.json').exists() else None
-        base = PLANS('tune', S)
+        base = {**PLANS('tune', S), **PLANS('tune2', S)}
         keys = sel or [k for k in base if k.startswith('OURS_')]
         for k in keys:
             if k in base:
