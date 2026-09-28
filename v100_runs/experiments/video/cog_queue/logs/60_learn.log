@@ -1,0 +1,16 @@
+S4_OSx0_d0.5 {'5': 0.03136664779341816, '7': -0.3224727131535952, '9': -0.12223408213134263, '11': -0.07667208492462003, '13': -0.07171003345942471, '15': 0.13509614641478512, '17': 0.14106060616945296, '19': 0.0777439740467338, '21': 0.23565288615028568, '23': 0.28188493321191327, '25': 0.25028008247852046, '27': 0.34225402805279187, '29': 0.5917245850892263}
+S4_OSx0_d0.5+L4 {'5': 0.03136664779341816, '7': -0.3224727131535952, '9': -0.12223408213134263, '11': -0.07667208492462003, '13': -1.0794944593186728, '15': -0.05865863218313933, '17': -1.1267163170541479, '19': 0.03143041670930457, '21': -1.1350777092128579, '23': 0.053651875488126596, '25': -0.9194489742940518, '27': 0.07920014654887333, '29': -0.07509079605190697}
+S4_OSv1_d0.5+L4 {'5': 0.03222483875279225, '7': -0.3193800828262685, '9': -0.1134314377162763, '11': -0.057017354332896064, '13': 0.49660295159487705, '15': 0.01694929785868492, '17': 1.3498069226337364, '19': 0.24369328040429547, '21': 2.0202959825143036, '23': 0.5281510050175513, '25': 2.395405080173589, '27': 0.7264175068484976, '29': 2.631238728863361}
+S4L_OS3x0 {'5': 0.03136664779341816, '6': -0.058284891675884694, '8': -0.658472804365844, '9': -0.47054551057800237, '11': -0.30089808803455753, '12': -0.2460805297110722, '14': -0.17504622364435635, '15': -0.19263422165119623, '17': 0.06248957892864633, '18': -0.005791765181694038, '20': 0.17054432144253698, '21': 0.11931360812508009, '23': 0.30702827164293894, '24': 0.28468238272275936, '26': 0.39976566073777203, '27': 0.4216321108972741, '29': 0.7880373262499356}
+Traceback (most recent call last):
+  File "/root/viewdit/experiments/video/cog_combo.py", line 634, in <module>
+    dict(embed=cmd_embed, verify=cmd_verify, gen=cmd_gen, score=cmd_score, summary=cmd_summary, calib=cmd_calib)[a.cmd](a)
+  File "/root/viewdit/experiments/video/cog_combo.py", line 505, in cmd_gen
+    json.dump({k: {kk: (sorted(vv) if isinstance(vv, (set, list)) else ({str(s): sorted(b) for s, b in vv.items()} if isinstance(vv, dict) else vv))
+  File "/root/viewdit/experiments/video/cog_combo.py", line 505, in <dictcomp>
+    json.dump({k: {kk: (sorted(vv) if isinstance(vv, (set, list)) else ({str(s): sorted(b) for s, b in vv.items()} if isinstance(vv, dict) else vv))
+  File "/root/viewdit/experiments/video/cog_combo.py", line 505, in <dictcomp>
+    json.dump({k: {kk: (sorted(vv) if isinstance(vv, (set, list)) else ({str(s): sorted(b) for s, b in vv.items()} if isinstance(vv, dict) else vv))
+  File "/root/viewdit/experiments/video/cog_combo.py", line 505, in <dictcomp>
+    json.dump({k: {kk: (sorted(vv) if isinstance(vv, (set, list)) else ({str(s): sorted(b) for s, b in vv.items()} if isinstance(vv, dict) else vv))
+TypeError: 'float' object is not iterable

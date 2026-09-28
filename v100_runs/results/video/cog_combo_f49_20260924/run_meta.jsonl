@@ -1,0 +1,3 @@
+{"cmd": "gen", "args": {"cmd": "gen", "phase": "confirm2", "nprompt": 4, "p0": 8, "seeds": [3000], "only": ""}, "sha": "51617f15c36c4744659d4bd5a614190d0cce7e401ac767755429f4fd05d6877a", "start": "2026-09-24 22:09:29"}
+{"cmd": "score", "args": {"cmd": "score", "phase": "confirm2", "nprompt": 8, "p0": 0, "seeds": [3000], "only": ""}, "sha": "51617f15c36c4744659d4bd5a614190d0cce7e401ac767755429f4fd05d6877a", "start": "2026-09-24 23:32:29"}
+{"cmd": "summary", "args": {"cmd": "summary", "phase": "confirm2", "nprompt": 8, "p0": 0, "seeds": [3000], "only": ""}, "sha": "51617f15c36c4744659d4bd5a614190d0cce7e401ac767755429f4fd05d6877a", "start": "2026-09-24 23:42:27"}
