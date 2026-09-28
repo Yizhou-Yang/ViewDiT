@@ -1,0 +1,1 @@
+WARNING: Running pip install with root privileges is generally not a good idea. Try `python3 -m pip install --user` instead.

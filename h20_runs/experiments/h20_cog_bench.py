@@ -159,15 +159,16 @@ class Sampler:
                         return_dict=False)[0].float()
 
     @torch.no_grad()
-    def tea_schedule(self, steps, th):
-        """TeaCache decisions depend only on the timestep embedding -> deterministic per schedule."""
+    def tea_schedule(self, steps, th, w=0):
+        """TeaCache decisions depend only on the timestep embedding -> deterministic per schedule.
+        w>0: fairness variant that forbids skipping before warm step w (same late-concentration prior as ours)."""
         self.sch.set_timesteps(steps, device='cuda')
         c = TEA_COEF[MNAME]
         poly = lambda x: c[0] * x ** 4 + c[1] * x ** 3 + c[2] * x ** 2 + c[3] * x + c[4]
         prev, acc, skip = None, 0., []
         for i, t in enumerate(self.sch.timesteps):
             emb = self.dit.time_embedding(self.dit.time_proj(t[None]).to(DT), None).float()
-            if i == 0 or i == steps - 1:
+            if i == 0 or i == steps - 1 or i < w:
                 acc = 0.
             else:
                 acc += poly(float((emb - prev).abs().mean() / prev.abs().mean()))
@@ -179,10 +180,34 @@ class Sampler:
         return skip
 
     @torch.no_grad()
+    def get_sch(self, solver):
+        """Higher-order solvers on the SAME noise schedule (CogVideoX snr-shift + zero-SNR alphas via trained_betas)."""
+        if not solver:
+            return self.sch
+        self._sch = getattr(self, '_sch', {})
+        if solver not in self._sch:
+            from diffusers import DPMSolverMultistepScheduler, UniPCMultistepScheduler
+            ac = self.sch.alphas_cumprod.clone().double()
+            ac[-1] = max(float(ac[-1]), 2 ** -24)
+            prev = torch.cat([torch.ones(1, dtype=ac.dtype), ac[:-1]])
+            kw = dict(num_train_timesteps=len(ac), trained_betas=(1 - ac / prev).float().tolist(), prediction_type='v_prediction',
+                      timestep_spacing='trailing', final_sigmas_type='zero')
+            if solver == 'dpm':
+                self._sch[solver] = DPMSolverMultistepScheduler(algorithm_type='dpmsolver++', solver_order=2, **kw)
+            elif solver == 'dpm3':
+                self._sch[solver] = DPMSolverMultistepScheduler(algorithm_type='dpmsolver++', solver_order=3, **kw)
+            else:
+                self._sch[solver] = UniPCMultistepScheduler(solver_order=2, **kw)
+        return self._sch[solver]
+
+    @torch.no_grad()
     def run(self, prompt, seed, plan):
         steps = plan.get('steps', N)
+        solver = plan.get('solver')
+        sch = self.get_sch(solver)
         self.sch.set_timesteps(steps, device='cuda')
-        ts = self.sch.timesteps
+        sch.set_timesteps(steps, device='cuda')
+        ts = sch.timesteps
         self.ex.reset(plan.get('bmode', 'zero'), plan.get('damp', 0.5), plan.get('bmode') == 'attn')
         pe, ne = self.emb[prompt].cuda().to(DT), self.emb[''].cuda().to(DT)
         g = torch.Generator(device='cuda').manual_seed(seed)
@@ -233,7 +258,10 @@ class Sampler:
                     delta = u - c
                     v = u + CFG * (c - u)
                 hist = (hist + [(i, v, ab ** .5 * x - (1 - ab) ** .5 * v)])[-2:]
-            lat = self.sch.step(v, t, lat, eta=0., return_dict=False)[0].to(DT)
+            if solver:
+                lat = sch.step(v, t, lat.float(), return_dict=False)[0].to(DT)
+            else:
+                lat = self.sch.step(v, t, lat, eta=0., return_dict=False)[0].to(DT)
         torch.cuda.synchronize()
         assert torch.isfinite(lat.float()).all()
         return lat, dict(seconds=time.perf_counter() - t0, kinds=kinds, **self.ex.calls)
@@ -262,6 +290,40 @@ def PLANS(phase, S=None):
     allb = set(range(NL))
     P = {'full': {}}
     tea = lambda th: dict(B={s: allb for s in S.tea_schedule(N, th)}) if S else {}
+    if phase in ('fair', 'fairbench'):
+        P['full_perturb1e-2'] = dict(perturb=1e-2)
+    if phase == 'fair':
+        # (1) fairness: competitors get the same late-concentration prior (warm w) and late guidance-off, with a wide knob sweep
+        for w30 in (6, 10):
+            w = sc(w30)
+            for th in (0.1, 0.2, 0.3, 0.5, 0.8):
+                P[f'TEAw{w}_{th}'] = dict(B={s: allb for s in S.tea_schedule(N, th, w)}) if S else {}
+            for th in (0.2, 0.5):
+                pl = dict(B={s: allb for s in S.tea_schedule(N, th, w)}) if S else {}
+                pl['G'] = list(range(sc(22), N))
+                P[f'TEAw{w}_{th}_GI'] = pl
+            for kr in (2, 3, 4):
+                P[f'FORAw{w}_n{kr}'] = lateplan(w, kr=kr, ko=1, NL=NL)          # ablation: B only (late static reuse)
+            for kr in (2, 3):
+                P[f'TSw{w}_n{kr}'] = lateplan(w, kr=kr, ko=1, bmode='t1', NL=NL)  # TaylorSeer + warm
+            for ko in (2, 3):
+                P[f'Oonly_O{ko}w{w}'] = lateplan(w, kr=0, ko=ko, NL=NL)          # ablation: O only (x0 Taylor skip)
+        for th in (0.4, 0.5, 0.8):
+            P[f'TEA_{th}'] = tea(th)
+        # (2) higher-order ODE solvers on the same schedule
+        for s in (15, 20, 25, 30):
+            P[f'dpm{s}'] = dict(steps=s, solver='dpm')
+            P[f'unipc{s}'] = dict(steps=s, solver='unipc')
+        P['dpm3_20'] = dict(steps=20, solver='dpm3')
+        # anchors (ours, already selected)
+        for k in ('OURS_Ow20_L4', 'OURS_Ow17_L4_GI', 'OURS_O3w13_B2', 'OURS_O4w13_B2_GI', 'OURS_O3w10_B3'):
+            P[k] = {**PLANS('tune', S), **PLANS('tune2', S)}[k]
+        # (3) our stack on top of a higher-order solver is not defined (O uses DDIM x0 extrapolation) -> not tested
+    if phase == 'fairbench':
+        fp = OUT.parent / f'{MNAME}_f{F}_s{N}_fairsel.json'
+        base = {**PLANS('fair', S), **PLANS('tune', S), **PLANS('tune2', S)}
+        for k in json.load(open(fp)):
+            P[k] = base[k]
     if phase in ('tune', 'bench', 'bench5b'):
         P['full_perturb1e-2'] = dict(perturb=1e-2)
     if phase == 'tune':
