@@ -22,7 +22,7 @@ def family(m):
     for p in ('TEAw', 'TEA_', 'FORAw', 'FORA_', 'TSw', 'TS_', 'Oonly', 'PAB', 'FC', 'dpm3_', 'dpm', 'unipc', 'steps'):
         if m.startswith(p):
             f = p.rstrip('_')
-            return f + ('_GI' if m.endswith('_GI') and p == 'TEAw' else '')
+            return f + ('_GI' if m.endswith('_GI') and p in ('TEAw', 'FORAw') else '')
     return m
 
 

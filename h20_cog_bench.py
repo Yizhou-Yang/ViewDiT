@@ -294,16 +294,17 @@ def PLANS(phase, S=None):
         P['full_perturb1e-2'] = dict(perturb=1e-2)
     if phase == 'fair':
         # (1) fairness: competitors get the same late-concentration prior (warm w) and late guidance-off, with a wide knob sweep
-        for w30 in (6, 10):
+        for w30 in (6, 8, 10):
             w = sc(w30)
             for th in (0.1, 0.2, 0.3, 0.5, 0.8):
                 P[f'TEAw{w}_{th}'] = dict(B={s: allb for s in S.tea_schedule(N, th, w)}) if S else {}
-            for th in (0.2, 0.5):
+            for th in (0.2, 0.3, 0.5):
                 pl = dict(B={s: allb for s in S.tea_schedule(N, th, w)}) if S else {}
                 pl['G'] = list(range(sc(22), N))
                 P[f'TEAw{w}_{th}_GI'] = pl
             for kr in (2, 3, 4):
                 P[f'FORAw{w}_n{kr}'] = lateplan(w, kr=kr, ko=1, NL=NL)          # ablation: B only (late static reuse)
+                P[f'FORAw{w}_n{kr}_GI'] = lateplan(w, kr=kr, ko=1, gi=sc(22), NL=NL)
             for kr in (2, 3):
                 P[f'TSw{w}_n{kr}'] = lateplan(w, kr=kr, ko=1, bmode='t1', NL=NL)  # TaylorSeer + warm
             for ko in (2, 3):
@@ -324,6 +325,7 @@ def PLANS(phase, S=None):
         base = {**PLANS('fair', S), **PLANS('tune', S), **PLANS('tune2', S)}
         for k in json.load(open(fp)):
             P[k] = base[k]
+        P['full_retime'] = {}
     if phase in ('tune', 'bench', 'bench5b'):
         P['full_perturb1e-2'] = dict(perturb=1e-2)
     if phase == 'tune':
